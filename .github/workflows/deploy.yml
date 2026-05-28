@@ -1,0 +1,62 @@
+name: Deploy to DigitalOcean droplet
+
+# Trigger: on every push to main, and on manual dispatch from the Actions tab.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# We want concurrency control so an in-flight deploy isn't overtaken
+# by a new push. The newer push waits for the older one to finish.
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  rsync-deploy:
+    name: rsync site to droplet
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install SSH key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add droplet to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H "${{ secrets.DROPLET_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Rsync site files to droplet
+        env:
+          DROPLET_HOST: ${{ secrets.DROPLET_HOST }}
+          DROPLET_USER: ${{ secrets.DROPLET_USER }}
+          DEPLOY_PATH:  ${{ secrets.DEPLOY_PATH }}
+        run: |
+          # Sync only the website assets. Everything else (workflows,
+          # nginx config, scripts, docs) stays out of the live web root.
+          rsync -avz --delete \
+            --exclude '.git/' \
+            --exclude '.github/' \
+            --exclude 'nginx/' \
+            --exclude 'scripts/' \
+            --exclude '.gitignore' \
+            --exclude 'README.md' \
+            --exclude 'DEPLOY.md' \
+            --exclude '_screens/' \
+            --exclude '_screenshot.js' \
+            ./ "$DROPLET_USER@$DROPLET_HOST:$DEPLOY_PATH/"
+
+      - name: Reload nginx
+        env:
+          DROPLET_HOST: ${{ secrets.DROPLET_HOST }}
+          DROPLET_USER: ${{ secrets.DROPLET_USER }}
+        run: |
+          # Reload (not restart) so any other sites on the box don't blip.
+          # Requires the deploy user to be allowed to run `nginx -s reload` via sudo
+          # without a password. The bootstrap script sets that up.
+          ssh "$DROPLET_USER@$DROPLET_HOST" "sudo /usr/sbin/nginx -s reload"
