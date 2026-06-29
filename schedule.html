@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Schedule — TI Baseball (Tools of Ignorance)</title>
+<meta name="description" content="Browse open training slots, group sessions, and clinics at TI Baseball in Ajax, Ontario. Book directly through our PushPress portal.">
+<link rel="icon" href="assets/logo.jpg" type="image/jpeg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="nav" aria-label="Primary">
+    <a href="index.html" class="nav-brand" aria-label="TI Baseball home">
+      <img src="assets/logo.png" alt="">
+      <span>TI BASEBALL<small>TOOLS OF IGNORANCE</small></span>
+    </a>
+    <button class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <line x1="4" y1="7" x2="20" y2="7"/>
+        <line x1="4" y1="12" x2="20" y2="12"/>
+        <line x1="4" y1="17" x2="20" y2="17"/>
+      </svg>
+    </button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="coach.html">Coaches</a></li>
+      <li><a href="programs.html">Programs</a></li>
+      <li><a href="beginners.html">Beginners</a></li>
+      <li><a href="camps.html">Camps</a></li>
+      <li><a href="academy.html">Academy</a></li>
+      <li><a href="facility.html">Facility</a></li>
+      <li><a href="contact.html" class="cta">Book Now</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+
+  <section class="page-head">
+    <div class="container">
+      <p class="eyebrow">Book A Session</p>
+      <h1>Live Schedule</h1>
+      <p>Browse open training slots, lock in your time, and pay — all in one flow, all on this page. Coach gets the booking, you get the calendar invite, your athlete's session is locked in.</p>
+    </div>
+  </section>
+
+  <!-- Quick book — large program cards that open Cal.com modals -->
+  <section>
+    <div class="container">
+      <p class="eyebrow">Quick Book</p>
+      <h2>Pick A Program To Get Started.</h2>
+      <div class="divider"></div>
+      <p style="max-width:680px;">Click any program below to see live availability and reserve your slot. Payment runs through Stripe at booking — your spot is locked in the moment you check out.</p>
+
+      <div class="grid cols-3 booking-cards" style="margin-top:30px;">
+
+        <div class="booking-card featured">
+          <span class="booking-ribbon">Most Popular</span>
+          <div class="booking-card-tag">Private · $90 single · $80/wk recurring (same slot)</div>
+          <h3>1-on-1 Training</h3>
+          <p>Dedicated time with Coach — hitting, catching, or pitching focus. Your call.</p>
+          <div class="btn-row" style="flex-wrap:wrap; gap:8px;">
+            <button class="btn btn-primary cal-trigger"
+                    data-cal-namespace="tibaseball"
+                    data-cal-link="tibaseball-ngwya2/1-on-1-hitting-or-catching"
+                    data-cal-config='{"layout":"month_view"}'>Pick A Time — $90</button>
+            <button class="btn btn-ghost cal-trigger"
+                    data-cal-namespace="tibaseball"
+                    data-cal-link="tibaseball-ngwya2/1-on-1-weekly-slot"
+                    data-cal-config='{"layout":"month_view"}'>Pick Weekly Slot — $80/wk</button>
+          </div>
+        </div>
+
+        <div class="booking-card">
+          <div class="booking-card-tag">Group · Mondays 6–7:30 PM · $35 drop-in · $120/mo</div>
+          <h3>Monday Night Hitting Group</h3>
+          <p>Recurring group session focused on swing techniques, contact, and power.</p>
+          <div class="btn-row" style="flex-wrap:wrap; gap:8px;">
+            <a class="btn btn-primary"
+               href="https://buy.stripe.com/4gM00kf6wbq2eyP5ZG1ZS04"
+               target="_blank" rel="noopener">Drop In — $35</a>
+            <a class="btn btn-ghost"
+               href="https://buy.stripe.com/6oU28saQg2Tw62j4VC1ZS05"
+               target="_blank" rel="noopener">Monthly — $120/mo</a>
+          </div>
+        </div>
+
+        <div class="booking-card">
+          <div class="booking-card-tag">Premium · Oct–April</div>
+          <h3>TI Baseball Development Academy</h3>
+          <p>High-performance 6-month program covering every aspect of the players' game.</p>
+          <button class="btn btn-primary"
+                  data-cal-namespace="tibaseball"
+                  data-cal-link="tibaseball-ngwya2/ti-baseball-development-academy"
+                  data-cal-config='{"layout":"month_view"}'>
+            Apply Now
+          </button>
+        </div>
+
+        <div class="booking-card">
+          <div class="booking-card-tag">Seasonal · 120 min</div>
+          <h3>Tryout Prep</h3>
+          <p>Targeted prep for end-of-season tryouts — show your strengths, fix the gaps.</p>
+          <button class="btn btn-primary"
+                  data-cal-namespace="tibaseball"
+                  data-cal-link="tibaseball-ngwya2/try-out-prep"
+                  data-cal-config='{"layout":"month_view"}'>
+            Book Tryout Prep
+          </button>
+        </div>
+
+        <div class="booking-card">
+          <div class="booking-card-tag">Camp · Ages 6–9 · July 20–24</div>
+          <h3>Summer Camp · Ages 6–9</h3>
+          <p>Week-long summer camp for young players. Fundamentals, fun, and a real love for the game.</p>
+          <button class="btn btn-primary"
+                  data-cal-namespace="tibaseball"
+                  data-cal-link="tibaseball-ngwya2/summer-baseball-camp-6-9"
+                  data-cal-config='{"layout":"month_view"}'>
+            Register
+          </button>
+        </div>
+
+        <div class="booking-card">
+          <div class="booking-card-tag">Camp · Ages 10–13 · July 20–24</div>
+          <h3>Summer Camp · Ages 10–13</h3>
+          <p>Week-long summer camp for intermediate players ready to push their game forward.</p>
+          <button class="btn btn-primary"
+                  data-cal-namespace="tibaseball"
+                  data-cal-link="tibaseball-ngwya2/summer-baseball-camp-10-13-july-20-24"
+                  data-cal-config='{"layout":"month_view"}'>
+            Register
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- How booking works -->
+  <section class="alt">
+    <div class="container">
+      <p class="eyebrow">How Booking Works</p>
+      <h2>Three Clicks. You're In.</h2>
+      <div class="divider"></div>
+      <p style="max-width:680px;">No back-and-forth, no waitlists, no apps to download. The whole flow runs on tibaseball.com.</p>
+
+      <div class="grid cols-3" style="margin-top:30px;">
+        <div class="card teal">
+          <div class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h12M9 12h12M9 19h12M5 5h.01M5 12h.01M5 19h.01"/></svg>
+          </div>
+          <h3>1. Pick A Program</h3>
+          <p>Tap any of the program cards above — 1-on-1, group, camp, or development academy. Each one opens its own booking flow.</p>
+        </div>
+        <div class="card pink">
+          <div class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </div>
+          <h3>2. Choose Your Time</h3>
+          <p>See every open slot on Coach's live calendar. Pick what works — sessions are first-come-first-served, so don't wait.</p>
+        </div>
+        <div class="card teal">
+          <div class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="13" rx="2"/><line x1="2" y1="11" x2="22" y2="11"/></svg>
+          </div>
+          <h3>3. Pay &amp; Lock It In</h3>
+          <p>Card payment via Stripe at checkout. Your spot is reserved the moment you confirm. Calendar invite hits your inbox seconds later.</p>
+        </div>
+      </div>
+
+      <p class="muted center" style="margin-top:32px;">
+        Want to see every event in one full calendar view? <a href="https://cal.com/tibaseball-ngwya2" target="_blank" rel="noopener">Open Coach's full calendar →</a>
+      </p>
+    </div>
+  </section>
+
+  <section class="dark">
+    <div class="container center">
+      <p class="eyebrow">No Slot That Works?</p>
+      <h2>Reach Out For Custom Times.</h2>
+      <div class="divider" style="margin:6px auto 22px;"></div>
+      <p style="max-width:600px; margin:0 auto 24px; color:#C9D1D6;">Team training, in-house clinics, and off-schedule private sessions can usually be arranged. Send a message and we'll find a fit.</p>
+      <div class="btn-row" style="justify-content:center;">
+        <a class="btn btn-primary" href="contact.html">Send A Message</a>
+        <a class="btn btn-ghost" href="programs.html">See Programs</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <div class="footer-brand">
+        <img src="assets/logo.png" alt="">
+        <div>
+          <h4>TI Baseball</h4>
+          <small>TOOLS OF IGNORANCE · EST. 2024</small>
+        </div>
+      </div>
+      <p style="max-width:340px;">Elite baseball development in Ajax, Ontario. Hitters. Pitchers. Catchers. Train strong, play strong.</p>
+    </div>
+    <div>
+      <h5>Explore</h5>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="coach.html">The Coaches</a></li>
+        <li><a href="programs.html">Programs</a></li>
+        <li><a href="beginners.html">Beginners</a></li>
+      <li><a href="camps.html">Summer Camps</a></li>
+        <li><a href="academy.html">Winter Academy</a></li>
+        <li><a href="facility.html">Facility</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5>Visit</h5>
+      <address>
+        274 MacKenzie Ave, Suite 450<br>
+        Ajax, ON L1S 2E9<br>
+        Canada
+      </address>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <div>© <span id="year">2026</span> TI Baseball (Tools of Ignorance). All rights reserved.</div>
+    <div>Train Strong. Play Strong.</div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

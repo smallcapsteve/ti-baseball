@@ -1,130 +1,122 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 720" role="img" aria-label="TI Baseball — Tools of Ignorance">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 720" role="img" aria-label="TI Baseball — Teams of Ignorance">
   <defs>
-    <clipPath id="ballL"><circle cx="195" cy="320" r="105"/></clipPath>
-    <clipPath id="ballR"><circle cx="525" cy="320" r="105"/></clipPath>
+    <clipPath id="circle-clip">
+      <circle cx="360" cy="310" r="265"/>
+    </clipPath>
   </defs>
 
-  <!-- Black rounded shield background -->
-  <rect x="0" y="0" width="720" height="720" rx="60" fill="#0A0A0A"/>
+  <!-- black rounded background -->
+  <rect x="0" y="0" width="720" height="720" rx="50" fill="#0A0A0A"/>
 
-  <!-- Outer teal ring -->
-  <circle cx="360" cy="360" r="290" fill="none" stroke="#1FBFC4" stroke-width="10"/>
-  <!-- Inner pink ring -->
-  <circle cx="360" cy="360" r="270" fill="none" stroke="#EC2C8A" stroke-width="4"/>
+  <!-- outer teal circle -->
+  <circle cx="360" cy="310" r="275" fill="none" stroke="#1FBFC4" stroke-width="11"/>
+  <!-- inner pink ring -->
+  <circle cx="360" cy="310" r="260" fill="none" stroke="#EC2C8A" stroke-width="3"/>
 
-  <!-- Shield outline (diamond-like home plate at bottom) -->
-  <path d="M 110 230
-           L 610 230
-           L 610 440
-           L 360 620
-           L 110 440 Z"
-        fill="none" stroke="#fff" stroke-width="6" stroke-linejoin="round"/>
-  <path d="M 110 230
-           L 610 230
-           L 610 440
-           L 360 620
-           L 110 440 Z"
+  <!-- left baseball (pink line-art only, clipped to circle) -->
+  <g clip-path="url(#circle-clip)">
+    <g transform="translate(170 310)">
+      <circle r="115" fill="none" stroke="#EC2C8A" stroke-width="6"/>
+      <path d="M -100 -55 Q 0 -15 100 -55" fill="none" stroke="#EC2C8A" stroke-width="5"/>
+      <path d="M -100 55 Q 0 15 100 55" fill="none" stroke="#EC2C8A" stroke-width="5"/>
+      <g stroke="#EC2C8A" stroke-width="4" stroke-linecap="round">
+        <line x1="-95" y1="-46" x2="-83" y2="-34"/>
+        <line x1="-77" y1="-52" x2="-65" y2="-40"/>
+        <line x1="-55" y1="-56" x2="-43" y2="-44"/>
+        <line x1="-30" y1="-58" x2="-18" y2="-46"/>
+        <line x1="-5" y1="-58" x2="7" y2="-46"/>
+        <line x1="20" y1="-56" x2="32" y2="-44"/>
+        <line x1="45" y1="-52" x2="57" y2="-40"/>
+        <line x1="68" y1="-46" x2="80" y2="-34"/>
+        <line x1="-95" y1="46" x2="-83" y2="34"/>
+        <line x1="-77" y1="52" x2="-65" y2="40"/>
+        <line x1="-55" y1="56" x2="-43" y2="44"/>
+        <line x1="-30" y1="58" x2="-18" y2="46"/>
+        <line x1="-5" y1="58" x2="7" y2="46"/>
+        <line x1="20" y1="56" x2="32" y2="44"/>
+        <line x1="45" y1="52" x2="57" y2="40"/>
+        <line x1="68" y1="46" x2="80" y2="34"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- right baseball (pink line-art only, clipped to circle) -->
+  <g clip-path="url(#circle-clip)">
+    <g transform="translate(550 310)">
+      <circle r="115" fill="none" stroke="#EC2C8A" stroke-width="6"/>
+      <path d="M -100 -55 Q 0 -15 100 -55" fill="none" stroke="#EC2C8A" stroke-width="5"/>
+      <path d="M -100 55 Q 0 15 100 55" fill="none" stroke="#EC2C8A" stroke-width="5"/>
+      <g stroke="#EC2C8A" stroke-width="4" stroke-linecap="round">
+        <line x1="-95" y1="-46" x2="-83" y2="-34"/>
+        <line x1="-77" y1="-52" x2="-65" y2="-40"/>
+        <line x1="-55" y1="-56" x2="-43" y2="-44"/>
+        <line x1="-30" y1="-58" x2="-18" y2="-46"/>
+        <line x1="-5" y1="-58" x2="7" y2="-46"/>
+        <line x1="20" y1="-56" x2="32" y2="-44"/>
+        <line x1="45" y1="-52" x2="57" y2="-40"/>
+        <line x1="68" y1="-46" x2="80" y2="-34"/>
+        <line x1="-95" y1="46" x2="-83" y2="34"/>
+        <line x1="-77" y1="52" x2="-65" y2="40"/>
+        <line x1="-55" y1="56" x2="-43" y2="44"/>
+        <line x1="-30" y1="58" x2="-18" y2="46"/>
+        <line x1="-5" y1="58" x2="7" y2="46"/>
+        <line x1="20" y1="56" x2="32" y2="44"/>
+        <line x1="45" y1="52" x2="57" y2="40"/>
+        <line x1="68" y1="46" x2="80" y2="34"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- shield outline (white) with pink offset -->
+  <path d="M 110 200 L 610 200 L 610 410 L 360 590 L 110 410 Z"
+        fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M 110 200 L 610 200 L 610 410 L 360 590 L 110 410 Z"
         fill="none" stroke="#EC2C8A" stroke-width="2" stroke-linejoin="round"
-        transform="translate(3 3)"/>
+        transform="translate(4 4)"/>
 
-  <!-- Left baseball (line-art) -->
-  <g clip-path="url(#ballL)">
-    <circle cx="195" cy="320" r="105" fill="none" stroke="#EC2C8A" stroke-width="5"/>
-    <path d="M 100 270 Q 195 310 290 270" fill="none" stroke="#EC2C8A" stroke-width="4"/>
-    <path d="M 100 370 Q 195 330 290 370" fill="none" stroke="#EC2C8A" stroke-width="4"/>
-    <g stroke="#EC2C8A" stroke-width="3" stroke-linecap="round">
-      <line x1="110" y1="262" x2="120" y2="252"/>
-      <line x1="130" y1="270" x2="140" y2="260"/>
-      <line x1="150" y1="278" x2="160" y2="268"/>
-      <line x1="170" y1="284" x2="180" y2="274"/>
-      <line x1="195" y1="287" x2="205" y2="277"/>
-      <line x1="220" y1="284" x2="230" y2="274"/>
-      <line x1="240" y1="278" x2="250" y2="268"/>
-      <line x1="260" y1="270" x2="270" y2="260"/>
-
-      <line x1="110" y1="378" x2="120" y2="388"/>
-      <line x1="130" y1="370" x2="140" y2="380"/>
-      <line x1="150" y1="362" x2="160" y2="372"/>
-      <line x1="170" y1="356" x2="180" y2="366"/>
-      <line x1="195" y1="353" x2="205" y2="363"/>
-      <line x1="220" y1="356" x2="230" y2="366"/>
-      <line x1="240" y1="362" x2="250" y2="372"/>
-      <line x1="260" y1="370" x2="270" y2="380"/>
-    </g>
-  </g>
-  <circle cx="195" cy="320" r="105" fill="none" stroke="#fff" stroke-width="3"/>
-
-  <!-- Right baseball (line-art) -->
-  <g clip-path="url(#ballR)">
-    <circle cx="525" cy="320" r="105" fill="none" stroke="#EC2C8A" stroke-width="5"/>
-    <path d="M 430 270 Q 525 310 620 270" fill="none" stroke="#EC2C8A" stroke-width="4"/>
-    <path d="M 430 370 Q 525 330 620 370" fill="none" stroke="#EC2C8A" stroke-width="4"/>
-    <g stroke="#EC2C8A" stroke-width="3" stroke-linecap="round">
-      <line x1="440" y1="262" x2="450" y2="252"/>
-      <line x1="460" y1="270" x2="470" y2="260"/>
-      <line x1="480" y1="278" x2="490" y2="268"/>
-      <line x1="500" y1="284" x2="510" y2="274"/>
-      <line x1="525" y1="287" x2="535" y2="277"/>
-      <line x1="550" y1="284" x2="560" y2="274"/>
-      <line x1="570" y1="278" x2="580" y2="268"/>
-      <line x1="590" y1="270" x2="600" y2="260"/>
-
-      <line x1="440" y1="378" x2="450" y2="388"/>
-      <line x1="460" y1="370" x2="470" y2="380"/>
-      <line x1="480" y1="362" x2="490" y2="372"/>
-      <line x1="500" y1="356" x2="510" y2="366"/>
-      <line x1="525" y1="353" x2="535" y2="363"/>
-      <line x1="550" y1="356" x2="560" y2="366"/>
-      <line x1="570" y1="362" x2="580" y2="372"/>
-      <line x1="590" y1="370" x2="600" y2="380"/>
-    </g>
-  </g>
-  <circle cx="525" cy="320" r="105" fill="none" stroke="#fff" stroke-width="3"/>
-
-  <!-- T letter (white with pink+teal accents) -->
-  <g transform="translate(180 180)">
-    <!-- pink offset shadow -->
-    <path d="M 8 8 L 218 8 L 218 60 L 145 60 L 145 270 L 75 270 L 75 60 L 8 60 Z" fill="#EC2C8A"/>
-    <!-- teal underlay -->
-    <path d="M 4 4 L 214 4 L 214 56 L 141 56 L 141 266 L 71 266 L 71 56 L 4 56 Z" fill="#1FBFC4"/>
-    <!-- main white -->
-    <path d="M 0 0 L 210 0 L 210 52 L 137 52 L 137 262 L 67 262 L 67 52 L 0 52 Z"
-          fill="#fff" stroke="#0A0A0A" stroke-width="4" stroke-linejoin="round"/>
-  </g>
-
-  <!-- I letter (teal with pink accent) -->
-  <g transform="translate(395 220)">
-    <!-- pink offset shadow -->
-    <path d="M 8 8 L 138 8 L 138 240 L 8 240 Z" fill="#EC2C8A"/>
-    <!-- main teal -->
-    <path d="M 0 0 L 130 0 L 130 232 L 0 232 Z"
+  <!-- I letter (teal with pink shadow) — rendered first so T sits in front -->
+  <g transform="translate(395 215)">
+    <path d="M 14 14 L 152 14 L 152 250 L 14 250 Z" fill="#EC2C8A"/>
+    <path d="M 0 0 L 138 0 L 138 236 L 0 236 Z"
           fill="#1FBFC4" stroke="#0A0A0A" stroke-width="4" stroke-linejoin="round"/>
-    <!-- small pink edge highlight -->
-    <path d="M 0 0 L 130 0 L 130 232 L 0 232 Z"
-          fill="none" stroke="#EC2C8A" stroke-width="1.5" stroke-linejoin="round"
-          transform="translate(2 2)"/>
   </g>
 
-  <!-- Small star (home plate marker) -->
-  <g transform="translate(360 560)" fill="#EC2C8A">
-    <polygon points="0,-16 4,-5 16,-5 6,3 10,15 0,8 -10,15 -6,3 -16,-5 -4,-5"/>
+  <!-- T letter (white with pink and teal shadow accents) -->
+  <g transform="translate(150 175)">
+    <path d="M 14 14 L 264 14 L 264 76 L 175 76 L 175 296 L 103 296 L 103 76 L 14 76 Z"
+          fill="#EC2C8A"/>
+    <path d="M 7 7 L 257 7 L 257 69 L 168 69 L 168 289 L 96 289 L 96 69 L 7 69 Z"
+          fill="#1FBFC4"/>
+    <path d="M 0 0 L 250 0 L 250 62 L 161 62 L 161 282 L 89 282 L 89 62 L 0 62 Z"
+          fill="#FFFFFF" stroke="#0A0A0A" stroke-width="4" stroke-linejoin="round"/>
   </g>
 
-  <!-- BASEBALL banner -->
-  <g transform="translate(360 670)">
-    <!-- pink top tick line -->
-    <rect x="-260" y="-32" width="80" height="6" fill="#EC2C8A"/>
-    <rect x="180" y="-32" width="80" height="6" fill="#EC2C8A"/>
-    <!-- main word -->
-    <text x="0" y="0" text-anchor="middle"
-          font-family="Impact, 'Arial Black', 'Anton', sans-serif"
-          font-size="62" font-weight="900" fill="#fff" letter-spacing="6">BASEBALL</text>
-    <!-- teal bottom tick line -->
-    <rect x="-260" y="14" width="80" height="6" fill="#1FBFC4"/>
-    <rect x="180" y="14" width="80" height="6" fill="#1FBFC4"/>
-    <!-- sub line -->
-    <text x="0" y="34" text-anchor="middle"
-          font-family="Impact, 'Arial Black', 'Anton', sans-serif"
-          font-size="18" fill="#EC2C8A" letter-spacing="6">TOOLS OF IGNORANCE</text>
+  <!-- pink star at the bottom of the shield (home plate marker) -->
+  <g transform="translate(360 555)" fill="#EC2C8A">
+    <polygon points="0,-18 5,-6 18,-6 8,3 12,17 0,9 -12,17 -8,3 -18,-6 -5,-6"/>
+  </g>
+
+  <!-- BASEBALL banner (italicized white text with pink dashes flanking, teal dashes below) -->
+  <g transform="translate(360 660)">
+    <rect x="-290" y="-8" width="80" height="6" fill="#EC2C8A"/>
+    <rect x="210" y="-8" width="80" height="6" fill="#EC2C8A"/>
+    <text x="0" y="14" text-anchor="middle"
+          font-family="Impact, 'Arial Black', sans-serif"
+          font-size="72" font-weight="900" fill="#FFFFFF"
+          letter-spacing="4" font-style="italic">BASEBALL</text>
+    <rect x="-290" y="24" width="80" height="6" fill="#1FBFC4"/>
+    <rect x="210" y="24" width="80" height="6" fill="#1FBFC4"/>
+  </g>
+
+  <!-- TEAMS OF IGNORANCE subtitle (italic, pink) -->
+  <text x="360" y="697" text-anchor="middle"
+        font-family="Impact, 'Arial Black', sans-serif"
+        font-size="20" fill="#EC2C8A" letter-spacing="5" font-style="italic">TEAMS OF IGNORANCE</text>
+
+  <!-- EST. 2024 home plate badge -->
+  <g transform="translate(360 712)">
+    <path d="M -16 -7 L 16 -7 L 16 0 L 0 8 L -16 0 Z" fill="none" stroke="#1FBFC4" stroke-width="1.2"/>
+    <text x="0" y="-1.5" text-anchor="middle" font-family="Impact, sans-serif" font-size="5" fill="#1FBFC4" letter-spacing="0.6">EST.</text>
+    <text x="0" y="4" text-anchor="middle" font-family="Impact, sans-serif" font-size="5" fill="#1FBFC4" letter-spacing="0.6">2024</text>
   </g>
 </svg>

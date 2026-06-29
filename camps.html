@@ -1,0 +1,665 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Summer Camps — TI Baseball (Tools of Ignorance)</title>
+<meta name="description" content="TI Baseball Summer Camps — Morning Ages 6–9 and Afternoon Ages 10–13. Hitting, throwing, fielding, baserunning, game awareness. Build confidence, have fun. Ajax, Ontario.">
+<link rel="icon" href="assets/logo.jpg" type="image/jpeg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .camp-cards { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin:30px 0; }
+  @media (max-width:760px){ .camp-cards{ grid-template-columns:1fr; } }
+  .bring-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:18px; margin:30px 0 0; padding:0; list-style:none; }
+  @media (max-width:820px) { .bring-grid { grid-template-columns:repeat(2, 1fr); } }
+  @media (max-width:480px) { .bring-grid { grid-template-columns:1fr; } }
+  .bring-item { display:flex; gap:16px; align-items:center; padding:18px 20px; border-radius:14px; background:linear-gradient(135deg, rgba(31,191,196,0.10), rgba(31,191,196,0.02)); border:1px solid rgba(31,191,196,0.18); transition:transform .15s, border-color .15s; }
+  .bring-item.pink { background:linear-gradient(135deg, rgba(236,44,138,0.10), rgba(236,44,138,0.02)); border-color:rgba(236,44,138,0.20); }
+  .bring-item:hover { transform:translateY(-2px); border-color:rgba(31,191,196,0.40); }
+  .bring-item.pink:hover { border-color:rgba(236,44,138,0.45); }
+  .bring-icon { flex:0 0 52px; width:52px; height:52px; border-radius:12px; background:rgba(31,191,196,0.14); display:flex; align-items:center; justify-content:center; color:#1FBFC4; }
+  .bring-item.pink .bring-icon { background:rgba(236,44,138,0.14); color:#EC2C8A; }
+  .bring-icon svg { width:30px; height:30px; }
+  .bring-label { font-weight:600; font-size:1.02rem; color:var(--ink); }
+  .bring-sub { font-size:.85rem; color:var(--ink-soft); margin-top:2px; }
+  /* Timeline schedule */
+  .timeline { position:relative; max-width:880px; margin:34px 0 0; padding:0; list-style:none; }
+  .timeline::before { content:''; position:absolute; left:108px; top:18px; bottom:18px; width:2px; background:linear-gradient(to bottom, rgba(31,191,196,0.4), rgba(236,44,138,0.4)); }
+  @media (max-width:600px){ .timeline::before { left:14px; } }
+  .tl-item { position:relative; display:grid; grid-template-columns:90px 36px 1fr; align-items:start; gap:0; margin:0 0 14px; }
+  @media (max-width:600px){ .tl-item { grid-template-columns:30px 1fr; gap:8px; margin-bottom:10px; } }
+  .tl-time { text-align:right; padding:13px 0 0; font-weight:700; font-size:.86rem; color:var(--ink); letter-spacing:.01em; font-variant-numeric:tabular-nums; }
+  @media (max-width:600px){ .tl-time { display:none; } }
+  .tl-dot { display:flex; align-items:flex-start; justify-content:center; padding-top:14px; }
+  .tl-dot-inner { width:36px; height:36px; border-radius:50%; background:var(--bg-card, #161A1F); border:2px solid #1FBFC4; display:flex; align-items:center; justify-content:center; color:#1FBFC4; z-index:1; box-shadow:0 0 0 4px rgba(31,191,196,0.10); }
+  .tl-dot-inner svg { width:18px; height:18px; }
+  @media (max-width:600px){
+    .tl-dot { padding-top:10px; grid-column:1; }
+    .tl-dot-inner { width:28px; height:28px; box-shadow:0 0 0 3px rgba(31,191,196,0.10); }
+    .tl-dot-inner svg { width:14px; height:14px; }
+  }
+  .tl-item.pink .tl-dot-inner { border-color:#EC2C8A; color:#EC2C8A; box-shadow:0 0 0 4px rgba(236,44,138,0.10); }
+  @media (max-width:600px){ .tl-item.pink .tl-dot-inner { box-shadow:0 0 0 3px rgba(236,44,138,0.10); } }
+  .tl-card { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.10); border-radius:12px; padding:14px 18px; margin-left:14px; transition:transform .15s, border-color .15s; }
+  @media (max-width:600px){ .tl-card { padding:10px 12px; margin-left:0; grid-column:2; min-width:0; } }
+  .tl-card:hover { transform:translateX(4px); border-color:rgba(31,191,196,0.35); }
+  .tl-item.pink .tl-card:hover { border-color:rgba(236,44,138,0.40); }
+  .tl-title { font-weight:600; font-size:1.02rem; color:var(--ink); margin:0; }
+  @media (max-width:600px){ .tl-title { font-size:.95rem; line-height:1.3; } }
+  .tl-time-mobile { display:none; font-weight:700; font-size:.82rem; color:var(--accent); letter-spacing:.02em; text-transform:uppercase; margin-bottom:4px; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  @media (max-width:600px){ .tl-time-mobile { display:block; font-size:.76rem; margin-bottom:3px; } }
+  .tl-sub { font-size:.88rem; color:var(--ink-soft); margin:3px 0 0; }
+  @media (max-width:600px){ .tl-sub { font-size:.82rem; line-height:1.4; } }
+  /* Highlight the break differently */
+  .tl-item.break .tl-card { background:linear-gradient(135deg, rgba(236,44,138,0.08), rgba(31,191,196,0.04)); border-style:dashed; border-color:rgba(255,255,255,0.18); }
+  /* Highlight the final wrap-up */
+  .tl-item.finale .tl-card { background:linear-gradient(135deg, rgba(31,191,196,0.10), rgba(236,44,138,0.10)); border-color:rgba(31,191,196,0.30); }
+
+  /* Schedule + photo two-column layout */
+  .schedule-grid { display:grid; grid-template-columns:1fr 360px; gap:48px; align-items:start; margin-top:34px; }
+  @media (max-width:960px) { .schedule-grid { grid-template-columns:1fr; gap:34px; } .schedule-grid .timeline { margin-top:0; } }
+  .schedule-photo { position:sticky; top:24px; border-radius:18px; overflow:hidden; border:1px solid rgba(255,255,255,0.10); box-shadow:0 24px 60px -20px rgba(0,0,0,0.5); }
+  .schedule-photo img { display:block; width:100%; height:auto; }
+  .schedule-photo .caption { padding:14px 18px; background:rgba(0,0,0,0.4); font-size:.86rem; color:var(--ink-soft); border-top:1px solid rgba(255,255,255,0.08); }
+
+  /* Wide action hero banner */
+  .camp-hero-banner { position:relative; margin:32px auto 0; max-width:1200px; border-radius:20px; overflow:hidden; box-shadow:0 30px 80px -30px rgba(0,0,0,0.7); border:1px solid rgba(255,255,255,0.08); }
+  .camp-hero-banner img { display:block; width:100%; height:auto; }
+  .camp-hero-banner::after {
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(to top, rgba(1,1,1,0.55) 0%, rgba(1,1,1,0.15) 40%, transparent 70%);
+    pointer-events:none;
+  }
+  .camp-hero-banner .caption-overlay {
+    position:absolute; left:0; right:0; bottom:0; padding:22px 28px;
+    color:#fff; z-index:1;
+    display:flex; justify-content:space-between; align-items:flex-end; gap:24px; flex-wrap:wrap;
+  }
+  .camp-hero-banner .caption-overlay h3 { margin:0; font-size:clamp(1.3rem, 2.6vw, 1.8rem); }
+  .camp-hero-banner .caption-overlay p { margin:4px 0 0; opacity:0.85; font-size:.96rem; max-width:560px; }
+  .camp-hero-banner .pill {
+    display:inline-flex; align-items:center; gap:8px;
+    padding:8px 16px; border-radius:999px;
+    background:rgba(31,191,196,0.92); color:#010101;
+    font-weight:700; font-size:.82rem; text-transform:uppercase; letter-spacing:.06em;
+    backdrop-filter:blur(8px); flex:none;
+  }
+
+  /* Register Now CTA banner */
+  .cta-banner {
+    display:grid; grid-template-columns:1fr auto; gap:40px; align-items:center;
+    padding:48px 56px;
+    border-radius:24px;
+    background:linear-gradient(135deg, #1FBFC4 0%, #178A8E 55%, #EC2C8A 130%);
+    box-shadow:0 24px 60px -20px rgba(31,191,196,0.4), 0 8px 24px -10px rgba(236,44,138,0.35);
+    position:relative; overflow:hidden;
+  }
+  .cta-banner::before {
+    content:''; position:absolute; inset:0;
+    background:radial-gradient(circle at 100% 0%, rgba(255,255,255,0.18), transparent 60%);
+    pointer-events:none;
+  }
+  .cta-banner-text { position:relative; }
+  .cta-banner-text h2 { font-size:clamp(1.9rem, 4vw, 2.6rem); line-height:1.1; }
+  .cta-banner-action { position:relative; display:flex; flex-direction:column; align-items:center; }
+  @media (max-width:760px) {
+    .cta-banner { grid-template-columns:1fr; padding:36px 28px; text-align:center; gap:28px; }
+    .cta-banner-text { text-align:center; }
+    .cta-banner-text p { margin-left:auto !important; margin-right:auto !important; }
+  }
+  .btn-big-cta {
+    display:inline-flex; align-items:center; gap:14px;
+    padding:20px 40px; min-width:240px; justify-content:center;
+    background:#010101; color:#fff;
+    font-family:'Anton', sans-serif; font-size:1.4rem; letter-spacing:.04em;
+    border-radius:14px; border:2px solid #010101;
+    text-decoration:none; text-transform:uppercase;
+    transition:transform .15s, box-shadow .15s, background .15s;
+    box-shadow:0 10px 24px -8px rgba(0,0,0,0.5);
+  }
+  .btn-big-cta svg { width:24px; height:24px; transition:transform .15s; }
+  .btn-big-cta:hover { transform:translateY(-2px); background:#fff; color:#010101; box-shadow:0 16px 32px -10px rgba(0,0,0,0.6); }
+  .btn-big-cta:hover svg { transform:translateX(4px); }
+  /* Scoped form styling — high specificity so it isn't crushed by the
+     global form.contact-form rules in styles.css (which would otherwise
+     force a white background and Anton-uppercase labels). */
+  form.camp-form { display:grid; gap:0; background:transparent; padding:0; border:0; box-shadow:none; max-width:780px; }
+  form.camp-form fieldset.reg { border:1px solid rgba(255,255,255,0.10); border-radius:14px; padding:22px 24px; margin:18px 0 0; background:rgba(255,255,255,0.02); }
+  form.camp-form fieldset.reg legend { padding:0 10px; font-weight:700; color:var(--accent); text-transform:uppercase; font-size:.78rem; letter-spacing:.06em; font-family:'Inter',sans-serif; }
+  form.camp-form .form-row { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:14px; }
+  @media (max-width:600px){ form.camp-form .form-row{ grid-template-columns:1fr; } }
+  form.camp-form label { display:block; font-weight:600; margin-bottom:6px; font-size:.92rem; font-family:'Inter',sans-serif; text-transform:none; letter-spacing:normal; color:var(--ink); }
+  form.camp-form input[type=text], form.camp-form input[type=email], form.camp-form input[type=tel], form.camp-form input[type=date], form.camp-form input[type=number], form.camp-form select, form.camp-form textarea {
+    width:100%; padding:11px 13px; border-radius:9px; border:1px solid rgba(255,255,255,0.14); background:rgba(0,0,0,0.20); color:var(--ink); font-size:.98rem; font-family:'Inter',sans-serif; box-shadow:none;
+  }
+  form.camp-form textarea { min-height:80px; resize:vertical; }
+  form.camp-form .check-line { display:flex; gap:12px; align-items:flex-start; padding:12px 14px; border:1px solid rgba(255,255,255,0.10); border-radius:10px; background:rgba(255,255,255,0.02); margin:10px 0; }
+  form.camp-form .check-line input[type=checkbox] { margin-top:4px; flex:0 0 auto; width:auto; }
+  form.camp-form .check-line label { margin:0; font-weight:500; line-height:1.5; font-size:.95rem; flex:1 1 auto; text-transform:none; letter-spacing:normal; font-family:'Inter',sans-serif; }
+  form.camp-form .check-line label strong { color:var(--accent); }
+  form.camp-form .check-line label a { color:var(--accent); text-decoration:underline; }
+  form.camp-form .btn-row { margin-top:22px; }
+
+  /* Sold-out state styling */
+  .sold-out-tag { background:rgba(236,44,138,0.20) !important; color:#EC2C8A !important; border:1px solid rgba(236,44,138,0.4); }
+  .btn-sold-out { background:rgba(255,255,255,0.06) !important; color:rgba(255,255,255,0.55) !important; border-color:rgba(255,255,255,0.10) !important; cursor:not-allowed !important; pointer-events:none; }
+  .both-sold-out-banner {
+    margin-top:30px; padding:24px 28px; border-radius:14px;
+    background:linear-gradient(135deg, rgba(236,44,138,0.18), rgba(236,44,138,0.05));
+    border:1px solid rgba(236,44,138,0.40);
+    text-align:center;
+  }
+  .both-sold-out-banner h3 { margin:0 0 10px; color:#fff; font-family:'Anton', sans-serif; font-size:1.4rem; letter-spacing:.04em; }
+  .both-sold-out-banner p { margin:0 0 14px; color:rgba(255,255,255,0.88); }
+</style>
+<style>/* Top utility ribbon — sits above the site header on every page */
+.top-ribbon {
+  background:#010101; border-bottom:1px solid rgba(255,255,255,0.06);
+  font-family:'Inter', sans-serif; font-size:.84rem;
+}
+.top-ribbon-inner {
+  max-width:1180px; margin:0 auto; padding:8px 22px;
+  display:flex; justify-content:space-between; align-items:center; gap:18px;
+  flex-wrap:wrap;
+}
+.top-ribbon-tagline { color:rgba(255,255,255,0.55); letter-spacing:.04em; text-transform:uppercase; font-size:.74rem; font-weight:600; }
+.top-ribbon-actions { display:flex; align-items:center; gap:14px; }
+.top-ribbon-social { display:flex; align-items:center; gap:8px; }
+.top-ribbon-social a {
+  display:flex; align-items:center; justify-content:center;
+  width:30px; height:30px; border-radius:50%;
+  background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.85);
+  transition:background .15s, color .15s, transform .15s;
+}
+.top-ribbon-social a:hover { background:#1FBFC4; color:#010101; transform:translateY(-1px); }
+.top-ribbon-social svg { width:16px; height:16px; }
+.top-ribbon-login {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:5px 14px; border-radius:6px;
+  background:transparent; border:1px solid rgba(255,255,255,0.20); color:#fff;
+  font-size:.78rem; font-weight:600; letter-spacing:.04em; text-transform:uppercase;
+  text-decoration:none; transition:background .15s, border-color .15s;
+}
+.top-ribbon-login:hover { background:#EC2C8A; border-color:#EC2C8A; }
+.top-ribbon-login svg { width:14px; height:14px; }
+@media (max-width:560px) {
+  .top-ribbon-inner { padding:8px 16px; gap:10px; }
+  .top-ribbon-tagline { display:none; }
+}
+</style>
+</head>
+<body>
+<div class="top-ribbon">
+  <div class="top-ribbon-inner">
+    <span class="top-ribbon-tagline">Ajax, ON · Baseball Training Academy</span>
+    <div class="top-ribbon-actions">
+      <div class="top-ribbon-social">
+        <a href="https://www.instagram.com/tools_of_ignorance77/" target="_blank" rel="noopener" aria-label="TI Baseball on Instagram">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </a>
+        <a href="https://www.facebook.com/profile.php?id=100068096166498" target="_blank" rel="noopener" aria-label="TI Baseball on Facebook">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+      </div>
+      <a href="/login" class="top-ribbon-login" id="top-ribbon-login-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        <span>Sign In</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+
+<header class="site-header">
+  <nav class="nav" aria-label="Primary">
+    <a href="index.html" class="nav-brand" aria-label="TI Baseball home">
+      <img src="assets/logo.png" alt="">
+      <span>TI BASEBALL<small>TOOLS OF IGNORANCE</small></span>
+    </a>
+    <button class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/>
+      </svg>
+    </button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="coach.html">Coaches</a></li>
+      <li><a href="programs.html">Programs</a></li>
+      <li><a href="beginners.html">Beginners</a></li>
+      <li><a href="camps.html">Camps</a></li>
+      <li><a href="academy.html">Academy</a></li>
+      <li><a href="facility.html">Facility</a></li>
+      <li><a href="contact.html" class="cta">Book Now</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+
+  <section class="page-head">
+    <div class="container">
+      <p class="eyebrow">Summer 2026 · Week-Long Programs</p>
+      <h1>TI Baseball Summer Camps.</h1>
+      <p>Build confidence, improve fundamental baseball skills, and have fun in a positive, high-energy environment. Our week-long programs are designed to help players develop their hitting, throwing, fielding, baserunning, and game awareness through engaging drills, skill stations, and game-based activities.</p>
+      <p>Led by experienced coaches, each week emphasizes quality instruction, individual skill development, and a love for the game &mdash; ensuring every player leaves more confident and excited to play baseball.</p>
+
+      <figure class="camp-hero-banner" style="margin-top:36px;">
+        <img src="assets/camp-action-hero.jpg" alt="TI Baseball campers in a fielding line ready for grounders, coach hitting from the right, inside the indoor training facility">
+        <figcaption class="caption-overlay">
+          <div>
+            <h3>Game-like reps. Coach-led drills. Real progress.</h3>
+            <p>Stations rotate every 30 minutes &mdash; from fielding ground balls to live tee work to base running challenges.</p>
+          </div>
+          <span class="pill">All Skill Levels</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- TWO CAMP SESSIONS -->
+  <section id="pick">
+    <div class="container">
+      <p class="eyebrow">Two Week-Long Programs</p>
+      <h2>Pick Your Camp.</h2>
+      <div class="divider"></div>
+
+      <div class="camp-cards">
+        <div class="card teal">
+          <div class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/></svg>
+          </div>
+          <span class="tag" data-camp-tag="morning">Ages 6–9 &middot; July 20–24</span>
+          <h3>Morning Camp</h3>
+          <p style="font-size:1.05rem; color:var(--ink); margin-top:6px;"><strong>Monday–Friday, July 20–24</strong><br>9:00 AM – 1:00 PM &middot; 4 hrs/day</p>
+          <p>Younger players build foundational skills through fun, age-appropriate drills, games, and lots of reps. Snack &amp; bathroom break built in.</p>
+          <p style="font-size:1.05rem; color:var(--accent); font-weight:600; margin:8px 0 14px;">$400 for the week-long program</p>
+          <a href="/book?program=camps-morning" class="btn btn-primary" style="align-self:flex-start;" data-camp-btn="morning" data-camp-btn-text="Register For Morning">Register For Morning</a>
+        </div>
+
+        <div class="card pink">
+          <div class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12c4-8 14-8 18 0"/><path d="M3 12c4 8 14 8 18 0"/><circle cx="12" cy="12" r="2"/></svg>
+          </div>
+          <span class="tag pink" data-camp-tag="afternoon">Ages 10–13 &middot; July 20–24</span>
+          <h3>Afternoon Camp</h3>
+          <p style="font-size:1.05rem; color:var(--ink); margin-top:6px;"><strong>Monday–Friday, July 20–24</strong><br>1:00 PM – 5:00 PM &middot; 4 hrs/day</p>
+          <p>Intermediate players push their game forward — sharper mechanics, smarter situational play, more challenging station work.</p>
+          <p style="font-size:1.05rem; color:#EC2C8A; font-weight:600; margin:8px 0 14px;">$400 for the week-long program</p>
+          <a href="/book?program=camps-afternoon" class="btn btn-primary" style="align-self:flex-start;" data-camp-btn="afternoon" data-camp-btn-text="Register For Afternoon">Register For Afternoon</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT TO BRING -->
+  <section class="alt">
+    <div class="container">
+      <p class="eyebrow">Come Prepared</p>
+      <h2>What Players Should Bring.</h2>
+      <div class="divider"></div>
+      <ul class="bring-grid">
+
+        <li class="bring-item">
+          <div class="bring-icon" aria-hidden="true">
+            <!-- Baseball glove: rounded mitt with fingers -->
+            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M7 14c0-5 4-9 9-9 4 0 7 2 8 5l3 4c1 1 1 2 0 3l-2 2v6c0 2-2 4-4 4H10c-2 0-4-2-4-4V14z"/>
+              <path d="M11 11v6"/><path d="M15 10v8"/><path d="M19 11v7"/>
+              <circle cx="22" cy="20" r="2"/>
+            </svg>
+          </div>
+          <div>
+            <div class="bring-label">Baseball glove</div>
+            <div class="bring-sub">Broken in if possible</div>
+          </div>
+        </li>
+
+        <li class="bring-item pink">
+          <div class="bring-icon" aria-hidden="true">
+            <!-- Bat: diagonal bat with knob -->
+            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 27l4 4"/>
+              <path d="M7 25l4-4 14-14a3 3 0 0 1 4 4L15 25l-4 4z"/>
+              <circle cx="7" cy="27" r="2"/>
+            </svg>
+          </div>
+          <div>
+            <div class="bring-label">Bat</div>
+            <div class="bring-sub">Wood, aluminum, or composite</div>
+          </div>
+        </li>
+
+        <li class="bring-item">
+          <div class="bring-icon" aria-hidden="true">
+            <!-- Hat: ball cap with brim -->
+            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 22c0-7 5-12 12-12s12 5 12 12"/>
+              <path d="M2 22h28"/>
+              <path d="M14 12c0-2 1-4 2-4s2 2 2 4"/>
+            </svg>
+          </div>
+          <div>
+            <div class="bring-label">Hat / Cap</div>
+            <div class="bring-sub">Sun &amp; sweat protection</div>
+          </div>
+        </li>
+
+        <li class="bring-item pink">
+          <div class="bring-icon" aria-hidden="true">
+            <!-- Batting helmet: dome with ear flap -->
+            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 18c0-7 5-12 11-12s11 5 11 12v4H5v-4z"/>
+              <path d="M21 22c0 2-1 4-3 4h-3"/>
+              <circle cx="10" cy="17" r="1"/>
+              <path d="M14 8c0-1 1-2 2-2s2 1 2 2"/>
+            </svg>
+          </div>
+          <div>
+            <div class="bring-label">Batting helmet</div>
+            <div class="bring-sub">With or without face guard</div>
+          </div>
+        </li>
+
+        <li class="bring-item">
+          <div class="bring-icon" aria-hidden="true">
+            <!-- Running shoes: side profile of sneaker -->
+            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 22c0-2 1-4 3-4l4-1 3-5 6 2 4 4 5 1c1 0 2 1 2 2v3c0 1-1 2-2 2H5c-1 0-2-1-2-2v-2z"/>
+              <path d="M11 14l2 3"/>
+              <path d="M14 12l3 4"/>
+              <path d="M3 24h26"/>
+            </svg>
+          </div>
+          <div>
+            <div class="bring-label">Running shoes</div>
+            <div class="bring-sub">Turf or sneakers — no cleats indoors</div>
+          </div>
+        </li>
+
+        <li class="bring-item pink">
+          <div class="bring-icon" aria-hidden="true">
+            <!-- Water bottle: tall bottle with cap -->
+            <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 4h8"/>
+              <path d="M13 4v3l-2 2v18c0 1 1 2 2 2h6c1 0 2-1 2-2V9l-2-2V4"/>
+              <path d="M11 15h10"/>
+              <path d="M14 19v6"/>
+            </svg>
+          </div>
+          <div>
+            <div class="bring-label">Water bottle</div>
+            <div class="bring-sub">Full — refill stations on site</div>
+          </div>
+        </li>
+
+      </ul>
+      <p class="muted" style="margin-top:22px; font-size:.94rem;">A snack is recommended for the mid-session break. Sunscreen if outdoors. Loaner gear is available for first-time players — just let Coach know in the registration form.</p>
+    </div>
+  </section>
+
+  <!-- DAILY SCHEDULE -->
+  <section>
+    <div class="container">
+      <p class="eyebrow">A Day At Camp</p>
+      <h2>Daily Schedule.</h2>
+      <div class="divider"></div>
+      <p style="max-width:680px;">Six rotating skill stations with a built-in mid-day break, capped by a game challenge and daily wrap-up. Every day of the week-long program follows the same rhythm so kids know what to expect.</p>
+
+      <div class="schedule-grid">
+
+      <ol class="timeline">
+
+        <li class="tl-item">
+          <div class="tl-time">0:00 &ndash; 0:15</div>
+          <div class="tl-dot"><div class="tl-dot-inner">
+            <!-- Warm-up: stretching figure -->
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="4" r="2"/><path d="M12 6v6"/><path d="M12 12l-5 6"/><path d="M12 12l5 6"/><path d="M9 9l-4-2"/><path d="M15 9l4-2"/>
+            </svg>
+          </div></div>
+          <div class="tl-card">
+            <div class="tl-time-mobile">0:00 &ndash; 0:15</div>
+            <p class="tl-title">Dynamic warm-up</p>
+            <p class="tl-sub">Movement prep, light jog, dynamic stretching</p>
+          </div>
+        </li>
+
+        <li class="tl-item">
+          <div class="tl-time">0:15 &ndash; 0:45</div>
+          <div class="tl-dot"><div class="tl-dot-inner">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><text x="12" y="17" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor" stroke="none" font-family="Inter">1</text></svg>
+          </div></div>
+          <div class="tl-card">
+            <div class="tl-time-mobile">0:15 &ndash; 0:45</div>
+            <p class="tl-title">Station Block 1</p>
+          </div>
+        </li>
+
+        <li class="tl-item pink">
+          <div class="tl-time">0:45 &ndash; 1:15</div>
+          <div class="tl-dot"><div class="tl-dot-inner">
+            <svg viewBox="0 0 24 24"><text x="12" y="17" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor" font-family="Inter">2</text></svg>
+          </div></div>
+          <div class="tl-card">
+            <div class="tl-time-mobile">0:45 &ndash; 1:15</div>
+            <p class="tl-title">Station Block 2</p>
+          </div>
+        </li>
+
+        <li class="tl-item">
+          <div class="tl-time">1:15 &ndash; 1:45</div>
+          <div class="tl-dot"><div class="tl-dot-inner">
+            <svg viewBox="0 0 24 24"><text x="12" y="17" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor" font-family="Inter">3</text></svg>
+          </div></div>
+          <div class="tl-card">
+            <div class="tl-time-mobile">1:15 &ndash; 1:45</div>
+            <p class="tl-title">Station Block 3</p>
+          </div>
+        </li>
+
+        <li class="tl-item pink break">
+          <div class="tl-time">1:45 &ndash; 2:05</div>
+          <div class="tl-dot"><div class="tl-dot-inner">
+            <!-- Snack: cup -->
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 8h12l-1 11a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L6 8z"/>
+              <path d="M6 8h12"/><path d="M9 4v3"/><path d="M15 4v3"/>
+            </svg>
+          </div></div>
+          <div class="tl-card">
+            <div class="tl-time-mobile">1:45 &ndash; 2:05</div>
+            <p class="tl-title">Snack &amp; bathroom break</p>
+            <p class="tl-sub">20-minute mid-day reset</p>
+          </div>
+        </li>
+
+        <li class="tl-item">
+          <div class="tl-time">2:05 &ndash; 2:35</div>
+          <div class="tl-dot"><div class="tl-dot-inner">
+            <svg viewBox="0 0 24 24"><text x="12" y="17" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor" font-family="Inter">4</text></svg>
+          </div></div>
+          <div class="tl-card">
+            <div class="tl-time-mobile">2:05 &ndash; 2:35</div>
+            <p class="tl-title">Station Block 4</p>
+          </div>
+        </li>
+
+        <li class="tl-item pink">
+          <div class="tl-time">2:35 &ndash; 3:05</div>
+          <div class="tl-dot"><div class="tl-dot-inner">
+            <svg viewBox="0 0 24 24"><text x="12" y="17" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor" font-family="Inter">5</text></svg>
+          </div></div>
+          <div class="tl-card">
+            <div class="tl-time-mobile">2:35 &ndash; 3:05</div>
+            <p class="tl-title">Station Block 5</p>
+          </div>
+        </li>
+
+        <li class="tl-item">
+          <div class="tl-time">3:05 &ndash; 3:35</div>
+          <div class="tl-dot"><div class="tl-dot-inner">
+            <svg viewBox="0 0 24 24"><text x="12" y="17" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor" font-family="Inter">6</text></svg>
+          </div></div>
+          <div class="tl-card">
+            <div class="tl-time-mobile">3:05 &ndash; 3:35</div>
+            <p class="tl-title">Station Block 6</p>
+          </div>
+        </li>
+
+        <li class="tl-item finale">
+          <div class="tl-time">3:35 &ndash; 4:00</div>
+          <div class="tl-dot"><div class="tl-dot-inner">
+            <!-- Trophy / game icon -->
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 4h12v5a6 6 0 0 1-12 0V4z"/>
+              <path d="M6 7H4a2 2 0 0 0 2 2"/>
+              <path d="M18 7h2a2 2 0 0 1-2 2"/>
+              <path d="M10 15v3h4v-3"/>
+              <path d="M8 21h8"/>
+            </svg>
+          </div></div>
+          <div class="tl-card">
+            <div class="tl-time-mobile">3:35 &ndash; 4:00</div>
+            <p class="tl-title">Wiffle Ball / Coach Pitch Game / Base Running Challenge</p>
+            <p class="tl-sub">Put it all together &mdash; competitive games and the daily wrap-up</p>
+          </div>
+        </li>
+
+      </ol>
+
+      <figure class="schedule-photo">
+        <img src="assets/camp-tee-player.jpg" alt="Young TI Baseball camper at a tee inside the indoor training facility, surrounded by baseballs, ready to swing">
+        <figcaption class="caption">Tee work, full bucket of reps, indoor turf &mdash; the camp setup.</figcaption>
+      </figure>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- REGISTRATION CTA -->
+  <section class="alt" style="padding:80px 0;">
+    <div class="container">
+      <div class="cta-banner">
+        <div class="cta-banner-text">
+          <p class="eyebrow" style="color:#fff; opacity:0.85;">Ready To Register?</p>
+          <h2 style="color:#fff; margin:0 0 14px;">Save Your Athlete's Spot.</h2>
+          <p style="color:#fff; opacity:0.92; font-size:1.08rem; max-width:520px; margin:0 0 8px;">A few quick details about your athlete &mdash; then straight to Stripe for the $400 week-long program fee. Spots fill up in the order payments come in.</p>
+          <p style="color:#fff; opacity:0.75; font-size:.92rem; max-width:520px; margin:0;">Two week-long programs &mdash; Morning (Ages 6&ndash;9, July 20&ndash;24) and Afternoon (Ages 10&ndash;13, July 20&ndash;24). Pick yours below.</p>
+        </div>
+        <div class="cta-banner-action">
+          <a href="#pick" class="btn-big-cta" id="cta-register-now">
+            <span>Register Now</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </a>
+          <p style="color:#fff; opacity:0.75; font-size:.84rem; margin:10px 0 0; text-align:center;">Takes about 2 minutes</p>
+        </div>
+      </div>
+
+      <div class="cta-secondary" style="text-align:center; margin-top:28px;">
+        <p class="muted" style="margin-bottom:14px;">Not ready yet? Ask Coach a question first.</p>
+        <a class="btn btn-ghost" href="contact.html">Send A Message</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <div class="footer-brand">
+        <img src="assets/logo.png" alt="">
+        <div>
+          <h4>TI Baseball</h4>
+          <small>TOOLS OF IGNORANCE &middot; EST. 2024</small>
+        </div>
+      </div>
+      <p style="max-width:340px;">Elite baseball development in Ajax, Ontario. Hitters. Pitchers. Catchers. Train strong, play strong.</p>
+    </div>
+    <div>
+      <h5>Explore</h5>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="coach.html">The Coaches</a></li>
+        <li><a href="programs.html">Programs</a></li>
+        <li><a href="beginners.html">Beginners</a></li>
+      <li><a href="camps.html">Summer Camps</a></li>
+        <li><a href="academy.html">Winter Academy</a></li>
+        <li><a href="facility.html">Facility</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="manage.html">Manage Subscription</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5>Visit</h5>
+      <address>274 MacKenzie Ave, Suite 450<br>Ajax, ON L1S 2E9<br>Canada</address>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <div>&copy; <span id="year">2026</span> TI Baseball (Tools of Ignorance). All rights reserved.</div>
+    <div>Train Strong. Play Strong.</div>
+  </div>
+</footer>
+
+<script>
+  // Live sold-out check against Stripe — polls /api/camp-availability on page load
+  // and updates the camp cards + CTA banner if either camp is sold out.
+  (function() {
+    function markSoldOut(camp) {
+      var tag = document.querySelector('[data-camp-tag="'+camp+'"]');
+      var btn = document.querySelector('[data-camp-btn="'+camp+'"]');
+      if (tag) {
+        tag.textContent = 'SOLD OUT — ' + (camp === 'morning' ? 'Ages 6–9' : 'Ages 10–13');
+        tag.classList.remove('pink');
+        tag.classList.add('sold-out-tag');
+      }
+      if (btn) {
+        btn.textContent = 'Sold Out';
+        btn.classList.remove('btn-primary');
+        btn.classList.add('btn-sold-out');
+        btn.removeAttribute('href');
+      }
+    }
+
+    function updateCtaForFullSellout() {
+      var cta = document.getElementById('cta-register-now');
+      if (!cta) return;
+      // Replace the entire CTA banner with a sold-out message
+      var section = cta.closest('section');
+      if (!section) return;
+      var container = section.querySelector('.container');
+      if (!container) return;
+      container.innerHTML =
+        '<div class="both-sold-out-banner">' +
+          '<h3>BOTH CAMPS ARE SOLD OUT</h3>' +
+          '<p>The 2026 TI Baseball Summer Camps are at capacity (20 athletes per camp). ' +
+          'Email Coach to be added to the waitlist for cancellations or to ask about a 2027 camp.</p>' +
+          '<div class="btn-row" style="justify-content:center;">' +
+            '<a class="btn btn-primary" href="mailto:Crosbyathletics321@gmail.com?subject=Summer%20Camp%20Waitlist%20%E2%80%94%20TI%20Baseball&body=Hi%20Coach%2C%0A%0APlease%20add%20us%20to%20the%20waitlist%20for%20the%20Summer%20Camp.%0A%0AAthlete%20name%3A%0APreferred%20camp%20(Morning%20or%20Afternoon)%3A%0APhone%3A%0A%0AThanks!">Email Coach For Waitlist</a>' +
+            '<a class="btn btn-ghost" href="contact.html">Or Use Contact Form</a>' +
+          '</div>' +
+        '</div>';
+    }
+
+    function applyAvailability(data) {
+      var morningOut = data.morning === 'sold_out';
+      var afternoonOut = data.afternoon === 'sold_out';
+      if (morningOut) markSoldOut('morning');
+      if (afternoonOut) markSoldOut('afternoon');
+      if (morningOut && afternoonOut) updateCtaForFullSellout();
+    }
+
+    fetch('/api/camp-availability')
+      .then(function(r) { return r.json(); })
+      .then(applyAvailability)
+      .catch(function() { /* fail open — leave the page as-is */ });
+  })();
+</script>
+<script src="script.js"></script>
+</body>
+</html>

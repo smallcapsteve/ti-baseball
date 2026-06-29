@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Facility — TI Baseball at B360 · Ajax, ON</title>
+<meta name="description" content="TI Baseball trains out of B360 in Ajax — three batting cages with pitching machines, indoor turf, free parking. 274 MacKenzie Ave, Suite 450.">
+<link rel="icon" href="assets/logo.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .fac-hero { padding:30px 0 40px; }
+  .fac-hero h1 { margin:0 0 8px; }
+  .fac-hero .lead { color:#C9D1D6; max-width:680px; font-size:1.05rem; }
+  .fac-meta-strip { display:flex; gap:24px; flex-wrap:wrap; margin-top:20px; padding:14px 20px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:12px; }
+  .fac-meta-strip .meta { display:flex; flex-direction:column; gap:2px; }
+  .fac-meta-strip .meta .label { font-size:.72rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#1FBFC4; }
+  .fac-meta-strip .meta .val { color:#fff; font-weight:500; font-size:.95rem; }
+  .fac-meta-strip .meta .val a { color:#fff; text-decoration:none; }
+  .fac-meta-strip .meta .val a:hover { color:#1FBFC4; }
+  .fac-grid { display:grid; grid-template-columns:1.2fr 1fr; gap:38px; align-items:start; margin-top:34px; }
+  @media (max-width:880px){ .fac-grid { grid-template-columns:1fr; gap:28px; } }
+  .fac-photo { border-radius:16px; overflow:hidden; border:1px solid rgba(255,255,255,0.10); box-shadow:0 20px 50px -20px rgba(0,0,0,0.5); }
+  .fac-photo img { display:block; width:100%; height:auto; }
+  .fac-secondary { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:24px; }
+  @media (max-width:600px){ .fac-secondary { grid-template-columns:1fr; gap:14px; } }
+  .fac-lane-card { padding:18px 20px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.10); border-radius:12px; }
+  .fac-lane-card .lane-num { font-family:'Anton',sans-serif; font-size:1.05rem; color:#1FBFC4; letter-spacing:.05em; }
+  .fac-lane-card .lane-desc { color:#C9D1D6; font-size:.92rem; margin-top:4px; }
+  .fac-lane-card.pink .lane-num { color:#EC2C8A; }
+  .fac-feature-list { list-style:none; padding:0; margin:18px 0 0; display:grid; grid-template-columns:1fr 1fr; gap:10px 22px; }
+  @media (max-width:600px){ .fac-feature-list { grid-template-columns:1fr; } }
+  .fac-feature-list li { display:flex; gap:10px; align-items:flex-start; color:#C9D1D6; font-size:.94rem; line-height:1.45; }
+  .fac-feature-list li::before { content:''; flex:none; width:8px; height:8px; border-radius:50%; background:#1FBFC4; margin-top:8px; box-shadow:0 0 0 3px rgba(31,191,196,0.20); }
+  .fac-feature-list li:nth-child(even)::before { background:#EC2C8A; box-shadow:0 0 0 3px rgba(236,44,138,0.20); }
+  .fac-video-wrap { margin-top:38px; border-radius:18px; overflow:hidden; border:1px solid rgba(255,255,255,0.10); background:#010101; box-shadow:0 30px 70px -20px rgba(0,0,0,0.6); }
+  .fac-video-wrap video { display:block; width:100%; height:auto; max-height:75vh; background:#000; }
+  .fac-video-caption { padding:14px 20px; background:rgba(0,0,0,0.4); border-top:1px solid rgba(255,255,255,0.08); color:#C9D1D6; font-size:.92rem; }
+  .fac-hours { display:grid; grid-template-columns:repeat(7, 1fr); gap:8px; margin-top:16px; }
+  @media (max-width:600px){ .fac-hours { grid-template-columns:repeat(2, 1fr); } }
+  .fac-hours .hr-day { padding:10px 8px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:8px; text-align:center; }
+  .fac-hours .hr-day .day { font-family:'Anton',sans-serif; color:#1FBFC4; font-size:.85rem; letter-spacing:.06em; }
+  .fac-hours .hr-day .time { color:#fff; font-size:.78rem; margin-top:3px; font-variant-numeric:tabular-nums; }
+  .map-embed { margin-top:18px; border-radius:14px; overflow:hidden; border:1px solid rgba(255,255,255,0.10); aspect-ratio:16/9; }
+  .map-embed iframe { width:100%; height:100%; border:0; display:block; }
+  .fac-attribution { margin-top:20px; padding:14px 18px; background:rgba(255,255,255,0.02); border-left:3px solid #1FBFC4; border-radius:6px; font-size:.88rem; color:#9CA3AB; }
+  .fac-attribution a { color:#1FBFC4; text-decoration:none; font-weight:600; }
+  .fac-attribution a:hover { text-decoration:underline; }
+</style>
+<style>/* Top utility ribbon — sits above the site header on every page */
+.top-ribbon {
+  background:#010101; border-bottom:1px solid rgba(255,255,255,0.06);
+  font-family:'Inter', sans-serif; font-size:.84rem;
+}
+.top-ribbon-inner {
+  max-width:1180px; margin:0 auto; padding:8px 22px;
+  display:flex; justify-content:space-between; align-items:center; gap:18px;
+  flex-wrap:wrap;
+}
+.top-ribbon-tagline { color:rgba(255,255,255,0.55); letter-spacing:.04em; text-transform:uppercase; font-size:.74rem; font-weight:600; }
+.top-ribbon-actions { display:flex; align-items:center; gap:14px; }
+.top-ribbon-social { display:flex; align-items:center; gap:8px; }
+.top-ribbon-social a {
+  display:flex; align-items:center; justify-content:center;
+  width:30px; height:30px; border-radius:50%;
+  background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.85);
+  transition:background .15s, color .15s, transform .15s;
+}
+.top-ribbon-social a:hover { background:#1FBFC4; color:#010101; transform:translateY(-1px); }
+.top-ribbon-social svg { width:16px; height:16px; }
+.top-ribbon-login {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:5px 14px; border-radius:6px;
+  background:transparent; border:1px solid rgba(255,255,255,0.20); color:#fff;
+  font-size:.78rem; font-weight:600; letter-spacing:.04em; text-transform:uppercase;
+  text-decoration:none; transition:background .15s, border-color .15s;
+}
+.top-ribbon-login:hover { background:#EC2C8A; border-color:#EC2C8A; }
+.top-ribbon-login svg { width:14px; height:14px; }
+@media (max-width:560px) {
+  .top-ribbon-inner { padding:8px 16px; gap:10px; }
+  .top-ribbon-tagline { display:none; }
+}</style>
+</head>
+<body>
+<div class="top-ribbon">
+  <div class="top-ribbon-inner">
+    <span class="top-ribbon-tagline">Ajax, ON · Baseball Training Academy</span>
+    <div class="top-ribbon-actions">
+      <div class="top-ribbon-social">
+        <a href="https://www.instagram.com/tools_of_ignorance77/" target="_blank" rel="noopener" aria-label="TI Baseball on Instagram">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </a>
+        <a href="https://www.facebook.com/profile.php?id=100068096166498" target="_blank" rel="noopener" aria-label="TI Baseball on Facebook">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+      </div>
+      <a href="/login" class="top-ribbon-login" id="top-ribbon-login-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        <span>Sign In</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<header class="site-header">
+  <nav class="nav" aria-label="Primary">
+    <a href="index.html" class="nav-brand" aria-label="TI Baseball home">
+      <img src="assets/logo.png" alt="">
+      <span>TI BASEBALL<small>TOOLS OF IGNORANCE</small></span>
+    </a>
+    <button class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/>
+      </svg>
+    </button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="coach.html">Coaches</a></li>
+      <li><a href="programs.html">Programs</a></li>
+      <li><a href="beginners.html">Beginners</a></li>
+      <li><a href="camps.html">Camps</a></li>
+      <li><a href="academy.html">Academy</a></li>
+      <li><a href="facility.html">Facility</a></li>
+      <li><a href="contact.html" class="cta">Book Now</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+
+  <section class="page-head">
+    <div class="container">
+      <p class="eyebrow">Where We Train</p>
+      <h1>Our Facility &mdash; B360.</h1>
+      <p>TI Baseball runs all programs out of <strong>B360</strong> in Ajax &mdash; a 70-foot, three-cage indoor batting facility with professional pitching machines, dedicated turf, and the room to actually do real reps year-round.</p>
+    </div>
+  </section>
+
+  <section class="facility-body" style="background:#010101; color:#E8EDEF;">
+    <style>
+      .facility-body h2, .facility-body h3 { color:#fff; }
+      .facility-body p { color:#C9D1D6; }
+    </style>
+    <div class="container">
+
+      <div class="fac-grid">
+        <div>
+          <p class="eyebrow">Three Lanes. Real Reps.</p>
+          <h2>Built For Baseball.</h2>
+          <div class="divider"></div>
+          <p>The cages are designed for players of all ages and skill levels &mdash; whether you&rsquo;re a beginner learning the basics or a competitive athlete sharpening your swing. Adjustable speeds, professional pitching machines, and a safe, well-lit environment make it possible to get serious reps in regardless of the weather or the season.</p>
+
+          <div class="fac-secondary">
+            <div class="fac-lane-card">
+              <div class="lane-num">Lane 1</div>
+              <div class="lane-desc">Baseball &amp; Softball &middot; 70 ft</div>
+            </div>
+            <div class="fac-lane-card pink">
+              <div class="lane-num">Lane 2</div>
+              <div class="lane-desc">Baseball &amp; Softball &middot; 65 ft</div>
+            </div>
+            <div class="fac-lane-card">
+              <div class="lane-num">Lane 3</div>
+              <div class="lane-desc">Cricket, Baseball &amp; Softball &middot; 70 ft</div>
+            </div>
+            <div class="fac-lane-card pink">
+              <div class="lane-num">Pitching Machines</div>
+              <div class="lane-desc">Adjustable speed in every lane</div>
+            </div>
+          </div>
+
+          <ul class="fac-feature-list">
+            <li>Protective netting throughout</li>
+            <li>Player benches &amp; waiting area</li>
+            <li>Bright lighting for clear visibility</li>
+            <li>Free parking + drop-off zone</li>
+            <li>Accessible for players and guests</li>
+            <li>Free Wi-Fi throughout</li>
+            <li>Parent lounge on-site</li>
+            <li>Meeting rooms for team chalk-talks</li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="fac-photo">
+            <img src="assets/facility-cage-lanes.jpg" alt="View down the batting cage lanes, showing protective netting and indoor turf">
+          </div>
+        </div>
+      </div>
+
+      <h2 style="margin-top:60px;">Take A Quick Tour.</h2>
+      <div class="divider"></div>
+      <p>A 30-second look inside the facility &mdash; the three lanes, the lighting, the layout.</p>
+
+      <div class="fac-video-wrap">
+        <video controls preload="metadata" playsinline poster="assets/facility-cage-lanes.jpg">
+          <source src="assets/facility-tour.mp4" type="video/mp4">
+          Your browser doesn&rsquo;t support embedded video. <a href="assets/facility-tour.mp4" style="color:#1FBFC4;">Download the tour video</a>.
+        </video>
+        <div class="fac-video-caption">A short walk-through of the B360 batting cages where TI Baseball trains.</div>
+      </div>
+
+      <h2 style="margin-top:60px;">Find Us.</h2>
+      <div class="divider"></div>
+      <p>274 MacKenzie Ave, Suite 450 &middot; Ajax, ON L1S 2E9 &mdash; just off Westney Road, with free parking at the front of the building.</p>
+
+      <div class="map-embed">
+        <iframe title="Map to B360 in Ajax — TI Baseball facility"
+                src="https://www.google.com/maps?q=274+MacKenzie+Ave+Suite+450+Ajax+ON+L1S+2E9&output=embed"
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                allowfullscreen></iframe>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="dark">
+    <div class="container center">
+      <p class="eyebrow">Ready To Train Here?</p>
+      <h2>Pick A Program And Get In The Cage.</h2>
+      <div class="divider" style="margin:6px auto 22px;"></div>
+      <p style="max-width:600px; margin:0 auto 24px; color:#C9D1D6;">From 1-on-1 sessions to summer camps to the winter Academy &mdash; every TI Baseball program runs out of B360.</p>
+      <div class="btn-row" style="justify-content:center;">
+        <a class="btn btn-primary" href="programs.html">See Programs</a>
+        <a class="btn btn-ghost" href="contact.html">Talk To Coach</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <div class="footer-brand">
+        <img src="assets/logo.png" alt="">
+        <div>
+          <h4>TI Baseball</h4>
+          <small>TOOLS OF IGNORANCE &middot; EST. 2024</small>
+        </div>
+      </div>
+      <p style="max-width:340px;">Elite baseball development in Ajax, Ontario. Hitters. Pitchers. Catchers. Train strong, play strong.</p>
+    </div>
+    <div>
+      <h5>Explore</h5>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="coach.html">The Coaches</a></li>
+        <li><a href="programs.html">Programs</a></li>
+        <li><a href="beginners.html">Beginners</a></li>
+      <li><a href="camps.html">Summer Camps</a></li>
+        <li><a href="academy.html">Winter Academy</a></li>
+        <li><a href="facility.html">Facility</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5>Visit</h5>
+      <address>
+        274 MacKenzie Ave, Suite 450<br>
+        Ajax, ON L1S 2E9<br>
+        Canada
+      </address>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <div>&copy; <span id="year">2026</span> TI Baseball (Tools of Ignorance). All rights reserved.</div>
+    <div>Train Strong. Play Strong.</div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

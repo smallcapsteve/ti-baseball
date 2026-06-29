@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Manage Subscription — TI Baseball (Tools of Ignorance)</title>
+<meta name="description" content="Cancel or change your recurring TI Baseball subscription.">
+<link rel="icon" href="assets/logo.jpg" type="image/jpeg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>/* Top utility ribbon — sits above the site header on every page */
+.top-ribbon {
+  background:#010101; border-bottom:1px solid rgba(255,255,255,0.06);
+  font-family:'Inter', sans-serif; font-size:.84rem;
+}
+.top-ribbon-inner {
+  max-width:1180px; margin:0 auto; padding:8px 22px;
+  display:flex; justify-content:space-between; align-items:center; gap:18px;
+  flex-wrap:wrap;
+}
+.top-ribbon-tagline { color:rgba(255,255,255,0.55); letter-spacing:.04em; text-transform:uppercase; font-size:.74rem; font-weight:600; }
+.top-ribbon-actions { display:flex; align-items:center; gap:14px; }
+.top-ribbon-social { display:flex; align-items:center; gap:8px; }
+.top-ribbon-social a {
+  display:flex; align-items:center; justify-content:center;
+  width:30px; height:30px; border-radius:50%;
+  background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.85);
+  transition:background .15s, color .15s, transform .15s;
+}
+.top-ribbon-social a:hover { background:#1FBFC4; color:#010101; transform:translateY(-1px); }
+.top-ribbon-social svg { width:16px; height:16px; }
+.top-ribbon-login {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:5px 14px; border-radius:6px;
+  background:transparent; border:1px solid rgba(255,255,255,0.20); color:#fff;
+  font-size:.78rem; font-weight:600; letter-spacing:.04em; text-transform:uppercase;
+  text-decoration:none; transition:background .15s, border-color .15s;
+}
+.top-ribbon-login:hover { background:#EC2C8A; border-color:#EC2C8A; }
+.top-ribbon-login svg { width:14px; height:14px; }
+@media (max-width:560px) {
+  .top-ribbon-inner { padding:8px 16px; gap:10px; }
+  .top-ribbon-tagline { display:none; }
+}
+</style>
+</head>
+<body>
+<div class="top-ribbon">
+  <div class="top-ribbon-inner">
+    <span class="top-ribbon-tagline">Ajax, ON · Baseball Training Academy</span>
+    <div class="top-ribbon-actions">
+      <div class="top-ribbon-social">
+        <a href="https://www.instagram.com/tools_of_ignorance77/" target="_blank" rel="noopener" aria-label="TI Baseball on Instagram">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </a>
+        <a href="https://www.facebook.com/profile.php?id=100068096166498" target="_blank" rel="noopener" aria-label="TI Baseball on Facebook">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+      </div>
+      <a href="/login" class="top-ribbon-login" id="top-ribbon-login-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        <span>Sign In</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+
+<header class="site-header">
+  <nav class="nav" aria-label="Primary">
+    <a href="index.html" class="nav-brand" aria-label="TI Baseball home">
+      <img src="assets/logo.png" alt="">
+      <span>TI BASEBALL<small>TOOLS OF IGNORANCE</small></span>
+    </a>
+    <button class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <line x1="4" y1="7" x2="20" y2="7"/>
+        <line x1="4" y1="12" x2="20" y2="12"/>
+        <line x1="4" y1="17" x2="20" y2="17"/>
+      </svg>
+    </button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="coach.html">Coaches</a></li>
+      <li><a href="programs.html">Programs</a></li>
+      <li><a href="beginners.html">Beginners</a></li>
+      <li><a href="camps.html">Camps</a></li>
+      <li><a href="academy.html">Academy</a></li>
+      <li><a href="facility.html">Facility</a></li>
+      <li><a href="contact.html" class="cta">Book Now</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+
+  <section class="page-head">
+    <div class="container">
+      <p class="eyebrow">Subscription Management</p>
+      <h1>Cancel Or Change A Subscription.</h1>
+      <p>If you signed up for a recurring TI Baseball program — Weekly 1-on-1, Monday Night Monthly, or the Academy — you can cancel or update payment any time. There are two easy ways.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="grid cols-2" style="margin-top:10px;">
+
+        <div class="card teal">
+          <div class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          </div>
+          <span class="tag">Self-Serve · Fastest</span>
+          <h3>Manage Through Stripe.</h3>
+          <p>Open the secure Stripe customer portal. Enter the email you used at checkout — Stripe will email you a one-time login link. Once you're in, you can cancel, update your card, change billing info, or download past receipts. No account or password to remember.</p>
+          <a class="btn btn-primary"
+             href="https://billing.stripe.com/p/login/bJe7sMbUkeCefCT2Nu1ZS00"
+             target="_blank" rel="noopener"
+             style="margin-top:auto;">Open Stripe Portal</a>
+        </div>
+
+        <div class="card pink">
+          <div class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 7L2 7"/></svg>
+          </div>
+          <span class="tag pink">Alternative — Email Coach</span>
+          <h3>Or Send Coach An Email.</h3>
+          <p>Prefer a human? Tell Coach the athlete's name and which program you'd like to cancel. He'll confirm by reply and the next charge won't run.</p>
+          <a class="btn btn-secondary" href="mailto:Crosbyathletics321@gmail.com?subject=Cancel%20subscription%20%E2%80%94%20TI%20Baseball&body=Hi%20Coach%2C%0A%0APlease%20cancel%20our%20recurring%20subscription.%0A%0AAthlete%20name%3A%0AProgram%3A%0AEmail%20used%20at%20checkout%3A%0A%0AThanks!" style="margin-top:auto;">Email Coach</a>
+        </div>
+
+      </div>
+
+      <div style="max-width:760px; margin-top:36px;">
+        <h3>What happens when you cancel</h3>
+        <ul class="check-list" style="margin-top:8px;">
+          <li>You keep access through the end of the billing period you've already paid for.</li>
+          <li class="pink">No further charges will run after that.</li>
+          <li>You can re-enroll any time from the <a href="programs.html">Programs</a> page.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="dark">
+    <div class="container center">
+      <p class="eyebrow">Questions Before You Cancel?</p>
+      <h2>Talk To Coach.</h2>
+      <div class="divider" style="margin:6px auto 22px;"></div>
+      <p style="max-width:600px; margin:0 auto 24px; color:#C9D1D6;">Sometimes a quick conversation with Coach about the program is all it takes. Reach out before cancelling — we'd rather work it out with you.</p>
+      <div class="btn-row" style="justify-content:center;">
+        <a class="btn btn-primary" href="contact.html">Send A Message</a>
+        <a class="btn btn-ghost" href="tel:+12899288662">Call (289) 928-8662</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <div class="footer-brand">
+        <img src="assets/logo.png" alt="">
+        <div>
+          <h4>TI Baseball</h4>
+          <small>TOOLS OF IGNORANCE &middot; EST. 2024</small>
+        </div>
+      </div>
+      <p style="max-width:340px;">Elite baseball development in Ajax, Ontario. Hitters. Pitchers. Catchers. Train strong, play strong.</p>
+    </div>
+    <div>
+      <h5>Explore</h5>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="coach.html">The Coaches</a></li>
+        <li><a href="programs.html">Programs</a></li>
+        <li><a href="beginners.html">Beginners</a></li>
+      <li><a href="camps.html">Summer Camps</a></li>
+        <li><a href="academy.html">Winter Academy</a></li>
+        <li><a href="facility.html">Facility</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="manage.html">Manage Subscription</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5>Visit</h5>
+      <address>
+        274 MacKenzie Ave, Suite 450<br>
+        Ajax, ON L1S 2E9<br>
+        Canada
+      </address>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <div>&copy; <span id="year">2026</span> TI Baseball (Tools of Ignorance). All rights reserved.</div>
+    <div>Train Strong. Play Strong.</div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

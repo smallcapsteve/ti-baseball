@@ -5,18 +5,73 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Coach Crosby — TI Baseball (Tools of Ignorance)</title>
 <meta name="description" content="Coach Crosby brings 32 years of baseball expertise — including 3 years of professional play and a baseball scholarship — to elite player development at TI Baseball in Ajax, Ontario.">
-<link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+<link rel="icon" href="assets/logo.jpg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<style>/* Top utility ribbon — sits above the site header on every page */
+.top-ribbon {
+  background:#010101; border-bottom:1px solid rgba(255,255,255,0.06);
+  font-family:'Inter', sans-serif; font-size:.84rem;
+}
+.top-ribbon-inner {
+  max-width:1180px; margin:0 auto; padding:8px 22px;
+  display:flex; justify-content:space-between; align-items:center; gap:18px;
+  flex-wrap:wrap;
+}
+.top-ribbon-tagline { color:rgba(255,255,255,0.55); letter-spacing:.04em; text-transform:uppercase; font-size:.74rem; font-weight:600; }
+.top-ribbon-actions { display:flex; align-items:center; gap:14px; }
+.top-ribbon-social { display:flex; align-items:center; gap:8px; }
+.top-ribbon-social a {
+  display:flex; align-items:center; justify-content:center;
+  width:30px; height:30px; border-radius:50%;
+  background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.85);
+  transition:background .15s, color .15s, transform .15s;
+}
+.top-ribbon-social a:hover { background:#1FBFC4; color:#010101; transform:translateY(-1px); }
+.top-ribbon-social svg { width:16px; height:16px; }
+.top-ribbon-login {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:5px 14px; border-radius:6px;
+  background:transparent; border:1px solid rgba(255,255,255,0.20); color:#fff;
+  font-size:.78rem; font-weight:600; letter-spacing:.04em; text-transform:uppercase;
+  text-decoration:none; transition:background .15s, border-color .15s;
+}
+.top-ribbon-login:hover { background:#EC2C8A; border-color:#EC2C8A; }
+.top-ribbon-login svg { width:14px; height:14px; }
+@media (max-width:560px) {
+  .top-ribbon-inner { padding:8px 16px; gap:10px; }
+  .top-ribbon-tagline { display:none; }
+}
+</style>
 </head>
 <body>
+<div class="top-ribbon">
+  <div class="top-ribbon-inner">
+    <span class="top-ribbon-tagline">Ajax, ON · Baseball Training Academy</span>
+    <div class="top-ribbon-actions">
+      <div class="top-ribbon-social">
+        <a href="https://www.instagram.com/tools_of_ignorance77/" target="_blank" rel="noopener" aria-label="TI Baseball on Instagram">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </a>
+        <a href="https://www.facebook.com/profile.php?id=100068096166498" target="_blank" rel="noopener" aria-label="TI Baseball on Facebook">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+      </div>
+      <a href="/login" class="top-ribbon-login" id="top-ribbon-login-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        <span>Sign In</span>
+      </a>
+    </div>
+  </div>
+</div>
+
 
 <header class="site-header">
   <nav class="nav" aria-label="Primary">
     <a href="index.html" class="nav-brand" aria-label="TI Baseball home">
-      <img src="assets/logo.svg" alt="">
+      <img src="assets/logo.png" alt="">
       <span>TI BASEBALL<small>TOOLS OF IGNORANCE</small></span>
     </a>
     <button class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
@@ -28,9 +83,12 @@
     </button>
     <ul class="nav-links" id="nav-links">
       <li><a href="index.html">Home</a></li>
-      <li><a href="coach.html">Coach</a></li>
+      <li><a href="coach.html">Coaches</a></li>
       <li><a href="programs.html">Programs</a></li>
-      <li><a href="pricing.html">Pricing</a></li>
+      <li><a href="beginners.html">Beginners</a></li>
+      <li><a href="camps.html">Camps</a></li>
+      <li><a href="academy.html">Academy</a></li>
+      <li><a href="facility.html">Facility</a></li>
       <li><a href="contact.html" class="cta">Book Now</a></li>
     </ul>
   </nav>
@@ -40,27 +98,55 @@
 
   <section class="page-head">
     <div class="container">
-      <p class="eyebrow">Meet The Coach</p>
-      <h1>Coach Crosby</h1>
-      <p>32 years in the game. Scholarship athlete. 3 years of professional baseball. Known simply as "Coach."</p>
+      <p class="eyebrow">Meet The Coaches</p>
+      <h1>Coach Crosby &amp; Coach Hastings</h1>
+      <p>Two coaches. Decades of combined experience. One mission &mdash; develop fundamentally sound, confident players who love the game.</p>
     </div>
   </section>
 
   <section>
     <div class="container">
-      <div class="feature">
-        <div class="visual">
-          <span class="badge">"Coach"</span>
-          <span class="big-mark">⚾</span>
-        </div>
-        <div>
+      <style>
+        .coach-pair { display:grid; grid-template-columns:1fr 1fr; gap:40px; align-items:start; }
+        @media (max-width:880px) { .coach-pair { grid-template-columns:1fr; gap:48px; } }
+        .coach-card { display:flex; flex-direction:column; gap:18px; }
+        .coach-card .visual { position:relative; border-radius:14px; overflow:hidden; box-shadow:0 22px 50px -20px rgba(0,0,0,0.45); border:1px solid rgba(255,255,255,0.06); aspect-ratio:3/4; }
+        .coach-card .visual img { width:100%; height:100%; object-fit:cover; display:block; }
+        .coach-card .visual .badge { position:absolute; left:14px; bottom:14px; padding:7px 14px; background:rgba(31,191,196,0.95); color:#010101; font-family:'Anton',sans-serif; font-size:.92rem; letter-spacing:.05em; border-radius:6px; }
+        .coach-card .visual .badge.pink { background:rgba(236,44,138,0.95); color:#fff; }
+        .coach-card .eyebrow { margin:0; }
+        .coach-card h2 { margin:0; }
+        .coach-card .divider { margin:0; }
+        .coach-card p { margin:6px 0; }
+      </style>
+      <div class="coach-pair">
+
+        <div class="coach-card">
+          <div class="visual">
+            <img src="assets/coach-portrait.jpg" alt="Coach James Crosby behind home plate in catcher's gear, wearing the pink TI Baseball shirt">
+            <span class="badge">"Coach" Crosby</span>
+          </div>
           <p class="eyebrow">Pro Experience · Elite Development</p>
-          <h2>32 Years Of Baseball. Lived From The Inside.</h2>
+          <h2>"Coach" James Crosby.</h2>
           <div class="divider"></div>
-          <p>Coach Crosby brings over three decades of high-level baseball expertise to the diamond. With 32 years in the game — including securing a baseball scholarship and playing 3 years of professional baseball — he knows exactly what it takes to reach the highest levels of the sport.</p>
+          <p>Coach Crosby brings over three decades of high-level baseball expertise to the diamond. With <strong>32 years in the game</strong> &mdash; including securing a baseball scholarship and playing <strong>3 years of professional baseball</strong> &mdash; he knows exactly what it takes to reach the highest levels of the sport.</p>
           <p>Known simply as "Coach," he uses his extensive background to provide precise, in-person movement analysis for the next generation of hitters, pitchers, and catchers.</p>
           <p class="muted">"If you are dedicated to mastering the craft, I have the blueprint to get you there."</p>
         </div>
+
+        <div class="coach-card">
+          <div class="visual">
+            <img src="assets/coach-hastings.jpg" alt="Coach Chris Hastings in his black TI Baseball shirt">
+            <span class="badge pink">Coach Hastings</span>
+          </div>
+          <p class="eyebrow">Defense · Baserunning · Player Development</p>
+          <h2>Coach Chris Hastings.</h2>
+          <div class="divider"></div>
+          <p>With <strong>more than 35 years of playing experience</strong> and <strong>over a decade of coaching community baseball</strong>, Coach Hastings is passionate about developing fundamentally sound players while fostering a lifelong love of the game.</p>
+          <p>His coaching philosophy emphasizes confidence, effort, and continual improvement &mdash; helping athletes build the skills and mindset to succeed both on and off the field.</p>
+          <p>Chris specializes in <strong>infield and outfield defensive play</strong>, <strong>elite baserunning</strong>, and introducing young players to baseball in a fun, positive, and engaging environment that inspires them to keep learning and competing.</p>
+        </div>
+
       </div>
     </div>
   </section>
@@ -68,7 +154,7 @@
   <section class="alt">
     <div class="container">
       <p class="eyebrow">The Blueprint For Success</p>
-      <h2>How Coach Builds Elite Players.</h2>
+      <h2>How We Build Elite Players.</h2>
       <div class="divider"></div>
       <div class="grid cols-3" style="margin-top:30px;">
         <div class="card teal">
@@ -96,6 +182,7 @@
     </div>
   </section>
 
+
   <section>
     <div class="container">
       <p class="eyebrow">Track Record</p>
@@ -114,7 +201,7 @@
 
   <section class="dark">
     <div class="container center">
-      <h2>Train With Coach.</h2>
+      <h2>Train With Us.</h2>
       <div class="divider" style="margin:6px auto 22px;"></div>
       <p style="max-width:600px; margin:0 auto 24px;">Whether you're starting out or chasing scholarships, Coach Crosby has the blueprint to get you there. Reach out today.</p>
       <div class="btn-row" style="justify-content:center;">
@@ -130,7 +217,7 @@
   <div class="container footer-grid">
     <div>
       <div class="footer-brand">
-        <img src="assets/logo.svg" alt="">
+        <img src="assets/logo.png" alt="">
         <div>
           <h4>TI Baseball</h4>
           <small>TOOLS OF IGNORANCE · EST. 2024</small>
@@ -142,9 +229,12 @@
       <h5>Explore</h5>
       <ul>
         <li><a href="index.html">Home</a></li>
-        <li><a href="coach.html">Coach Crosby</a></li>
+        <li><a href="coach.html">The Coaches</a></li>
         <li><a href="programs.html">Programs</a></li>
-        <li><a href="pricing.html">Pricing</a></li>
+        <li><a href="beginners.html">Beginners</a></li>
+      <li><a href="camps.html">Summer Camps</a></li>
+        <li><a href="academy.html">Winter Academy</a></li>
+        <li><a href="facility.html">Facility</a></li>
         <li><a href="contact.html">Contact</a></li>
       </ul>
     </div>

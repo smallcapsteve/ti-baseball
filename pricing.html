@@ -5,18 +5,73 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Pricing — TI Baseball (Tools of Ignorance)</title>
 <meta name="description" content="Flexible baseball training pricing at TI Baseball in Ajax, Ontario. Sliding-scale rates for 1-on-1, small group, team training, and strength &amp; conditioning sessions.">
-<link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+<link rel="icon" href="assets/logo.jpg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<style>/* Top utility ribbon — sits above the site header on every page */
+.top-ribbon {
+  background:#010101; border-bottom:1px solid rgba(255,255,255,0.06);
+  font-family:'Inter', sans-serif; font-size:.84rem;
+}
+.top-ribbon-inner {
+  max-width:1180px; margin:0 auto; padding:8px 22px;
+  display:flex; justify-content:space-between; align-items:center; gap:18px;
+  flex-wrap:wrap;
+}
+.top-ribbon-tagline { color:rgba(255,255,255,0.55); letter-spacing:.04em; text-transform:uppercase; font-size:.74rem; font-weight:600; }
+.top-ribbon-actions { display:flex; align-items:center; gap:14px; }
+.top-ribbon-social { display:flex; align-items:center; gap:8px; }
+.top-ribbon-social a {
+  display:flex; align-items:center; justify-content:center;
+  width:30px; height:30px; border-radius:50%;
+  background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.85);
+  transition:background .15s, color .15s, transform .15s;
+}
+.top-ribbon-social a:hover { background:#1FBFC4; color:#010101; transform:translateY(-1px); }
+.top-ribbon-social svg { width:16px; height:16px; }
+.top-ribbon-login {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:5px 14px; border-radius:6px;
+  background:transparent; border:1px solid rgba(255,255,255,0.20); color:#fff;
+  font-size:.78rem; font-weight:600; letter-spacing:.04em; text-transform:uppercase;
+  text-decoration:none; transition:background .15s, border-color .15s;
+}
+.top-ribbon-login:hover { background:#EC2C8A; border-color:#EC2C8A; }
+.top-ribbon-login svg { width:14px; height:14px; }
+@media (max-width:560px) {
+  .top-ribbon-inner { padding:8px 16px; gap:10px; }
+  .top-ribbon-tagline { display:none; }
+}
+</style>
 </head>
 <body>
+<div class="top-ribbon">
+  <div class="top-ribbon-inner">
+    <span class="top-ribbon-tagline">Ajax, ON · Baseball Training Academy</span>
+    <div class="top-ribbon-actions">
+      <div class="top-ribbon-social">
+        <a href="https://www.instagram.com/tools_of_ignorance77/" target="_blank" rel="noopener" aria-label="TI Baseball on Instagram">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </a>
+        <a href="https://www.facebook.com/profile.php?id=100068096166498" target="_blank" rel="noopener" aria-label="TI Baseball on Facebook">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+      </div>
+      <a href="/login" class="top-ribbon-login" id="top-ribbon-login-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        <span>Sign In</span>
+      </a>
+    </div>
+  </div>
+</div>
+
 
 <header class="site-header">
   <nav class="nav" aria-label="Primary">
     <a href="index.html" class="nav-brand" aria-label="TI Baseball home">
-      <img src="assets/logo.svg" alt="">
+      <img src="assets/logo.png" alt="">
       <span>TI BASEBALL<small>TOOLS OF IGNORANCE</small></span>
     </a>
     <button class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
@@ -28,9 +83,12 @@
     </button>
     <ul class="nav-links" id="nav-links">
       <li><a href="index.html">Home</a></li>
-      <li><a href="coach.html">Coach</a></li>
+      <li><a href="coach.html">Coaches</a></li>
       <li><a href="programs.html">Programs</a></li>
-      <li><a href="pricing.html">Pricing</a></li>
+      <li><a href="beginners.html">Beginners</a></li>
+      <li><a href="camps.html">Camps</a></li>
+      <li><a href="academy.html">Academy</a></li>
+      <li><a href="facility.html">Facility</a></li>
       <li><a href="contact.html" class="cta">Book Now</a></li>
     </ul>
   </nav>
@@ -82,26 +140,34 @@
         <div class="price-card">
           <h3>One-on-One</h3>
           <p class="sub">Dedicated, hyper-focused attention tailored exclusively to your athlete's mechanics and goals.</p>
-          <div class="price">Contact<small>for rates</small></div>
+          <div class="price">$80<small>/ session</small></div>
           <ul class="check-list" style="margin-top:14px;">
             <li>Personalized mechanical analysis</li>
             <li class="pink">Highest rep quality &amp; feedback</li>
             <li>Discount on multi-session packages</li>
           </ul>
-          <a class="btn btn-secondary" href="contact.html" style="margin-top:auto;">Request Rates</a>
+          <button class="btn btn-secondary cal-trigger"
+                  data-cal-namespace="tibaseball"
+                  data-cal-link="tibaseball-ngwya2/1-on-1-hitting-or-catching"
+                  data-cal-config='{"layout":"month_view"}'
+                  style="margin-top:auto;">Book A Session</button>
         </div>
 
         <div class="price-card featured">
           <span class="ribbon">Most Popular</span>
           <h3>Small Group</h3>
           <p class="sub">High-energy, competitive environment with friends or teammates. Capped at 10 athletes to keep quality high.</p>
-          <div class="price">Tiered<small>per player</small></div>
+          <div class="price">From $35<small>/ per player</small></div>
           <ul class="check-list" style="margin-top:14px;">
             <li class="pink">2-on-1 · 4-on-1 · 6-on-1 · 8-on-1 · 10-on-1</li>
             <li>Per-player rate drops as group grows</li>
             <li class="pink">Personal feedback maintained at every tier</li>
           </ul>
-          <a class="btn btn-primary" href="contact.html" style="margin-top:auto;">Build A Group</a>
+          <button class="btn btn-primary cal-trigger"
+                  data-cal-namespace="tibaseball"
+                  data-cal-link="tibaseball-ngwya2/monday-night-hitting-group"
+                  data-cal-config='{"layout":"month_view"}'
+                  style="margin-top:auto;">Build A Group</button>
         </div>
 
         <div class="price-card">
@@ -113,7 +179,7 @@
             <li class="pink">Coach travels to your team</li>
             <li>Custom clinic curriculum</li>
           </ul>
-          <a class="btn btn-secondary" href="contact.html" style="margin-top:auto;">Book Your Team</a>
+          <a class="btn btn-secondary" href="contact.html" style="margin-top:auto;">Ask About Team Booking</a>
         </div>
 
         <div class="price-card">
@@ -125,7 +191,7 @@
             <li class="pink">Speed, agility, mobility, conditioning</li>
             <li>Affordable flat per-session rate</li>
           </ul>
-          <a class="btn btn-secondary" href="contact.html" style="margin-top:auto;">Add S&amp;C</a>
+          <a class="btn btn-secondary" href="contact.html" style="margin-top:auto;">Ask About S&amp;C</a>
         </div>
       </div>
     </div>
@@ -144,20 +210,33 @@
               <th>Tier</th>
               <th>Athletes</th>
               <th>Format</th>
-              <th>Per-Player Cost</th>
+              <th>Per-Player / Session</th>
             </tr>
           </thead>
           <tbody>
-            <tr><td>1-on-1</td><td>1</td><td>Private session</td><td>Highest individual rate</td></tr>
-            <tr><td>2-on-1</td><td>2</td><td>Partner session</td><td>↓ lower per player</td></tr>
-            <tr><td>4-on-1</td><td>4</td><td>Mini-group</td><td>↓↓</td></tr>
-            <tr><td>6-on-1</td><td>6</td><td>Small group</td><td>↓↓↓</td></tr>
-            <tr><td>8-on-1</td><td>8</td><td>Larger group</td><td>↓↓↓↓</td></tr>
-            <tr><td>10-on-1 (Max Cap)</td><td>10</td><td>Group max</td><td>Lowest per-player rate</td></tr>
+            <tr><td>1-on-1</td><td>1</td><td>Private session</td><td><strong>$80</strong></td></tr>
+            <tr><td>2-on-1</td><td>2</td><td>Partner session</td><td><strong>$70</strong></td></tr>
+            <tr><td>4-on-1</td><td>4</td><td>Mini-group</td><td><strong>$60</strong></td></tr>
+            <tr><td>6-on-1</td><td>6</td><td>Small group</td><td><strong>$50</strong></td></tr>
+            <tr><td>8-on-1</td><td>8</td><td>Larger group</td><td><strong>$40</strong></td></tr>
+            <tr><td>10-on-1 (Max Cap)</td><td>10</td><td>Group max</td><td><strong>$35</strong></td></tr>
           </tbody>
         </table>
       </div>
       <p class="muted" style="margin-top:14px; font-size:.92rem;">Group sizes are strictly capped at 10 athletes to ensure quality repetitions and personal feedback.</p>
+
+      <!-- Ajax Spartans discount callout -->
+      <div class="spartans-discount" style="margin-top:30px;">
+        <div class="spartans-discount-inner">
+          <div class="spartans-discount-badge">
+            <span class="badge-pill">Discount</span>
+          </div>
+          <div>
+            <h3 style="margin:0 0 .25em;">Ajax Spartans Baseball Players</h3>
+            <p style="margin:0; color:var(--ink-soft);">All Ajax Spartans players — <strong>House League and Rep included</strong> — receive a discount on every tier above. Mention your team when you book and we'll apply it automatically.</p>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -181,7 +260,7 @@
   <div class="container footer-grid">
     <div>
       <div class="footer-brand">
-        <img src="assets/logo.svg" alt="">
+        <img src="assets/logo.png" alt="">
         <div>
           <h4>TI Baseball</h4>
           <small>TOOLS OF IGNORANCE · EST. 2024</small>
@@ -193,9 +272,12 @@
       <h5>Explore</h5>
       <ul>
         <li><a href="index.html">Home</a></li>
-        <li><a href="coach.html">Coach Crosby</a></li>
+        <li><a href="coach.html">The Coaches</a></li>
         <li><a href="programs.html">Programs</a></li>
-        <li><a href="pricing.html">Pricing</a></li>
+        <li><a href="beginners.html">Beginners</a></li>
+      <li><a href="camps.html">Summer Camps</a></li>
+        <li><a href="academy.html">Winter Academy</a></li>
+        <li><a href="facility.html">Facility</a></li>
         <li><a href="contact.html">Contact</a></li>
       </ul>
     </div>
