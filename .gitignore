@@ -1,33 +1,16 @@
-# OS junk
+.wrangler/
+deploy-*.zip
+_worker.js.recovered
+_worker.js.bak
+_worker_v*.js
+_worker_v*.bak
+*.bak
+.netlify/
 .DS_Store
 Thumbs.db
-.Spotlight-V100
-.Trashes
-
-# Editor junk
 .vscode/
 .idea/
-*.swp
-*.swo
-*~
-
-# Logs & temp
-*.log
-.tmp/
-tmp/
-
-# Local screenshot/preview output
-/_screens/
-/_screenshot.js
-
-# Local server pidfiles
-*.pid
-
-# Env files (in case you add a backend later)
 .env
-.env.*
-!.env.example
-
-# Build output (none today, but reserved)
-/dist/
-/build/
+.env.local
+*.pem
+*.key

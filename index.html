@@ -5,18 +5,73 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>TI Baseball — Tools of Ignorance · Ajax, ON</title>
 <meta name="description" content="TI Baseball (Tools of Ignorance) in Ajax, Ontario. Elite hitting, pitching, and catching development by Coach Crosby. 32 years of experience. Train strong, play strong.">
-<link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+<link rel="icon" href="assets/logo.jpg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<style>/* Top utility ribbon — sits above the site header on every page */
+.top-ribbon {
+  background:#010101; border-bottom:1px solid rgba(255,255,255,0.06);
+  font-family:'Inter', sans-serif; font-size:.84rem;
+}
+.top-ribbon-inner {
+  max-width:1180px; margin:0 auto; padding:8px 22px;
+  display:flex; justify-content:space-between; align-items:center; gap:18px;
+  flex-wrap:wrap;
+}
+.top-ribbon-tagline { color:rgba(255,255,255,0.55); letter-spacing:.04em; text-transform:uppercase; font-size:.74rem; font-weight:600; }
+.top-ribbon-actions { display:flex; align-items:center; gap:14px; }
+.top-ribbon-social { display:flex; align-items:center; gap:8px; }
+.top-ribbon-social a {
+  display:flex; align-items:center; justify-content:center;
+  width:30px; height:30px; border-radius:50%;
+  background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.85);
+  transition:background .15s, color .15s, transform .15s;
+}
+.top-ribbon-social a:hover { background:#1FBFC4; color:#010101; transform:translateY(-1px); }
+.top-ribbon-social svg { width:16px; height:16px; }
+.top-ribbon-login {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:5px 14px; border-radius:6px;
+  background:transparent; border:1px solid rgba(255,255,255,0.20); color:#fff;
+  font-size:.78rem; font-weight:600; letter-spacing:.04em; text-transform:uppercase;
+  text-decoration:none; transition:background .15s, border-color .15s;
+}
+.top-ribbon-login:hover { background:#EC2C8A; border-color:#EC2C8A; }
+.top-ribbon-login svg { width:14px; height:14px; }
+@media (max-width:560px) {
+  .top-ribbon-inner { padding:8px 16px; gap:10px; }
+  .top-ribbon-tagline { display:none; }
+}
+</style>
 </head>
 <body>
+<div class="top-ribbon">
+  <div class="top-ribbon-inner">
+    <span class="top-ribbon-tagline">Ajax, ON · Baseball Training Academy</span>
+    <div class="top-ribbon-actions">
+      <div class="top-ribbon-social">
+        <a href="https://www.instagram.com/tools_of_ignorance77/" target="_blank" rel="noopener" aria-label="TI Baseball on Instagram">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </a>
+        <a href="https://www.facebook.com/profile.php?id=100068096166498" target="_blank" rel="noopener" aria-label="TI Baseball on Facebook">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+      </div>
+      <a href="/login" class="top-ribbon-login" id="top-ribbon-login-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        <span>Sign In</span>
+      </a>
+    </div>
+  </div>
+</div>
+
 
 <header class="site-header">
   <nav class="nav" aria-label="Primary">
     <a href="index.html" class="nav-brand" aria-label="TI Baseball home">
-      <img src="assets/logo.svg" alt="">
+      <img src="assets/logo.png" alt="">
       <span>TI BASEBALL<small>TOOLS OF IGNORANCE</small></span>
     </a>
     <button class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
@@ -28,13 +83,91 @@
     </button>
     <ul class="nav-links" id="nav-links">
       <li><a href="index.html">Home</a></li>
-      <li><a href="coach.html">Coach</a></li>
+      <li><a href="coach.html">Coaches</a></li>
       <li><a href="programs.html">Programs</a></li>
-      <li><a href="pricing.html">Pricing</a></li>
+      <li><a href="beginners.html">Beginners</a></li>
+      <li><a href="camps.html">Camps</a></li>
+      <li><a href="academy.html">Academy</a></li>
+      <li><a href="facility.html">Facility</a></li>
       <li><a href="contact.html" class="cta">Book Now</a></li>
     </ul>
   </nav>
 </header>
+
+<a href="/camps" class="camp-promo-banner" aria-label="Summer camp registration is open — click to register">
+  <div class="container camp-promo-inner">
+    <span class="camp-promo-badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/>
+      </svg>
+      <span>Summer 2026</span>
+    </span>
+    <span class="camp-promo-text">
+      <strong>Summer Camp Spots Now Open</strong>
+      <span class="camp-promo-sub">Morning — Ages 6–9, July 20–24 &middot; Afternoon — Ages 10–13, July 20–24</span>
+    </span>
+    <span class="camp-promo-cta">
+      Register <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </span>
+  </div>
+</a>
+
+<style>
+  .camp-promo-banner {
+    display:block;
+    background:linear-gradient(95deg, #EC2C8A 0%, #c61f72 60%, #EC2C8A 100%);
+    color:#fff; text-decoration:none;
+    border-bottom:3px solid #1FBFC4;
+    transition:background .15s;
+  }
+  .camp-promo-banner:hover { background:linear-gradient(95deg, #ff3a9b 0%, #EC2C8A 60%, #ff3a9b 100%); }
+  .camp-promo-inner {
+    display:flex; align-items:center; gap:22px;
+    padding:14px 22px;
+    flex-wrap:wrap; justify-content:center;
+  }
+  .camp-promo-badge {
+    display:inline-flex; align-items:center; gap:8px;
+    padding:6px 14px; border-radius:999px;
+    background:rgba(0,0,0,0.30);
+    font-family:'Inter', sans-serif; font-weight:700; font-size:.78rem; text-transform:uppercase; letter-spacing:.08em;
+    flex:none;
+    color:#fff;
+  }
+  .camp-promo-badge svg { width:18px; height:18px; }
+  .camp-promo-text { display:flex; flex-direction:column; gap:3px; flex:1; min-width:0; }
+  .camp-promo-text strong {
+    font-family:'Inter', sans-serif; font-size:1rem;
+    font-weight:700; letter-spacing:.04em; text-transform:uppercase; line-height:1.2;
+    color:#fff;
+  }
+  .camp-promo-sub { font-size:.88rem; opacity:0.95; line-height:1.35; font-weight:500; }
+  .camp-promo-cta {
+    display:inline-flex; align-items:center; gap:8px;
+    padding:10px 18px; border-radius:8px;
+    background:#010101; color:#fff;
+    font-family:'Inter', sans-serif; font-size:.86rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+    flex:none;
+    transition:transform .15s;
+  }
+  .camp-promo-cta svg { width:16px; height:16px; transition:transform .15s; }
+  .camp-promo-banner:hover .camp-promo-cta { transform:translateY(-1px); }
+  .camp-promo-banner:hover .camp-promo-cta svg { transform:translateX(3px); }
+  @media (max-width:720px) {
+    .camp-promo-inner { gap:14px; text-align:center; }
+    .camp-promo-text { align-items:center; }
+  }
+  @media (max-width:640px) {
+    .camp-promo-inner {
+      flex-direction:column; align-items:center; gap:10px;
+      padding:12px 16px;
+    }
+    .camp-promo-text { align-items:center; text-align:center; flex:0 1 auto; }
+    .camp-promo-text strong { font-size:.95rem; }
+    .camp-promo-sub { font-size:.8rem; line-height:1.4; }
+    .camp-promo-cta { padding:9px 18px; font-size:.82rem; }
+  }
+</style>
 
 <main>
 
@@ -42,11 +175,11 @@
   <section class="hero">
     <div class="container hero-inner">
       <div>
-        <p class="eyebrow">Ajax, Ontario · Ages 8–18</p>
-        <h1>Train <span class="accent">Strong.</span><br>Play <span class="accent-pink">Strong.</span></h1>
+        <p class="eyebrow eyebrow-teal">Ajax, Ontario · Ages 8–18</p>
+        <h1>Elevate<br><span class="accent-pink">Your</span> <span class="accent">Game.</span></h1>
         <p class="lead">TI Baseball — the Tools of Ignorance — is a baseball training academy dedicated to mastering the craft. We combine expert in-person movement analysis with targeted, high-rep drills to build elite hitters, pitchers, and catchers. No shortcuts — just hard work and grit.</p>
         <div class="btn-row">
-          <a class="btn btn-primary" href="contact.html">Book Your First Session</a>
+          <a class="btn btn-primary" href="programs.html">Book Your First Session</a>
           <a class="btn btn-ghost" href="programs.html">See Programs</a>
         </div>
         <div class="stat-strip">
@@ -55,8 +188,8 @@
             <div class="label">Years In The Game</div>
           </div>
           <div class="stat">
-            <div class="num pink">3</div>
-            <div class="label">Years Pro Baseball</div>
+            <div class="num pink">US</div>
+            <div class="label">College Scholarship</div>
           </div>
           <div class="stat">
             <div class="num">1:1</div>
@@ -65,7 +198,7 @@
         </div>
       </div>
       <div class="hero-logo">
-        <img src="assets/logo.svg" alt="Tools of Ignorance Baseball Training logo">
+        <img src="assets/logo.jpg" alt="Tools of Ignorance Baseball Training logo">
       </div>
     </div>
   </section>
@@ -96,30 +229,37 @@
   <!-- WHAT WE OFFER (preview cards) -->
   <section class="alt">
     <div class="container">
-      <p class="eyebrow">What We Offer · Ages 8–18</p>
+      <p class="eyebrow">What We Offer · Ages 6–17</p>
       <h2>Flexible Training, Real Results.</h2>
       <div class="divider"></div>
-      <div class="grid cols-3" style="margin-top:30px;">
+      <div class="grid cols-4" style="margin-top:30px;">
         <div class="card teal">
           <div class="icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg>
           </div>
-          <h3>1-on-1 Private</h3>
-          <p>Maximum individual attention to fast-track mechanical fixes and personalize the work to your athlete.</p>
+          <h3>1-on-1 Hitting</h3>
+          <p>Dedicated private sessions with Coach — hitting, catching, or pitching focus. Personalized coaching, drills, and immediate feedback.</p>
         </div>
         <div class="card pink">
           <div class="icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="6.34" y2="6.34"/><line x1="17.66" y1="17.66" x2="19.07" y2="19.07"/><line x1="4.93" y1="19.07" x2="6.34" y2="17.66"/><line x1="17.66" y1="6.34" x2="19.07" y2="4.93"/></svg>
           </div>
-          <h3>Small Group</h3>
-          <p>High-energy, competitive groups of 2–10 athletes that maximize reps while keeping feedback personal.</p>
+          <h3>Summer Camps</h3>
+          <p>Day camps split by age — Morning Ages 6–9 (9 AM – 1 PM) and Afternoon Ages 10–13 (1 PM – 5 PM). Skill stations, drills, games. <a href="camps.html" style="color:var(--accent);">Register on the camps page →</a></p>
         </div>
-        <div class="card">
+        <div class="card teal">
           <div class="icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V9l7-5 7 5v12"/><path d="M9 21v-6h6v6"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
           </div>
-          <h3>Team Clinics</h3>
-          <p>Bring Coach out to your squad for hitting, pitching, and catching fundamentals across full rosters.</p>
+          <h3>Tryout Prep</h3>
+          <p>Focused prep for end-of-season tryouts — hitting, fielding, throwing, speed. Build confidence, stand out when it matters most.</p>
+        </div>
+        <div class="card pink">
+          <div class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12c4-8 14-8 18 0"/><path d="M3 12c4 8 14 8 18 0"/><circle cx="12" cy="12" r="2"/></svg>
+          </div>
+          <h3>Monday Night Hitting</h3>
+          <p>Recurring group hitting nights — focused instruction, drills, and reps in a high-energy environment. Mondays 6–7:30 PM.</p>
         </div>
       </div>
       <div class="btn-row" style="margin-top:32px;">
@@ -133,20 +273,39 @@
   <section>
     <div class="container">
       <div class="feature">
-        <div class="visual">
+        <div class="visual has-photo">
+          <img src="assets/coach-portrait.jpg" alt="Coach Crosby in catcher's gear at home plate">
           <span class="badge">Coach Crosby</span>
-          <span class="big-mark">⚾</span>
         </div>
         <div>
           <p class="eyebrow">Meet The Coach</p>
           <h2>32 Years. Pro Experience. Elite Development.</h2>
           <div class="divider"></div>
-          <p>Coach Crosby brings over three decades of high-level baseball expertise to the diamond. A scholarship athlete and 3-year pro player, "Coach" uses his background to deliver precise, in-person movement analysis for the next generation of hitters, pitchers, and catchers.</p>
+          <p>Coach Crosby brings over three decades of high-level baseball expertise to the diamond. A US college scholarship athlete, "Coach" uses his background to deliver precise, in-person movement analysis for the next generation of hitters, pitchers, and catchers.</p>
           <p class="muted">Proven track record developing players across Ontario's most respected programs — Ontario Blue Jays, Ontario Giants, Toronto Wave, Ajax Spartans, and Brampton Royals.</p>
           <div class="btn-row">
             <a class="btn btn-primary" href="coach.html">Coach's Full Profile</a>
           </div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FACILITY VIDEO -->
+  <section class="dark" style="padding:60px 0;">
+    <div class="container center">
+      <p class="eyebrow">Where We Train</p>
+      <h2 style="color:#fff;">Train at B360.</h2>
+      <div class="divider" style="margin:6px auto 18px;"></div>
+      <p style="max-width:640px; margin:0 auto 28px; color:#C9D1D6;">Three lanes, professional pitching machines, and indoor turf — a real environment to get real reps year-round. Take a quick walk-through of the facility.</p>
+      <div style="max-width:960px; margin:0 auto; border-radius:18px; overflow:hidden; border:1px solid rgba(255,255,255,0.10); box-shadow:0 30px 80px -20px rgba(0,0,0,0.6); background:#000;">
+        <video controls preload="metadata" playsinline poster="assets/facility-cage-lanes.jpg" style="display:block; width:100%; height:auto; max-height:75vh; background:#000;">
+          <source src="assets/facility-tour.mp4" type="video/mp4">
+          Your browser doesn&rsquo;t support embedded video.
+        </video>
+      </div>
+      <div style="margin-top:22px;">
+        <a class="btn btn-ghost" href="facility.html">See The Facility &rarr;</a>
       </div>
     </div>
   </section>
@@ -159,8 +318,8 @@
       <div class="divider" style="margin:6px auto 22px;"></div>
       <p style="max-width:640px; margin:0 auto 24px; color:#C9D1D6;">Contact Coach to start your athlete on a development path tailored to their goals — from first-time fundamentals to scholarship-ready standards.</p>
       <div class="btn-row" style="justify-content:center;">
-        <a class="btn btn-primary" href="contact.html">Book Now</a>
-        <a class="btn btn-ghost" href="programs.html">Explore Programs</a>
+        <a class="btn btn-primary" href="programs.html">Book Now</a>
+        <a class="btn btn-ghost" href="contact.html">Contact Us</a>
       </div>
     </div>
   </section>
@@ -171,7 +330,7 @@
   <div class="container footer-grid">
     <div>
       <div class="footer-brand">
-        <img src="assets/logo.svg" alt="">
+        <img src="assets/logo.png" alt="">
         <div>
           <h4>TI Baseball</h4>
           <small>TOOLS OF IGNORANCE · EST. 2024</small>
@@ -183,9 +342,11 @@
       <h5>Explore</h5>
       <ul>
         <li><a href="index.html">Home</a></li>
-        <li><a href="coach.html">Coach Crosby</a></li>
+        <li><a href="coach.html">The Coaches</a></li>
         <li><a href="programs.html">Programs</a></li>
-        <li><a href="pricing.html">Pricing</a></li>
+        <li><a href="beginners.html">Beginners</a></li>
+        <li><a href="academy.html">Winter Academy</a></li>
+        <li><a href="facility.html">Facility</a></li>
         <li><a href="contact.html">Contact</a></li>
       </ul>
     </div>

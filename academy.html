@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TI Baseball Academy — Winter Development Program | TI Baseball (Tools of Ignorance)</title>
+<meta name="description" content="The TI Baseball Academy Winter Development Program — October to April, 6 months, 2 sessions per week (3 nights available — athlete picks 2). Hitting, pitching, catching, defense, strength &amp; conditioning, and baseball IQ. $3,000 or $600/month.">
+<link rel="icon" href="assets/logo.jpg" type="image/jpeg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>/* Top utility ribbon — sits above the site header on every page */
+.top-ribbon {
+  background:#010101; border-bottom:1px solid rgba(255,255,255,0.06);
+  font-family:'Inter', sans-serif; font-size:.84rem;
+}
+.top-ribbon-inner {
+  max-width:1180px; margin:0 auto; padding:8px 22px;
+  display:flex; justify-content:space-between; align-items:center; gap:18px;
+  flex-wrap:wrap;
+}
+.top-ribbon-tagline { color:rgba(255,255,255,0.55); letter-spacing:.04em; text-transform:uppercase; font-size:.74rem; font-weight:600; }
+.top-ribbon-actions { display:flex; align-items:center; gap:14px; }
+.top-ribbon-social { display:flex; align-items:center; gap:8px; }
+.top-ribbon-social a {
+  display:flex; align-items:center; justify-content:center;
+  width:30px; height:30px; border-radius:50%;
+  background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.85);
+  transition:background .15s, color .15s, transform .15s;
+}
+.top-ribbon-social a:hover { background:#1FBFC4; color:#010101; transform:translateY(-1px); }
+.top-ribbon-social svg { width:16px; height:16px; }
+.top-ribbon-login {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:5px 14px; border-radius:6px;
+  background:transparent; border:1px solid rgba(255,255,255,0.20); color:#fff;
+  font-size:.78rem; font-weight:600; letter-spacing:.04em; text-transform:uppercase;
+  text-decoration:none; transition:background .15s, border-color .15s;
+}
+.top-ribbon-login:hover { background:#EC2C8A; border-color:#EC2C8A; }
+.top-ribbon-login svg { width:14px; height:14px; }
+@media (max-width:560px) {
+  .top-ribbon-inner { padding:8px 16px; gap:10px; }
+  .top-ribbon-tagline { display:none; }
+}
+</style>
+</head>
+<body>
+<div class="top-ribbon">
+  <div class="top-ribbon-inner">
+    <span class="top-ribbon-tagline">Ajax, ON · Baseball Training Academy</span>
+    <div class="top-ribbon-actions">
+      <div class="top-ribbon-social">
+        <a href="https://www.instagram.com/tools_of_ignorance77/" target="_blank" rel="noopener" aria-label="TI Baseball on Instagram">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </a>
+        <a href="https://www.facebook.com/profile.php?id=100068096166498" target="_blank" rel="noopener" aria-label="TI Baseball on Facebook">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+      </div>
+      <a href="/login" class="top-ribbon-login" id="top-ribbon-login-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        <span>Sign In</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+
+<header class="site-header">
+  <nav class="nav" aria-label="Primary">
+    <a href="index.html" class="nav-brand" aria-label="TI Baseball home">
+      <img src="assets/logo.png" alt="">
+      <span>TI BASEBALL<small>TOOLS OF IGNORANCE</small></span>
+    </a>
+    <button class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <line x1="4" y1="7" x2="20" y2="7"/>
+        <line x1="4" y1="12" x2="20" y2="12"/>
+        <line x1="4" y1="17" x2="20" y2="17"/>
+      </svg>
+    </button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="coach.html">Coaches</a></li>
+      <li><a href="programs.html">Programs</a></li>
+      <li><a href="beginners.html">Beginners</a></li>
+      <li><a href="camps.html">Camps</a></li>
+      <li><a href="academy.html">Academy</a></li>
+      <li><a href="facility.html">Facility</a></li>
+      <li><a href="contact.html" class="cta">Book Now</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+
+  <section class="page-head">
+    <div class="container">
+      <p class="eyebrow">Winter Development Program</p>
+      <h1>TI Baseball Academy</h1>
+      <p>October – April · 6-month high-performance baseball development program — 2 sessions per week with 3 nights available so families can fit it into their schedule. For athletes serious about improving their skills, increasing their baseball IQ, and preparing for the upcoming season.</p>
+    </div>
+  </section>
+
+  <!-- Overview -->
+  <section>
+    <div class="container">
+      <div class="feature">
+        <div class="visual has-photo" style="aspect-ratio:1/1;">
+          <img src="assets/academy-drills.jpg" alt="TI Baseball Academy players running through agility, hitting, and footwork drills inside the indoor training cage" style="object-position:center;">
+          <span class="badge">3 Days / Week</span>
+        </div>
+        <div>
+          <p class="eyebrow">Why The Academy</p>
+          <h2>Six Months. Two Sessions A Week. Built To Maximize Potential.</h2>
+          <div class="divider"></div>
+          <p>The TI Baseball Academy Winter Development Program is a comprehensive six-month program providing a structured training environment focused on technical skill development, athletic performance, and game understanding.</p>
+          <p>Athletes train <strong>two days per week</strong> in a high-energy, professional setting — and the Academy runs <strong>three nights a week</strong>, so each athlete picks the two evenings that fit their schedule. Every session is designed to build confidence, consistency, and long-term player development.</p>
+          <ul class="check-list">
+            <li><strong>6 months</strong>, October through April.</li>
+            <li class="pink"><strong>2 training days per week</strong> (out of 3 available evenings — pick the nights that work for you).</li>
+            <li><strong>Six development tracks</strong> — hitting, pitching, catching, defense, athletic performance, and baseball IQ.</li>
+            <li class="pink"><strong>Individual assessments &amp; video analysis</strong> woven into every session.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- The 6 development tracks -->
+  <section class="alt">
+    <div class="container">
+      <p class="eyebrow">What's Included</p>
+      <h2>Six Development Tracks.</h2>
+      <div class="divider"></div>
+      <p style="max-width:680px;">Every athlete gets focused work across all six tracks — not just the position they play. The result: complete players who can move, hit, throw, think, and lead.</p>
+
+      <div class="grid cols-3" style="margin-top:30px;">
+
+        <!-- Hitting -->
+        <div class="card teal">
+          <div class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12c4-8 14-8 18 0"/><path d="M3 12c4 8 14 8 18 0"/><circle cx="12" cy="12" r="2"/></svg>
+          </div>
+          <h3>Hitting Development</h3>
+          <ul class="check-list" style="margin-top:8px;">
+            <li>Swing mechanics and efficiency</li>
+            <li class="pink">Bat speed and power development</li>
+            <li>Approach and situational hitting</li>
+            <li class="pink">Pitch recognition and timing</li>
+            <li>Video analysis and swing breakdowns</li>
+          </ul>
+        </div>
+
+        <!-- Pitching -->
+        <div class="card pink">
+          <div class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l16-16"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="6" r="2"/></svg>
+          </div>
+          <h3>Pitching Development</h3>
+          <ul class="check-list" style="margin-top:8px;">
+            <li>Throwing mechanics</li>
+            <li class="pink">Velocity and arm care training</li>
+            <li>Pitch design and command</li>
+            <li class="pink">Bullpen work and progress tracking</li>
+            <li>Video analysis and mechanical assessments</li>
+          </ul>
+        </div>
+
+        <!-- Catching -->
+        <div class="card teal">
+          <div class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 4v16H5V4z"/><path d="M9 4v16"/><path d="M15 4v16"/></svg>
+          </div>
+          <h3>Catching Development</h3>
+          <ul class="check-list" style="margin-top:8px;">
+            <li>Receiving and framing</li>
+            <li class="pink">Blocking and footwork</li>
+            <li>Throwing mechanics and pop times</li>
+            <li class="pink">Game management and leadership</li>
+          </ul>
+        </div>
+
+        <!-- Defensive -->
+        <div class="card pink">
+          <div class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <h3>Defensive Development</h3>
+          <ul class="check-list" style="margin-top:8px;">
+            <li>Infield fundamentals and advanced play</li>
+            <li class="pink">Outfield routes, reads, and throwing mechanics</li>
+            <li>Position-specific training and game situations</li>
+          </ul>
+        </div>
+
+        <!-- Strength, Speed & Athletic Performance -->
+        <div class="card teal">
+          <div class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4v16M18 4v16M2 8h4M2 16h4M18 8h4M18 16h4M9 12h6"/></svg>
+          </div>
+          <h3>Strength, Speed &amp; Athletic Performance</h3>
+          <ul class="check-list" style="margin-top:8px;">
+            <li>Strength and conditioning</li>
+            <li class="pink">Speed and acceleration training</li>
+            <li>Agility and movement efficiency</li>
+            <li class="pink">Injury prevention and mobility work</li>
+          </ul>
+        </div>
+
+        <!-- Baseball IQ -->
+        <div class="card pink">
+          <div class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2a4.5 4.5 0 0 1 4.5 4.5v0a4.5 4.5 0 0 1-1 2.85V14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-4.65A4.5 4.5 0 0 1 9.5 2z"/><path d="M9 22h6"/><path d="M9 16v6"/><path d="M15 16v6"/></svg>
+          </div>
+          <h3>Baseball IQ &amp; Classroom Learning</h3>
+          <ul class="check-list" style="margin-top:8px;">
+            <li>Situational awareness and decision-making</li>
+            <li class="pink">Offensive and defensive strategies</li>
+            <li>Positioning and game preparation</li>
+            <li class="pink">Mental performance and confidence building</li>
+            <li>Classroom sessions on baseball knowledge</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Assessment & Progress Tracking -->
+  <section>
+    <div class="container">
+      <p class="eyebrow">Assessment &amp; Progress Tracking</p>
+      <h2>Every Athlete Measured. Every Athlete Improving.</h2>
+      <div class="divider"></div>
+      <p style="max-width:680px;">Improvement isn't a vibe — it's data. Each athlete gets a baseline, video documentation of their movements, and a documented plan for their progression through the season.</p>
+
+      <div class="grid cols-2" style="margin-top:30px;">
+        <div class="card teal">
+          <div class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </div>
+          <h3>Technical Evaluations</h3>
+          <p>Movement assessments, mechanics breakdowns, and benchmark testing at the start of the program — and re-tested throughout to track growth.</p>
+        </div>
+        <div class="card pink">
+          <div class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="9" cy="12" r="2"/><path d="M15 10l4 2-4 2z"/></svg>
+          </div>
+          <h3>Video Analysis</h3>
+          <p>Hitting, throwing, and defensive movements captured on video, broken down frame-by-frame, and shared back with the athlete for visual learning.</p>
+        </div>
+        <div class="card pink">
+          <div class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+          <h3>Individual Development Plans</h3>
+          <p>Each athlete leaves with a personalized roadmap — specific drills, specific milestones, specific work to do between sessions.</p>
+        </div>
+        <div class="card teal">
+          <div class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg>
+          </div>
+          <h3>Ongoing Progress Monitoring</h3>
+          <p>Re-assessments throughout the six months so athletes — and their parents — can see exactly how much ground they've covered.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Investment / Pricing -->
+  <section id="enroll" class="alt"><div class="container" style="padding-bottom:0;"><div id="academy-spots-banner" style="text-align:center; font-size:.85rem; color:rgba(255,255,255,0.6); margin-bottom:8px;"></div></div>
+    <div class="container">
+      <p class="eyebrow">Investment</p>
+      <h2>Two Ways To Pay.</h2>
+      <div class="divider"></div>
+      <p style="max-width:680px;">Choose the option that works for your family — full-program lump sum, or month-to-month.</p>
+
+      <div class="price-grid" style="margin-top:30px; grid-template-columns: repeat(2, 1fr);">
+        <div class="price-card featured">
+          <span class="ribbon">Best Value</span>
+          <h3>Full Program</h3>
+          <p class="sub">Pay once, train all 6 months October through April.</p>
+          <div class="price">$3,000<small>/ 6 months</small></div>
+          <ul class="check-list" style="margin-top:14px;">
+            <li>Locked-in spot for the full program</li>
+            <li class="pink">No monthly billing reminders</li>
+            <li>Best per-session value</li>
+          </ul>
+          <a class="btn btn-primary"
+             href="/book?program=academy-full"
+             target="_blank" rel="noopener"
+             style="margin-top:auto;">Enroll &mdash; Pay $3,000</a>
+        </div>
+        <div class="price-card">
+          <h3>Monthly</h3>
+          <p class="sub">Pay month-to-month for the duration of the program.</p>
+          <div class="price">$600<small>/ month</small></div>
+          <ul class="check-list" style="margin-top:14px;">
+            <li>Spread the cost over the season</li>
+            <li class="pink">Same training, same access</li>
+            <li>Charged monthly through Stripe</li>
+          </ul>
+          <a class="btn btn-secondary"
+             href="/book?program=academy-monthly"
+             target="_blank" rel="noopener"
+             style="margin-top:auto;">Enroll &mdash; $600 / Month</a>
+        </div>
+      </div>
+
+      <p class="muted" style="margin-top:20px; font-size:.92rem;">Have a different payment arrangement you'd like to discuss? <a href="contact.html">Get in touch with Coach</a> — we'll find a fit.</p>
+    </div>
+  </section>
+
+  <!-- Closing CTA -->
+  <section class="dark">
+    <div class="container center">
+      <p class="eyebrow">For Players Who Want More</p>
+      <h2>Stronger. Faster. Smarter.<br>More Prepared Than Ever.</h2>
+      <div class="divider" style="margin:6px auto 22px;"></div>
+      <p style="max-width:640px; margin:0 auto 24px; color:#C9D1D6;">The TI Baseball Academy Winter Development Program is built for players who want to maximize their potential, develop elite habits, and enter the spring season ready to dominate.</p>
+      <div class="btn-row" style="justify-content:center;">
+        <a class="btn btn-primary" href="#enroll">See Enrollment Options</a>
+        <a class="btn btn-ghost" href="contact.html">Ask A Question</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <div class="footer-brand">
+        <img src="assets/logo.png" alt="">
+        <div>
+          <h4>TI Baseball</h4>
+          <small>TOOLS OF IGNORANCE · EST. 2024</small>
+        </div>
+      </div>
+      <p style="max-width:340px;">Elite baseball development in Ajax, Ontario. Hitters. Pitchers. Catchers. Train strong, play strong.</p>
+    </div>
+    <div>
+      <h5>Explore</h5>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="coach.html">The Coaches</a></li>
+        <li><a href="programs.html">Programs</a></li>
+        <li><a href="beginners.html">Beginners</a></li>
+      <li><a href="camps.html">Summer Camps</a></li>
+        <li><a href="academy.html">Winter Academy</a></li>
+        <li><a href="facility.html">Facility</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5>Visit</h5>
+      <address>
+        274 MacKenzie Ave, Suite 450<br>
+        Ajax, ON L1S 2E9<br>
+        Canada
+      </address>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <div>© <span id="year">2026</span> TI Baseball (Tools of Ignorance). All rights reserved.</div>
+    <div>Train Strong. Play Strong.</div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+<script>
+(function(){
+  var el = document.getElementById('academy-spots-banner');
+  if(!el) return;
+  fetch('/api/program-spots?program=academy')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if(d && typeof d.remaining === 'number'){
+        if(d.remaining === 0){ el.innerHTML = '<strong style="color:#EC2C8A;">SOLD OUT</strong> — all 12 spots reserved'; }
+        else { el.textContent = d.remaining + ' of 12 spots still available · Program starts October'; }
+      }
+    })
+    .catch(function(){});
+})();
+</script>
+</body>
+</html>

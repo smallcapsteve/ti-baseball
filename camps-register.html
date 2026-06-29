@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Camp Registration — TI Baseball (Tools of Ignorance)</title>
+<meta name="description" content="Register your athlete for the TI Baseball Summer Camp. Morning Ages 6–9 or Afternoon Ages 10–13. $400 per camp.">
+<!-- This page is served at the nested path /camps/register, so base href
+     pins every relative URL (styles.css, script.js, assets/, etc.) to the
+     site root instead of resolving them under /camps/. -->
+<base href="/">
+<link rel="icon" href="assets/logo.jpg" type="image/jpeg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  /* Same scoped form styling as camps.html — high specificity so the global
+     form.contact-form rules don't override. */
+  form.camp-form { display:grid; gap:0; background:transparent; padding:0; border:0; box-shadow:none; max-width:780px; margin:0 auto; }
+  form.camp-form fieldset.reg { border:1px solid rgba(255,255,255,0.10); border-radius:14px; padding:22px 24px; margin:18px 0 0; background:rgba(255,255,255,0.02); }
+  form.camp-form fieldset.reg legend { padding:0 10px; font-weight:700; color:var(--accent); text-transform:uppercase; font-size:.78rem; letter-spacing:.06em; font-family:'Inter',sans-serif; }
+  form.camp-form .form-row { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:14px; }
+  @media (max-width:600px){ form.camp-form .form-row{ grid-template-columns:1fr; } }
+  form.camp-form label { display:block; font-weight:600; margin-bottom:6px; font-size:.92rem; font-family:'Inter',sans-serif; text-transform:none; letter-spacing:normal; color:var(--ink); }
+  form.camp-form input[type=text], form.camp-form input[type=email], form.camp-form input[type=tel], form.camp-form input[type=date], form.camp-form input[type=number], form.camp-form select, form.camp-form textarea {
+    width:100%; padding:11px 13px; border-radius:9px; border:1px solid rgba(255,255,255,0.14); background:rgba(0,0,0,0.20); color:var(--ink); font-size:.98rem; font-family:'Inter',sans-serif; box-shadow:none;
+  }
+  form.camp-form textarea { min-height:80px; resize:vertical; }
+  form.camp-form .check-line { display:flex; gap:12px; align-items:flex-start; padding:12px 14px; border:1px solid rgba(255,255,255,0.10); border-radius:10px; background:rgba(255,255,255,0.02); margin:10px 0; }
+  form.camp-form .check-line input[type=checkbox] { margin-top:4px; flex:0 0 auto; width:auto; }
+  form.camp-form .check-line label { margin:0; font-weight:500; line-height:1.5; font-size:.95rem; flex:1 1 auto; text-transform:none; letter-spacing:normal; font-family:'Inter',sans-serif; }
+  form.camp-form .check-line label strong { color:var(--accent); }
+  form.camp-form .check-line label a { color:var(--accent); text-decoration:underline; }
+  form.camp-form .btn-row { margin-top:22px; }
+
+  /* Slim breadcrumb */
+  .crumb { display:flex; align-items:center; gap:8px; color:var(--ink-soft); font-size:.9rem; margin-bottom:14px; }
+  .crumb a { color:var(--accent); text-decoration:none; }
+  .crumb a:hover { text-decoration:underline; }
+
+  /* Progress summary card at top of page */
+  .reg-summary {
+    max-width:780px; margin:0 auto 24px;
+    padding:18px 22px; border-radius:12px;
+    background:linear-gradient(135deg, rgba(31,191,196,0.10), rgba(236,44,138,0.06));
+    border:1px solid rgba(31,191,196,0.20);
+    display:flex; align-items:center; gap:18px; flex-wrap:wrap;
+  }
+  .reg-summary .summary-icon { width:44px; height:44px; flex:none; border-radius:50%; background:rgba(31,191,196,0.18); color:#1FBFC4; display:flex; align-items:center; justify-content:center; }
+  .reg-summary .summary-icon svg { width:24px; height:24px; }
+  .reg-summary p { margin:0; color:var(--ink); font-size:.96rem; }
+  .reg-summary strong { color:var(--accent); }
+
+  /* Inline validation errors */
+  form.camp-form .field-invalid { border-color:#EC2C8A !important; box-shadow:0 0 0 3px rgba(236,44,138,0.18) !important; }
+  form.camp-form .check-line.has-error { border-color:#EC2C8A; background:rgba(236,44,138,0.04); }
+  form.camp-form .field-error {
+    display:flex; align-items:center; gap:6px;
+    color:#EC2C8A; font-size:.85rem; font-weight:600;
+    margin:6px 0 0; line-height:1.3;
+  }
+  form.camp-form .field-error::before { content:'⚠'; font-size:.95rem; }
+  form.camp-form .form-msg-top {
+    margin:0 0 18px; padding:14px 18px; border-radius:10px;
+    background:rgba(236,44,138,0.10); border:1px solid rgba(236,44,138,0.35);
+    color:#fff; font-weight:500; font-size:.95rem;
+  }
+</style>
+<style>/* Top utility ribbon — sits above the site header on every page */
+.top-ribbon {
+  background:#010101; border-bottom:1px solid rgba(255,255,255,0.06);
+  font-family:'Inter', sans-serif; font-size:.84rem;
+}
+.top-ribbon-inner {
+  max-width:1180px; margin:0 auto; padding:8px 22px;
+  display:flex; justify-content:space-between; align-items:center; gap:18px;
+  flex-wrap:wrap;
+}
+.top-ribbon-tagline { color:rgba(255,255,255,0.55); letter-spacing:.04em; text-transform:uppercase; font-size:.74rem; font-weight:600; }
+.top-ribbon-actions { display:flex; align-items:center; gap:14px; }
+.top-ribbon-social { display:flex; align-items:center; gap:8px; }
+.top-ribbon-social a {
+  display:flex; align-items:center; justify-content:center;
+  width:30px; height:30px; border-radius:50%;
+  background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.85);
+  transition:background .15s, color .15s, transform .15s;
+}
+.top-ribbon-social a:hover { background:#1FBFC4; color:#010101; transform:translateY(-1px); }
+.top-ribbon-social svg { width:16px; height:16px; }
+.top-ribbon-login {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:5px 14px; border-radius:6px;
+  background:transparent; border:1px solid rgba(255,255,255,0.20); color:#fff;
+  font-size:.78rem; font-weight:600; letter-spacing:.04em; text-transform:uppercase;
+  text-decoration:none; transition:background .15s, border-color .15s;
+}
+.top-ribbon-login:hover { background:#EC2C8A; border-color:#EC2C8A; }
+.top-ribbon-login svg { width:14px; height:14px; }
+@media (max-width:560px) {
+  .top-ribbon-inner { padding:8px 16px; gap:10px; }
+  .top-ribbon-tagline { display:none; }
+}
+</style>
+</head>
+<body>
+<div class="top-ribbon">
+  <div class="top-ribbon-inner">
+    <span class="top-ribbon-tagline">Ajax, ON · Baseball Training Academy</span>
+    <div class="top-ribbon-actions">
+      <div class="top-ribbon-social">
+        <a href="https://www.instagram.com/tools_of_ignorance77/" target="_blank" rel="noopener" aria-label="TI Baseball on Instagram">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </a>
+        <a href="https://www.facebook.com/profile.php?id=100068096166498" target="_blank" rel="noopener" aria-label="TI Baseball on Facebook">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+      </div>
+      <a href="/login" class="top-ribbon-login" id="top-ribbon-login-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        <span>Sign In</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+
+<header class="site-header">
+  <nav class="nav" aria-label="Primary">
+    <a href="index.html" class="nav-brand" aria-label="TI Baseball home">
+      <img src="assets/logo.png" alt="">
+      <span>TI BASEBALL<small>TOOLS OF IGNORANCE</small></span>
+    </a>
+    <button class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/>
+      </svg>
+    </button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="coach.html">Coaches</a></li>
+      <li><a href="programs.html">Programs</a></li>
+      <li><a href="beginners.html">Beginners</a></li>
+      <li><a href="camps.html">Camps</a></li>
+      <li><a href="academy.html">Academy</a></li>
+      <li><a href="facility.html">Facility</a></li>
+      <li><a href="contact.html" class="cta">Book Now</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+
+  <section class="page-head">
+    <div class="container">
+      <nav class="crumb" aria-label="Breadcrumb">
+        <a href="/camps">&larr; Back to camp info</a>
+      </nav>
+      <p class="eyebrow">Step 1 of 2 &middot; Athlete Details</p>
+      <h1>Camp Registration.</h1>
+      <p>Fill out the form below to register your athlete for the week-long program. After you submit, you'll be sent to Stripe to complete the $400 fee. Your spot is confirmed in the order payments come in.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+
+      <div class="reg-summary">
+        <div class="summary-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/>
+          </svg>
+        </div>
+        <p>You're registering for the <strong>TI Baseball Summer Camp</strong> &mdash; a week-long program. Both options are $400 for the week:<br><strong>Morning</strong> (Ages 6–9, July 20–24, 9 AM–1 PM) &middot; <strong>Afternoon</strong> (Ages 10–13, July 20–24, 1 PM–5 PM). Pick which one below.</p>
+      </div>
+
+      <div style="max-width:780px; margin:0 auto 20px; padding:14px 18px; border-radius:10px; background:rgba(236,44,138,0.10); border:1px solid rgba(236,44,138,0.35);">
+        <p style="margin:0; color:var(--ink); font-size:.94rem; line-height:1.5;"><strong style="color:#EC2C8A;">Spots are limited to 20 athletes per camp.</strong> Your spot is <strong>only confirmed once your $400 payment goes through Stripe</strong> &mdash; submitting this form alone doesn't reserve a spot. If a camp fills before you pay, you'll see a notice at Stripe checkout and can register for the other camp instead.</p>
+      </div>
+
+      <form class="camp-form" name="camp-registration" method="POST" action="/api/camp-registration" novalidate>
+        <p class="hp-field" aria-hidden="true" style="position:absolute; left:-9999px;"><label>Don't fill this out: <input name="bot-field"></label></p>
+
+        <fieldset class="reg">
+          <legend>Week-Long Program</legend>
+          <div>
+            <label for="camp">Which week-long program are you registering for?</label>
+            <select id="camp" name="camp" required>
+              <option value="">Select…</option>
+              <option value="morning">Morning &mdash; Ages 6–9 &mdash; July 20–24 (Mon–Fri) &mdash; 9 AM – 1 PM &mdash; $400 for the week</option>
+              <option value="afternoon">Afternoon &mdash; Ages 10–13 &mdash; July 20–24 (Mon–Fri) &mdash; 1 PM – 5 PM &mdash; $400 for the week</option>
+            </select>
+          </div>
+        </fieldset>
+
+        <fieldset class="reg">
+          <legend>Athlete</legend>
+          <div class="form-row">
+            <div>
+              <label for="player_name">Athlete's full name</label>
+              <input id="player_name" name="player_name" type="text" required autocomplete="name">
+            </div>
+            <div>
+              <label for="player_dob">Athlete's date of birth</label>
+              <input id="player_dob" name="player_dob" type="date" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label for="player_level">Level of play</label>
+              <select id="player_level" name="player_level" required>
+                <option value="">Select…</option>
+                <option>Beginner</option><option>House League</option><option>Select</option>
+                <option>Rep</option><option>College</option><option>Other</option>
+              </select>
+            </div>
+            <div>
+              <label for="player_position">Primary position (optional)</label>
+              <input id="player_position" name="player_position" type="text" placeholder="e.g., outfield, catcher, pitcher">
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label for="player_shirt">T-shirt size</label>
+              <select id="player_shirt" name="player_shirt" required>
+                <option value="">Select…</option>
+                <option>Youth XS</option><option>Youth S</option><option>Youth M</option><option>Youth L</option>
+                <option>Adult S</option><option>Adult M</option><option>Adult L</option>
+              </select>
+            </div>
+            <div>
+              <label for="player_throws">Throws / Bats</label>
+              <select id="player_throws" name="player_throws">
+                <option value="">Select…</option>
+                <option>Right / Right</option><option>Left / Left</option>
+                <option>Right / Left</option><option>Left / Right</option><option>Switch hitter</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label for="loaner_gear">Will the athlete need loaner gear? (optional)</label>
+            <input id="loaner_gear" name="loaner_gear" type="text" placeholder="e.g., glove, bat, batting helmet — leave blank if none needed">
+          </div>
+        </fieldset>
+
+        <fieldset class="reg">
+          <legend>Parent / Guardian</legend>
+          <div class="form-row">
+            <div>
+              <label for="parent_name">Parent / guardian name</label>
+              <input id="parent_name" name="parent_name" type="text" required autocomplete="name">
+            </div>
+            <div>
+              <label for="parent_phone">Parent / guardian phone</label>
+              <input id="parent_phone" name="parent_phone" type="tel" required autocomplete="tel">
+            </div>
+          </div>
+          <div>
+            <label for="parent_email">Parent / guardian email</label>
+            <input id="parent_email" name="parent_email" type="email" required autocomplete="email">
+          </div>
+        </fieldset>
+
+        <fieldset class="reg">
+          <legend>Emergency Contact</legend>
+          <div class="form-row">
+            <div>
+              <label for="emergency_name">Emergency contact name</label>
+              <input id="emergency_name" name="emergency_name" type="text" required>
+            </div>
+            <div>
+              <label for="emergency_phone">Emergency contact phone</label>
+              <input id="emergency_phone" name="emergency_phone" type="tel" required>
+            </div>
+          </div>
+          <div>
+            <label for="emergency_relation">Relationship to athlete</label>
+            <input id="emergency_relation" name="emergency_relation" type="text" placeholder="e.g., grandparent, aunt, family friend">
+          </div>
+        </fieldset>
+
+        <fieldset class="reg">
+          <legend>Health &amp; Safety</legend>
+          <div>
+            <label for="medical">Medical conditions, allergies, or medications Coach should be aware of</label>
+            <textarea id="medical" name="medical" placeholder="Asthma, food allergies, EpiPen on-site, etc. Write 'none' if not applicable."></textarea>
+          </div>
+          <div>
+            <label for="pickup_authorized">Authorized to pick up the athlete (besides parent/guardian above)</label>
+            <input id="pickup_authorized" name="pickup_authorized" type="text" placeholder="Name(s) and relationship — leave blank if only the parent above will pick up">
+          </div>
+        </fieldset>
+
+        <fieldset class="reg">
+          <legend>Consents</legend>
+          <div class="check-line">
+            <input id="photo_release" name="photo_release" type="checkbox" value="yes">
+            <label for="photo_release">
+              <strong>Photo / video release (optional)</strong> &mdash; I consent to my athlete being photographed or filmed during camp activities for use on tibaseball.com, social media, or promotional materials. Leave unchecked to opt out.
+            </label>
+          </div>
+          <div class="check-line">
+            <input id="waiver" name="waiver" type="checkbox" required>
+            <label for="waiver">
+              <strong>Required:</strong> I have read and agree to the <a href="/waiver" target="_blank" rel="noopener">TI Baseball Academy Assumption of Risk &amp; Liability Waiver</a>. I am the parent or legal guardian of the athlete and am accepting on their behalf.
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset class="reg">
+          <legend>Anything Else?</legend>
+          <div>
+            <label for="notes">Notes for Coach (optional)</label>
+            <textarea id="notes" name="notes" placeholder="Anything about your athlete you'd like Coach to know going in."></textarea>
+          </div>
+        </fieldset>
+
+        <div class="btn-row" style="margin-top:22px; justify-content:space-between;">
+          <a class="btn btn-ghost" href="/camps">&larr; Back to camp info</a>
+          <button class="btn btn-primary" type="submit">Continue To Payment &nbsp;&rarr;</button>
+        </div>
+        <p class="muted" style="font-size:.86rem; margin-top:12px; text-align:right;">Next: Stripe Checkout for the $400 week-long program fee. Registration isn't confirmed until payment is received.</p>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <div class="footer-brand">
+        <img src="assets/logo.png" alt="">
+        <div>
+          <h4>TI Baseball</h4>
+          <small>TOOLS OF IGNORANCE &middot; EST. 2024</small>
+        </div>
+      </div>
+      <p style="max-width:340px;">Elite baseball development in Ajax, Ontario. Hitters. Pitchers. Catchers. Train strong, play strong.</p>
+    </div>
+    <div>
+      <h5>Explore</h5>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="coach.html">The Coaches</a></li>
+        <li><a href="programs.html">Programs</a></li>
+        <li><a href="beginners.html">Beginners</a></li>
+      <li><a href="camps.html">Summer Camps</a></li>
+        <li><a href="academy.html">Winter Academy</a></li>
+        <li><a href="facility.html">Facility</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="manage.html">Manage Subscription</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5>Visit</h5>
+      <address>274 MacKenzie Ave, Suite 450<br>Ajax, ON L1S 2E9<br>Canada</address>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <div>&copy; <span id="year">2026</span> TI Baseball (Tools of Ignorance). All rights reserved.</div>
+    <div>Train Strong. Play Strong.</div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+<script>
+  // Pre-select camp if ?camp=morning or ?camp=afternoon is in the URL (from the camp cards on /camps).
+  (function() {
+    var params = new URLSearchParams(window.location.search);
+    var c = params.get('camp');
+    if (c === 'morning' || c === 'afternoon') {
+      var sel = document.getElementById('camp');
+      if (sel) sel.value = c;
+    }
+  })();
+
+  // Live sold-out check — disable any camp option in the dropdown that's full,
+  // and show a banner at the top if any camp is sold out.
+  (function() {
+    fetch('/api/camp-availability')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var sel = document.getElementById('camp');
+        if (!sel) return;
+        var soldOut = [];
+        ['morning','afternoon'].forEach(function(camp) {
+          if (data[camp] === 'sold_out') {
+            soldOut.push(camp);
+            // find the option and disable it
+            for (var i = 0; i < sel.options.length; i++) {
+              if (sel.options[i].value === camp) {
+                sel.options[i].disabled = true;
+                sel.options[i].textContent = (camp === 'morning' ? 'Morning' : 'Afternoon') + ' — SOLD OUT';
+                if (sel.value === camp) sel.value = '';
+                break;
+              }
+            }
+          }
+        });
+        if (soldOut.length === 0) return;
+        // Add a warning banner above the form
+        var banner = document.createElement('div');
+        banner.style.cssText = 'max-width:780px; margin:0 auto 16px; padding:14px 18px; border-radius:10px; background:rgba(236,44,138,0.12); border:1px solid rgba(236,44,138,0.40); color:#fff; font-size:.95rem; line-height:1.45;';
+        if (soldOut.length === 2) {
+          banner.innerHTML = '<strong style="color:#EC2C8A;">Both camps are sold out.</strong> All 20 spots in each camp have been filled. To join the waitlist for cancellations, <a href="mailto:Crosbyathletics321@gmail.com?subject=Summer%20Camp%20Waitlist" style="color:#1FBFC4; text-decoration:underline;">email Coach directly</a>.';
+        } else {
+          var name = soldOut[0] === 'morning' ? 'Morning Camp (Ages 6–9)' : 'Afternoon Camp (Ages 10–13)';
+          var other = soldOut[0] === 'morning' ? 'Afternoon Camp' : 'Morning Camp';
+          banner.innerHTML = '<strong style="color:#EC2C8A;">' + name + ' is sold out.</strong> The ' + other + ' is still available — please select it below.';
+        }
+        var form = document.querySelector('form.camp-form');
+        if (form) form.parentNode.insertBefore(banner, form);
+      })
+      .catch(function() { /* fail open */ });
+  })();
+
+  // Client-side validation — shows inline errors instead of bouncing the user
+  // to a plain-text /api/camp-registration response page.
+  (function() {
+    var form = document.querySelector('form.camp-form');
+    if (!form) return;
+
+    function clearErrors() {
+      form.querySelectorAll('.field-error').forEach(function(el) { el.remove(); });
+      form.querySelectorAll('.field-invalid').forEach(function(el) { el.classList.remove('field-invalid'); });
+      form.querySelectorAll('.check-line.has-error').forEach(function(el) { el.classList.remove('has-error'); });
+      var top = form.querySelector('.form-msg-top');
+      if (top) top.remove();
+    }
+
+    function addErrorBelow(field, message) {
+      var err = document.createElement('div');
+      err.className = 'field-error';
+      err.textContent = message;
+      if (field.type === 'checkbox') {
+        // Place after the .check-line wrapper, not inside the flex row
+        var line = field.closest('.check-line');
+        if (line) {
+          line.classList.add('has-error');
+          line.parentNode.insertBefore(err, line.nextSibling);
+        } else {
+          field.parentNode.appendChild(err);
+        }
+      } else {
+        field.classList.add('field-invalid');
+        // Place after the field, inside its label/input wrapper
+        if (field.nextSibling) {
+          field.parentNode.insertBefore(err, field.nextSibling);
+        } else {
+          field.parentNode.appendChild(err);
+        }
+      }
+    }
+
+    form.addEventListener('submit', function(e) {
+      clearErrors();
+      var firstInvalid = null;
+      var requiredFields = form.querySelectorAll('[required]');
+
+      requiredFields.forEach(function(field) {
+        var invalid = false;
+        if (field.type === 'checkbox') {
+          invalid = !field.checked;
+        } else if (field.tagName === 'SELECT') {
+          invalid = !field.value;
+        } else {
+          invalid = !field.value.trim();
+        }
+        if (invalid) {
+          var message;
+          if (field.type === 'checkbox') {
+            // Use the label text inside the checkbox row for clarity
+            message = field.id === 'waiver'
+              ? 'You must agree to the waiver to continue.'
+              : 'You must check this box to continue.';
+          } else {
+            var label = form.querySelector('label[for="' + field.id + '"]');
+            var labelText = label ? label.textContent.trim() : 'This field';
+            message = 'Missing required field — please fill in your ' + labelText.toLowerCase().replace(/[?.:]$/, '') + '.';
+          }
+          addErrorBelow(field, message);
+          if (!firstInvalid) firstInvalid = field;
+        }
+      });
+
+      if (firstInvalid) {
+        e.preventDefault();
+        // Top-of-form summary so they know to look
+        var top = document.createElement('div');
+        top.className = 'form-msg-top';
+        top.textContent = 'Please fix the highlighted fields below before continuing.';
+        form.insertBefore(top, form.firstChild);
+        firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(function() { firstInvalid.focus(); }, 350);
+      }
+    });
+
+    // Live-clear errors as user types/changes a field
+    form.addEventListener('input', function(e) {
+      var t = e.target;
+      if (!t) return;
+      if (t.classList.contains('field-invalid')) {
+        t.classList.remove('field-invalid');
+        var next = t.nextSibling;
+        if (next && next.classList && next.classList.contains('field-error')) next.remove();
+      }
+    });
+    form.addEventListener('change', function(e) {
+      var t = e.target;
+      if (t && t.type === 'checkbox') {
+        var line = t.closest('.check-line');
+        if (line && line.classList.contains('has-error') && t.checked) {
+          line.classList.remove('has-error');
+          var next = line.nextSibling;
+          if (next && next.classList && next.classList.contains('field-error')) next.remove();
+        }
+      }
+    });
+  })();
+</script>
+</body>
+</html>

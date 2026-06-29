@@ -3,7 +3,7 @@
    Palette pulled from the logo:
      teal  #1FBFC4
      pink  #EC2C8A
-     black #0A0A0A
+     black #010101
      off-white #F5F7F8
    ========================================= */
 
@@ -12,11 +12,11 @@
   --teal-dark: #149299;
   --pink: #EC2C8A;
   --pink-dark: #C41A6B;
-  --ink: #0A0A0A;
+  --ink: #010101;
   --ink-soft: #1A1A1A;
   --bg: #FFFFFF;
   --bg-alt: #F5F7F8;
-  --bg-dark: #0E0E10;
+  --bg-dark: #010101;
   --line: #E4E7EA;
   --muted: #5B6770;
   --shadow-md: 0 10px 30px -10px rgba(10,10,10,0.18);
@@ -67,6 +67,7 @@ p  { margin: 0 0 1em; }
   text-transform: uppercase;
   margin: 0 0 .8em;
 }
+.eyebrow-teal { color: var(--teal); }
 
 /* ---------- Layout helpers ---------- */
 .container {
@@ -86,6 +87,10 @@ section.dark .eyebrow { color: var(--teal); }
 @media (min-width: 720px) {
   .grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
   .grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .grid.cols-4 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 1024px) {
+  .grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
 }
 
 /* ---------- Header / Nav ---------- */
@@ -109,26 +114,42 @@ section.dark .eyebrow { color: var(--teal); }
 .nav-brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   font-family: 'Anton', sans-serif;
-  font-size: 1.15rem;
-  letter-spacing: 2px;
+  font-size: 1.55rem;
+  letter-spacing: 3px;
   color: var(--ink);
   text-transform: uppercase;
+  line-height: 1;
+  text-decoration: none;
 }
 .nav-brand img {
-  width: 52px;
-  height: 52px;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px -4px rgba(10,10,10,0.4);
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px -4px rgba(10,10,10,0.45);
+  flex: none;
+}
+.nav-brand span {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
 }
 .nav-brand span small {
   display: block;
-  font-size: .65rem;
-  letter-spacing: 3px;
+  font-size: .78rem;
+  letter-spacing: 2.5px;
   color: var(--pink);
   font-family: 'Anton', sans-serif;
-  margin-top: 2px;
+  font-weight: 400;
+  margin-top: 0;
+  line-height: 1;
+}
+@media (max-width: 560px) {
+  .nav-brand { font-size: 1.25rem; letter-spacing: 2px; gap: 10px; }
+  .nav-brand img { width: 46px; height: 46px; border-radius: 10px; }
+  .nav-brand span small { font-size: .68rem; letter-spacing: 2px; }
 }
 .nav-links {
   display: flex;
@@ -240,12 +261,11 @@ section.dark .btn-ghost:hover { background: #fff; color: var(--ink); }
   padding: 70px 0 90px;
 }
 .hero::before {
+  /* Pure black hero so the logo's black background blends seamlessly. */
   content: '';
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(800px 400px at 90% 20%, rgba(236,44,138,0.25), transparent 70%),
-    radial-gradient(800px 500px at 10% 90%, rgba(31,191,196,0.25), transparent 70%);
+  background: transparent;
   pointer-events: none;
 }
 .hero-inner {
@@ -361,6 +381,179 @@ section.dark .btn-ghost:hover { background: #fff; color: var(--ink); }
   background:
     radial-gradient(circle at 70% 30%, rgba(255,255,255,0.25), transparent 60%),
     radial-gradient(circle at 20% 80%, rgba(0,0,0,0.25), transparent 60%);
+}
+/* When a real photo is used, hide the gradient + emoji and let the image fill the frame. */
+.feature .visual.has-photo {
+  background: var(--ink);
+  aspect-ratio: 1 / 1;
+}
+.feature .visual.has-photo::after,
+.feature .visual.has-photo .big-mark { display: none; }
+.feature .visual.has-photo img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+@media (min-width: 880px) {
+  .feature .visual.has-photo { aspect-ratio: 4 / 5; }
+}
+
+/* Ajax Spartans discount callout (Pricing page) */
+.spartans-discount {
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, rgba(31,191,196,0.10) 0%, rgba(236,44,138,0.10) 100%);
+  border: 1px solid var(--line);
+  padding: 22px 24px;
+  box-shadow: var(--shadow-md);
+}
+.spartans-discount-inner {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+.spartans-discount-badge { flex-shrink: 0; }
+.spartans-discount .badge-pill {
+  display: inline-block;
+  background: var(--pink);
+  color: #fff;
+  padding: 8px 14px;
+  font-family: 'Anton', sans-serif;
+  font-size: .85rem;
+  letter-spacing: 2px;
+  border-radius: 999px;
+  text-transform: uppercase;
+}
+.spartans-discount h3 {
+  font-family: 'Anton', sans-serif;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* ---------- Cal.com booking cards (schedule.html quick-book row) ---------- */
+.booking-cards {
+  align-items: stretch;
+}
+.booking-card {
+  position: relative;
+  background: var(--ink);
+  color: #fff;
+  border: 1px solid #22242B;
+  border-radius: var(--radius);
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-md);
+  transition: transform .15s ease, box-shadow .15s ease, border-color .15s;
+}
+.booking-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--teal);
+  box-shadow: 0 25px 55px -15px rgba(31,191,196,0.35);
+}
+.booking-card h3 {
+  color: #fff;
+  margin: 0 0 .35em;
+}
+.booking-card p {
+  color: #BFC7CC;
+  margin: 0 0 22px;
+  flex-grow: 1;
+}
+.booking-card .btn {
+  margin-top: auto;
+  align-self: stretch;
+  text-align: center;
+}
+.booking-card-tag {
+  display: inline-block;
+  font-family: 'Anton', sans-serif;
+  letter-spacing: 2px;
+  font-size: .8rem;
+  padding: 6px 12px;
+  background: var(--teal);
+  color: #fff;
+  border-radius: 999px;
+  align-self: flex-start;
+  margin-bottom: 14px;
+  text-transform: uppercase;
+}
+.booking-card.featured {
+  border-color: var(--pink);
+  box-shadow: 0 25px 55px -15px rgba(236,44,138,0.45);
+}
+.booking-card.featured:hover {
+  border-color: var(--pink);
+  box-shadow: 0 30px 70px -15px rgba(236,44,138,0.55);
+}
+.booking-card.featured .booking-card-tag {
+  background: var(--pink);
+}
+.booking-ribbon {
+  position: absolute;
+  top: -10px; right: 18px;
+  background: var(--pink);
+  color: #fff;
+  font-family: 'Anton', sans-serif;
+  font-size: .75rem;
+  letter-spacing: 2px;
+  padding: 6px 12px;
+  border-radius: 999px;
+}
+
+/* ---------- Cal.com inline calendar wrapper ---------- */
+.cal-embed-wrapper {
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  background: var(--ink);
+  border: 1px solid #22242B;
+}
+
+/* Cal.com modal triggers (used on Pricing, Programs, Home pages) — same look as our existing btn-* */
+.cal-trigger { cursor: pointer; }
+
+/* Coach In Action gallery — used on coach.html */
+.photo-grid {
+  display: grid;
+  gap: 22px;
+  grid-template-columns: 1fr;
+  margin-top: 30px;
+}
+@media (min-width: 720px) {
+  .photo-grid { grid-template-columns: 1fr 1fr; }
+}
+.photo-card {
+  position: relative;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  background: var(--ink);
+  aspect-ratio: 4 / 3;
+}
+.photo-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+.photo-card.portrait { aspect-ratio: 3 / 4; }
+.photo-tag {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  background: var(--ink);
+  color: #fff;
+  padding: 8px 14px;
+  font-family: 'Anton', sans-serif;
+  font-size: .85rem;
+  letter-spacing: 2px;
+  border-radius: 999px;
 }
 .feature .visual .badge {
   position: absolute;
@@ -577,6 +770,14 @@ form.contact-form textarea { min-height: 130px; resize: vertical; }
   color: var(--teal-dark);
 }
 .form-msg.show { display: block; }
+/* Honeypot field — invisible to humans, bots will fill it and get filtered. */
+.hp-field {
+  position: absolute !important;
+  left: -10000px !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+}
 
 /* ---------- Footer ---------- */
 .site-footer {
@@ -649,12 +850,11 @@ form.contact-form textarea { min-height: 130px; resize: vertical; }
   overflow: hidden;
 }
 .page-head::before {
+  /* Pure black page header to match the logo's black background. */
   content: '';
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(600px 320px at 90% 0%, rgba(31,191,196,0.35), transparent 70%),
-    radial-gradient(600px 320px at 0% 100%, rgba(236,44,138,0.30), transparent 70%);
+  background: transparent;
   pointer-events: none;
 }
 .page-head h1 { color: #fff; margin-bottom: 8px; }
@@ -666,15 +866,27 @@ form.contact-form textarea { min-height: 130px; resize: vertical; }
 .tag {
   display: inline-block;
   font-family: 'Anton', sans-serif;
-  letter-spacing: 1.5px;
-  font-size: .75rem;
-  padding: 5px 10px;
+  letter-spacing: 1.8px;
+  font-size: .78rem;
+  padding: 6px 12px;
   border-radius: 999px;
   background: rgba(31,191,196,0.15);
   color: var(--teal-dark);
   margin-right: 6px;
+  text-transform: uppercase;
+  line-height: 1.2;
 }
 .tag.pink { background: rgba(236,44,138,0.15); color: var(--pink-dark); }
+
+/* Cleanup when a tag is used inside a program card (sits between icon and title) */
+.card > .tag {
+  align-self: flex-start;     /* don't stretch to fill the card width */
+  margin: 0 0 12px;           /* clean spacing: 12px below, no side margin */
+  max-width: 100%;            /* allow wrapping if the label is long */
+  white-space: normal;
+}
+.card > .icon { margin-bottom: 14px; }  /* slight tighten so icon → tag → title flow evenly */
+.card > h3 { margin-top: 0; }
 
 .divider {
   height: 4px;

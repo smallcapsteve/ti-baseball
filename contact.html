@@ -5,18 +5,73 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Contact — TI Baseball (Tools of Ignorance)</title>
 <meta name="description" content="Get in touch with TI Baseball in Ajax, Ontario. Book a session, set up a group, or ask about camps.">
-<link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+<link rel="icon" href="assets/logo.jpg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<style>/* Top utility ribbon — sits above the site header on every page */
+.top-ribbon {
+  background:#010101; border-bottom:1px solid rgba(255,255,255,0.06);
+  font-family:'Inter', sans-serif; font-size:.84rem;
+}
+.top-ribbon-inner {
+  max-width:1180px; margin:0 auto; padding:8px 22px;
+  display:flex; justify-content:space-between; align-items:center; gap:18px;
+  flex-wrap:wrap;
+}
+.top-ribbon-tagline { color:rgba(255,255,255,0.55); letter-spacing:.04em; text-transform:uppercase; font-size:.74rem; font-weight:600; }
+.top-ribbon-actions { display:flex; align-items:center; gap:14px; }
+.top-ribbon-social { display:flex; align-items:center; gap:8px; }
+.top-ribbon-social a {
+  display:flex; align-items:center; justify-content:center;
+  width:30px; height:30px; border-radius:50%;
+  background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.85);
+  transition:background .15s, color .15s, transform .15s;
+}
+.top-ribbon-social a:hover { background:#1FBFC4; color:#010101; transform:translateY(-1px); }
+.top-ribbon-social svg { width:16px; height:16px; }
+.top-ribbon-login {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:5px 14px; border-radius:6px;
+  background:transparent; border:1px solid rgba(255,255,255,0.20); color:#fff;
+  font-size:.78rem; font-weight:600; letter-spacing:.04em; text-transform:uppercase;
+  text-decoration:none; transition:background .15s, border-color .15s;
+}
+.top-ribbon-login:hover { background:#EC2C8A; border-color:#EC2C8A; }
+.top-ribbon-login svg { width:14px; height:14px; }
+@media (max-width:560px) {
+  .top-ribbon-inner { padding:8px 16px; gap:10px; }
+  .top-ribbon-tagline { display:none; }
+}
+</style>
 </head>
 <body>
+<div class="top-ribbon">
+  <div class="top-ribbon-inner">
+    <span class="top-ribbon-tagline">Ajax, ON · Baseball Training Academy</span>
+    <div class="top-ribbon-actions">
+      <div class="top-ribbon-social">
+        <a href="https://www.instagram.com/tools_of_ignorance77/" target="_blank" rel="noopener" aria-label="TI Baseball on Instagram">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </a>
+        <a href="https://www.facebook.com/profile.php?id=100068096166498" target="_blank" rel="noopener" aria-label="TI Baseball on Facebook">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+      </div>
+      <a href="/login" class="top-ribbon-login" id="top-ribbon-login-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        <span>Sign In</span>
+      </a>
+    </div>
+  </div>
+</div>
+
 
 <header class="site-header">
   <nav class="nav" aria-label="Primary">
     <a href="index.html" class="nav-brand" aria-label="TI Baseball home">
-      <img src="assets/logo.svg" alt="">
+      <img src="assets/logo.png" alt="">
       <span>TI BASEBALL<small>TOOLS OF IGNORANCE</small></span>
     </a>
     <button class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
@@ -28,9 +83,12 @@
     </button>
     <ul class="nav-links" id="nav-links">
       <li><a href="index.html">Home</a></li>
-      <li><a href="coach.html">Coach</a></li>
+      <li><a href="coach.html">Coaches</a></li>
       <li><a href="programs.html">Programs</a></li>
-      <li><a href="pricing.html">Pricing</a></li>
+      <li><a href="beginners.html">Beginners</a></li>
+      <li><a href="camps.html">Camps</a></li>
+      <li><a href="academy.html">Academy</a></li>
+      <li><a href="facility.html">Facility</a></li>
       <li><a href="contact.html" class="cta">Book Now</a></li>
     </ul>
   </nav>
@@ -53,15 +111,18 @@
         <p class="eyebrow">Send A Message</p>
         <h2>Tell Coach About Your Athlete.</h2>
         <div class="divider"></div>
-        <!--
-          To start receiving submissions, sign up at https://formspree.io
-          and replace YOUR_FORM_ID in the action below with your form's ID.
-          (Other options: Netlify Forms, Basin, Web3Forms, etc.)
-        -->
         <form class="contact-form"
-              action="https://formspree.io/f/YOUR_FORM_ID"
+              name="contact"
               method="POST"
+             
+             
+              action="/api/contact"
               novalidate>
+          <!-- Netlify Forms identifier (required hidden field) -->
+          <input type="hidden" name="form-name" value="contact">
+          <!-- Honeypot for spam protection (hidden from real users via CSS) -->
+          <p class="hp-field" aria-hidden="true"><label>Don't fill this out: <input name="bot-field"></label></p>
+
           <div class="form-row">
             <div>
               <label for="name">Your Name</label>
@@ -79,24 +140,37 @@
               <input id="phone" name="phone" type="tel" autocomplete="tel">
             </div>
             <div>
-              <label for="age">Athlete Age</label>
-              <input id="age" name="age" type="number" min="6" max="22">
+              <label for="dob">Athlete Date of Birth</label>
+              <input id="dob" name="dob" type="date" autocomplete="bday">
             </div>
           </div>
 
-          <div>
-            <label for="interest">I'm Interested In</label>
-            <select id="interest" name="interest">
-              <option>1-on-1 Private Training</option>
-              <option>Small Group Training</option>
-              <option>Team Clinic</option>
-              <option>Hitting Instruction</option>
-              <option>Pitching Development</option>
-              <option>Catchers Training</option>
-              <option>Strength &amp; Conditioning</option>
-              <option>Upcoming Camp</option>
-              <option>General Question</option>
-            </select>
+          <div class="form-row">
+            <div>
+              <label for="level">Level Of Play</label>
+              <select id="level" name="level">
+                <option value="">Select…</option>
+                <option>Beginner</option>
+                <option>House League</option>
+                <option>Select</option>
+                <option>Rep</option>
+                <option>College</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div>
+              <label for="interest">I'm Interested In</label>
+              <select id="interest" name="interest">
+                <option>1-on-1 Private Training</option>
+                <option>Strength &amp; Conditioning</option>
+                <option>Monday Night Hitting Group</option>
+                <option>Tryout Prep</option>
+                <option>TI Baseball Academy (Winter)</option>
+                <option>Summer Camp</option>
+                <option>Team Clinic</option>
+                <option>General Question</option>
+              </select>
+            </div>
           </div>
 
           <div>
@@ -126,14 +200,12 @@
 
         <div class="info-block">
           <div class="label">Email</div>
-          <a href="mailto:hello@toibaseball.ca">hello@toibaseball.ca</a>
-          <p class="muted" style="font-size:.85rem; margin:6px 0 0;">Replace with your real email in <code>contact.html</code>.</p>
+          <a href="mailto:Crosbyathletics321@gmail.com">Crosbyathletics321@gmail.com</a>
         </div>
 
         <div class="info-block">
           <div class="label">Phone</div>
-          <a href="tel:+19055550199">(905) 555-0199</a>
-          <p class="muted" style="font-size:.85rem; margin:6px 0 0;">Replace with your real phone number in <code>contact.html</code>.</p>
+          <a href="tel:+12899288662">+1 (289) 928-8662</a>
         </div>
 
         <div class="info-block">
@@ -171,7 +243,7 @@
   <div class="container footer-grid">
     <div>
       <div class="footer-brand">
-        <img src="assets/logo.svg" alt="">
+        <img src="assets/logo.png" alt="">
         <div>
           <h4>TI Baseball</h4>
           <small>TOOLS OF IGNORANCE · EST. 2024</small>
@@ -183,9 +255,12 @@
       <h5>Explore</h5>
       <ul>
         <li><a href="index.html">Home</a></li>
-        <li><a href="coach.html">Coach Crosby</a></li>
+        <li><a href="coach.html">The Coaches</a></li>
         <li><a href="programs.html">Programs</a></li>
-        <li><a href="pricing.html">Pricing</a></li>
+        <li><a href="beginners.html">Beginners</a></li>
+      <li><a href="camps.html">Summer Camps</a></li>
+        <li><a href="academy.html">Winter Academy</a></li>
+        <li><a href="facility.html">Facility</a></li>
         <li><a href="contact.html">Contact</a></li>
       </ul>
     </div>
