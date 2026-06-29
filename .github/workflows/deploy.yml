@@ -1,0 +1,46 @@
+name: Deploy to Cloudflare Pages
+
+# Auto-deploy tibaseball.com on every push to main, and also via the
+# "Run workflow" button in the GitHub Actions tab.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Don't let an in-flight deploy be overtaken by a newer push — the older
+# one finishes first.
+concurrency:
+  group: pages-deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: wrangler pages deploy
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # Deploy the repo root (which contains _worker.js, _routes.json,
+          # all HTML, and assets/) to the existing ti-baseball project.
+          command: |
+            pages deploy . \
+              --project-name=ti-baseball \
+              --branch=main \
+              --commit-message="${{ github.event.head_commit.message || 'manual dispatch' }}"
+
+      - name: Show deployment URL
+        if: success()
+        run: |
+          echo "::notice title=Deployed::Production: https://tibaseball.com (Cloudflare Pages project ti-baseball)"
