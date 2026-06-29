@@ -39,3 +39,5 @@ KV namespace bindings (Cloudflare Dashboard):
 - `USERS_KV` (id: f71e6910c1cd46599c04bfe06f4a33f2)
 - `SESSIONS_KV` (id: c6fdc52bbb00417cadc73979606ebf84)
 - `RESET_KV` (id: fdc5cc64fafd4c33a79d743a18a7d564)
+
+_Last verified live: 2026-06-29T21:36:57Z_
