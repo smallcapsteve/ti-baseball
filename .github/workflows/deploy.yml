@@ -1,13 +1,10 @@
 name: Deploy to Cloudflare Pages
 
-# Auto-deploy tibaseball.com on every push to main, and also via the
-# "Run workflow" button in the GitHub Actions tab.
 on:
   push:
     branches: [main]
   workflow_dispatch:
 
-# Don't let an in-flight deploy be overtaken by a newer push.
 concurrency:
   group: pages-deploy-${{ github.ref }}
   cancel-in-progress: false
@@ -26,12 +23,22 @@ jobs:
         with:
           fetch-depth: 1
 
+      # Build the commit-message arg as an env var (single-line, escaped)
+      - name: Extract commit subject
+        id: subj
+        run: |
+          subject=$(git log -1 --pretty=%s | head -c 200)
+          # Strip anything that wrangler could interpret as a flag/arg
+          subject=$(printf '%s' "$subject" | tr -d '\n\r' | sed 's/[^A-Za-z0-9 ._:,()/-]/_/g')
+          echo "msg=$subject" >> "$GITHUB_OUTPUT"
+          echo "Commit subject for deploy: $subject"
+
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy . --project-name=ti-baseball --branch=main --commit-message="${{ github.event.head_commit.message || 'manual dispatch' }}"
+          command: pages deploy . --project-name=ti-baseball --branch=main --commit-hash=${{ github.sha }}
 
       - name: Show deployment URL
         if: success()
