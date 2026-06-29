@@ -1293,16 +1293,39 @@ async function handleAvailableSlots(request, env){
   const endParam = url.searchParams.get('end');
   const endDate = endParam ? new Date(endParam) : new Date(Date.now() + 14*24*60*60*1000);
   const endISO = endDate.toISOString();
-  const params = new URLSearchParams({
-    eventTypeId: String(CAL_ONE_ON_ONE_EVENT_ID),
-    start, end: endISO,
-    timeZone: 'America/Toronto'
-  });
-  const r = await calApiV2(`/v2/slots?${params}`, env, { method:'GET' });
-  if(!r.ok) return jsonResponse({error:'Cal.com slots error', detail: r.body },502);
-  // Cal returns { data: { 'YYYY-MM-DD': [ { start: '...' }, ... ] } }
-  const data = r.body?.data || {};
-  return jsonResponse({ slots: data, eventTypeId: CAL_ONE_ON_ONE_EVENT_ID });
+  // Same multi-endpoint fallback pattern that /api/public-slots uses — Cal.com
+  // has shipped several incompatible slot endpoints over time. We try the
+  // best-known working one first, then fall back if it 404s.
+  const tries = [
+    { path:'/v2/slots/available', version:'2024-08-13', params:{ eventTypeId:String(CAL_ONE_ON_ONE_EVENT_ID), startTime:start, endTime:endISO, timeZone:'America/Toronto' } },
+    { path:'/v1/slots', version:'2024-08-13', params:{ eventTypeId:String(CAL_ONE_ON_ONE_EVENT_ID), startTime:start, endTime:endISO, timeZone:'America/Toronto', apiKey: env.CAL_COM_API_KEY } },
+    { path:'/v2/slots', version:'2024-09-04', params:{ eventTypeId:String(CAL_ONE_ON_ONE_EVENT_ID), start:start.slice(0,10), end:endISO.slice(0,10), timeZone:'America/Toronto' } }
+  ];
+  let lastErr = null;
+  for(const t of tries){
+    const ps = new URLSearchParams(t.params);
+    const headers = { 'cal-api-version': t.version, 'Content-Type':'application/json' };
+    if(t.path.startsWith('/v2')){ headers['Authorization'] = `Bearer ${env.CAL_COM_API_KEY}`; }
+    try {
+      const resp = await fetch(`https://api.cal.com${t.path}?${ps}`, { method:'GET', headers });
+      const txt = await resp.text();
+      let body; try { body = JSON.parse(txt); } catch { body = { raw: txt }; }
+      if(!resp.ok){ lastErr = { path:t.path, status:resp.status, body }; continue; }
+      let data = body?.data?.slots || body?.data || {};
+      if(Array.isArray(data)){
+        const grouped = {};
+        for(const s of data){
+          const startStr = s.time || s.start || s.startTime;
+          if(!startStr) continue;
+          const day = startStr.slice(0,10);
+          (grouped[day] = grouped[day] || []).push({ start: startStr, time: startStr });
+        }
+        data = grouped;
+      }
+      return jsonResponse({ slots: data, eventTypeId: CAL_ONE_ON_ONE_EVENT_ID });
+    } catch(err){ lastErr = { path:t.path, error: String(err.message||err) }; }
+  }
+  return jsonResponse({ error:'Cal.com slots error', detail: lastErr }, 502);
 }
 
 function pickEarliestExpiringLot(user){
