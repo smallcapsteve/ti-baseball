@@ -7,8 +7,7 @@ on:
     branches: [main]
   workflow_dispatch:
 
-# Don't let an in-flight deploy be overtaken by a newer push — the older
-# one finishes first.
+# Don't let an in-flight deploy be overtaken by a newer push.
 concurrency:
   group: pages-deploy-${{ github.ref }}
   cancel-in-progress: false
@@ -32,15 +31,8 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          # Deploy the repo root (which contains _worker.js, _routes.json,
-          # all HTML, and assets/) to the existing ti-baseball project.
-          command: |
-            pages deploy . \
-              --project-name=ti-baseball \
-              --branch=main \
-              --commit-message="${{ github.event.head_commit.message || 'manual dispatch' }}"
+          command: pages deploy . --project-name=ti-baseball --branch=main --commit-message="${{ github.event.head_commit.message || 'manual dispatch' }}"
 
       - name: Show deployment URL
         if: success()
-        run: |
-          echo "::notice title=Deployed::Production: https://tibaseball.com (Cloudflare Pages project ti-baseball)"
+        run: echo "::notice title=Deployed::Production live at https://tibaseball.com"
