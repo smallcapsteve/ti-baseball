@@ -2307,10 +2307,24 @@ async function handleAdminReconcileUser(request, env, email){
           report.alreadyKnown++;
           continue;
         }
-        // Infer source from event title (best-effort)
+        // Infer source from event title + actual booking day of week (best-effort).
+        // Coach sometimes books "Monday Night" event-type slots on non-Monday
+        // days — those should be treated as 1-on-1s, not Monday Night drop-ins.
         const title = (b.title || '').toLowerCase();
+        const dow = b.start ? new Date(b.start).getUTCDay() : -1; // 0=Sun, 1=Mon, ... ET roughly matches UTC for Monday evening here
+        // Compute Eastern weekday more carefully:
+        let easternDow = -1;
+        if(b.start){
+          try {
+            const fmt = new Intl.DateTimeFormat('en-US', { timeZone:'America/Toronto', weekday:'short' });
+            const wd = fmt.format(new Date(b.start));
+            const map = { Sun:0, Mon:1, Tue:2, Wed:3, Thu:4, Fri:5, Sat:6 };
+            easternDow = map[wd] ?? -1;
+          } catch(_){}
+        }
         let source = '1-on-1';
-        if(title.includes('monday night')) source = 'monday-drop-in';
+        if(title.includes('monday night') && easternDow === 1) source = 'monday-drop-in';
+        else if(title.includes('monday night') && easternDow !== 1) source = '1-on-1'; // booked outside Monday slot → treat as 1-on-1
         else if(title.includes('summer baseball camp 6 - 9') || title.includes('camps-morning')) source = 'camps-morning';
         else if(title.includes('summer baseball camp 10 - 13') || title.includes('camps-afternoon')) source = 'camps-afternoon';
         else if(title.includes('academy')) source = 'academy-full';
