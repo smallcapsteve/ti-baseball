@@ -352,12 +352,23 @@ async function handleAdminUsers(request, env){
       // Derive program tags from history
       const tags = new Set();
       const groupMap = {
+        // 1-on-1 variants (worker can write any of these depending on origin)
         'one-on-one':'1-on-1',
+        '1-on-1':'1-on-1',
+        '1-on-1 (credit)':'1-on-1',
+        '1-on-1 (admin paid)':'1-on-1',
+        '1-on-1 (admin booked)':'1-on-1',
+        '1-on-1 (single)':'1-on-1',
+        'single_session_$90':'1-on-1',
+        // Monday Night variants
         'monday-drop-in':'Monday Night',
         'monday-monthly':'Monday Night',
         'monday-monthly_renewal':'Monday Night',
+        'monday-drop-in_renewal':'Monday Night',
+        // Camps
         'camps-morning':'Camps',
         'camps-afternoon':'Camps',
+        // Academy
         'academy-full':'Academy',
         'academy-monthly':'Academy',
         'academy':'Academy'
