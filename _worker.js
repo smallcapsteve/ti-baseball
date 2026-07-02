@@ -753,6 +753,12 @@ async function handleProgramCheckout(request, env){
     if(slotStart) params.set('metadata[ti_slot]', slotStart);
     if(cfg.preorder) params.set('metadata[ti_preorder]', 'true');
 
+    // Enable Stripe promotion codes on the Checkout page. Coach creates codes
+    // in the Stripe Dashboard (Products → Coupons → Promotion codes) and
+    // restricts them to specific products/prices there. Parents see an
+    // "Add promotion code" link on Stripe's payment page.
+    params.set('allow_promotion_codes', 'true');
+
     if(cfg.stripeMode === 'subscription'){
       const priceId = await getOrCreateRecurringPriceForProgram(env, cfg);
       params.set('mode', 'subscription');
