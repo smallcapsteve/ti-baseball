@@ -270,49 +270,165 @@
     </div>
   </section>
 
-  <!-- Investment / Pricing -->
-  <section id="enroll" class="alt"><div class="container" style="padding-bottom:0;"><div id="academy-spots-banner" style="text-align:center; font-size:.85rem; color:rgba(255,255,255,0.6); margin-bottom:8px;"></div></div>
+  <!-- Registration form (no payment — Coach follows up personally) -->
+  <section id="enroll" class="alt">
     <div class="container">
-      <p class="eyebrow">Investment</p>
-      <h2>Two Ways To Pay.</h2>
+      <p class="eyebrow">Interested? Let Us Know.</p>
+      <h2>Academy Registration.</h2>
       <div class="divider"></div>
-      <p style="max-width:680px;">Choose the option that works for your family — full-program lump sum, or month-to-month.</p>
+      <p style="max-width:680px;">Fill out the form below and Coach will reach out personally within a couple of days with the full schedule, payment options, and everything you need to lock in your athlete's spot.</p>
 
-      <div class="price-grid" style="margin-top:30px; grid-template-columns: repeat(2, 1fr);">
-        <div class="price-card featured">
-          <span class="ribbon">Best Value</span>
-          <h3>Full Program</h3>
-          <p class="sub">Pay once, train all 6 months October through April.</p>
-          <div class="price">$3,000<small>/ 6 months</small></div>
-          <ul class="check-list" style="margin-top:14px;">
-            <li>Locked-in spot for the full program</li>
-            <li class="pink">No monthly billing reminders</li>
-            <li>Best per-session value</li>
-          </ul>
-          <a class="btn btn-primary"
-             href="/book?program=academy-full"
-             target="_blank" rel="noopener"
-             style="margin-top:auto;">Enroll &mdash; Pay $3,000</a>
-        </div>
-        <div class="price-card">
-          <h3>Monthly</h3>
-          <p class="sub">Pay month-to-month for the duration of the program.</p>
-          <div class="price">$600<small>/ month</small></div>
-          <ul class="check-list" style="margin-top:14px;">
-            <li>Spread the cost over the season</li>
-            <li class="pink">Same training, same access</li>
-            <li>Charged monthly through Stripe</li>
-          </ul>
-          <a class="btn btn-secondary"
-             href="/book?program=academy-monthly"
-             target="_blank" rel="noopener"
-             style="margin-top:auto;">Enroll &mdash; $600 / Month</a>
-        </div>
+      <style>
+        .academy-form-wrap {
+          max-width:720px; margin:30px auto 0;
+          padding:36px;
+          border-radius:20px;
+          background:#fff;
+          border:1px solid rgba(0,0,0,0.08);
+          box-shadow:0 18px 40px -20px rgba(0,0,0,0.15);
+        }
+        @media (max-width:600px){ .academy-form-wrap{ padding:24px 20px; } }
+        .academy-form { display:flex; flex-direction:column; gap:18px; }
+        .academy-form .form-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+        @media (max-width:600px){ .academy-form .form-row { grid-template-columns:1fr; } }
+        .academy-form label { display:block; font-size:.78rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:#333; margin-bottom:6px; }
+        .academy-form input, .academy-form select, .academy-form textarea {
+          width:100%; padding:11px 14px;
+          border-radius:8px; border:1px solid rgba(0,0,0,0.18);
+          background:#fff; color:#111;
+          font-family:'Inter', sans-serif; font-size:.96rem;
+          box-sizing:border-box;
+          transition:border-color .15s, box-shadow .15s;
+        }
+        .academy-form input::placeholder, .academy-form textarea::placeholder { color:rgba(0,0,0,0.40); }
+        .academy-form input:focus, .academy-form select:focus, .academy-form textarea:focus {
+          outline:none; border-color:#1FBFC4;
+          box-shadow:0 0 0 3px rgba(31,191,196,0.18);
+        }
+        .academy-form textarea { min-height:96px; resize:vertical; font-family:'Inter', sans-serif; }
+        .academy-form .hp-field { position:absolute; left:-9999px; }
+        .academy-form .form-msg {
+          margin-top:4px; padding:12px 14px; border-radius:8px;
+          font-size:.92rem; display:none;
+        }
+        .academy-form .form-msg.ok {
+          display:block; background:rgba(31,191,196,0.12);
+          border:1px solid rgba(31,191,196,0.40); color:#0e6a6d;
+        }
+        .academy-form .form-msg.err {
+          display:block; background:rgba(236,44,138,0.10);
+          border:1px solid rgba(236,44,138,0.40); color:#a01762;
+        }
+        .academy-form button { align-self:flex-start; }
+      </style>
+
+      <div class="academy-form-wrap">
+        <form class="academy-form" id="academy-form" novalidate>
+          <p class="hp-field" aria-hidden="true"><label>Don't fill this out: <input name="company"></label></p>
+
+          <div class="form-row">
+            <div>
+              <label for="af-parent">Parent / Guardian Name <span style="color:#EC2C8A;">*</span></label>
+              <input id="af-parent" name="parentName" type="text" required autocomplete="name">
+            </div>
+            <div>
+              <label for="af-email">Email <span style="color:#EC2C8A;">*</span></label>
+              <input id="af-email" name="parentEmail" type="email" required autocomplete="email">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div>
+              <label for="af-phone">Phone</label>
+              <input id="af-phone" name="parentPhone" type="tel" autocomplete="tel" placeholder="(289) 555-0123">
+            </div>
+            <div>
+              <label for="af-athlete">Athlete's Name <span style="color:#EC2C8A;">*</span></label>
+              <input id="af-athlete" name="athleteName" type="text" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div>
+              <label for="af-age">Athlete's Age</label>
+              <input id="af-age" name="athleteAge" type="number" min="8" max="18" placeholder="e.g. 13">
+            </div>
+            <div>
+              <label for="af-level">Level of Play</label>
+              <select id="af-level" name="level">
+                <option value="">Select…</option>
+                <option>House League</option>
+                <option>Select</option>
+                <option>Rep</option>
+                <option>College</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label for="af-notes">Notes or Questions</label>
+            <textarea id="af-notes" name="notes" placeholder="Anything you'd like Coach to know — position, goals, questions about the program, past training, etc."></textarea>
+          </div>
+
+          <button class="btn btn-primary" type="submit" id="af-submit">Submit Registration</button>
+          <div class="form-msg" id="af-msg" role="status" aria-live="polite"></div>
+        </form>
       </div>
-
-      <p class="muted" style="margin-top:20px; font-size:.92rem;">Have a different payment arrangement you'd like to discuss? <a href="contact.html">Get in touch with Coach</a> — we'll find a fit.</p>
     </div>
   </section>
+
+  <script>
+    (function(){
+      var f = document.getElementById('academy-form');
+      var msg = document.getElementById('af-msg');
+      var btn = document.getElementById('af-submit');
+      if(!f) return;
+      f.addEventListener('submit', async function(e){
+        e.preventDefault();
+        msg.className = 'form-msg'; msg.textContent = '';
+        var hp = f.querySelector('input[name="company"]');
+        if(hp && hp.value){ return; /* honeypot — silent drop */ }
+
+        var data = {
+          parentName:  (f.parentName.value||'').trim(),
+          parentEmail: (f.parentEmail.value||'').trim(),
+          parentPhone: (f.parentPhone.value||'').trim(),
+          athleteName: (f.athleteName.value||'').trim(),
+          athleteAge:  (f.athleteAge.value||'').trim(),
+          level:       f.level.value,
+          notes:       (f.notes.value||'').trim()
+        };
+        if(!data.parentName || !data.parentEmail || !data.athleteName){
+          msg.className = 'form-msg err';
+          msg.textContent = 'Please fill in your name, email, and your athlete\'s name.';
+          return;
+        }
+        btn.disabled = true; btn.textContent = 'Sending…';
+        try {
+          var r = await fetch('/api/academy-register', {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify(data)
+          });
+          var j = await r.json().catch(function(){ return {}; });
+          if(r.ok && j.ok){
+            msg.className = 'form-msg ok';
+            msg.textContent = 'Got it! Coach will be in touch within a couple of days with the full schedule and next steps. Check your email for confirmation.';
+            f.reset();
+          } else {
+            msg.className = 'form-msg err';
+            msg.textContent = (j && j.error) || 'Something went wrong. Please try again or email Coach directly.';
+          }
+        } catch(err){
+          msg.className = 'form-msg err';
+          msg.textContent = 'Network error. Please try again or email Crosbyathletics321@gmail.com.';
+        } finally {
+          btn.disabled = false; btn.textContent = 'Submit Registration';
+        }
+      });
+    })();
+  </script>
 
   <!-- Closing CTA -->
   <section class="dark">
