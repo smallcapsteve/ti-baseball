@@ -924,14 +924,33 @@ async function handleClaimProgramBooking(request, env){
       ti_program: programKey, ti_stripe_ref: stripeRef
     });
     if(!res.ok){
-      return jsonResponse({ claimed:false, paid:true, calError: res.error, contact:'Crosbyathletics321@gmail.com' });
+      // Payment already cleared. Do NOT lose the customer's booking intent.
+      // Write a placeholder booking to KV with status='needs_manual_booking' so
+      // Coach can see it in admin + email Coach urgently so they book manually.
+      user.bookings = (user.bookings||[]).concat([{
+        calBookingUid: null,
+        startTime: slotStart,
+        bookedAt: Date.now(),
+        status: 'needs_manual_booking',
+        stripeRef,
+        source: programKey,
+        calError: String(res.error||'').slice(0,240)
+      }]);
+      await env.USERS_KV.put(user.email, JSON.stringify(user));
+      try { await sendCoachAlert(env, 'booking_failed_after_payment', {
+        user, programKey, programLabel: cfg.label, slotStart, calError: res.error
+      }); } catch(_){}
+      return jsonResponse({
+        claimed:true, paid:true, needsManualBooking:true,
+        slotStart, program:programKey,
+        message:'Payment received. Coach has been alerted and will confirm your Monday Night session personally within 24 hours.'
+      });
     }
     user.bookings = (user.bookings||[]).concat([{
       calBookingUid: res.uid, startTime: slotStart, bookedAt: Date.now(),
       status:'accepted', stripeRef, source: programKey
     }]);
     await env.USERS_KV.put(user.email, JSON.stringify(user));
-    // Notify Coach (best-effort)
     try { await sendCoachAlert(env, 'program_single', {
       user, programKey, programLabel: cfg.label, slotStart, calBookingUid: res.uid
     }); } catch(_){}
@@ -1387,7 +1406,7 @@ async function handleBookSession(request, env){
     metadata: {
       ti_email: user.email,
       ti_lot_id: lot.id,
-      ti_credit_used: true,
+      ti_credit_used: 'true',
       athlete_name: user.athleteName || '',
       athlete_dob: user.athleteDob || '',
       level: user.level || ''
