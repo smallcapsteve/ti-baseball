@@ -844,7 +844,21 @@ async function createCalBookingForUser(env, user, eventTypeId, startISO, extraMe
     return { ok:false, error: body?.error?.message || body?.message || 'Cal.com error', detail: body };
   }
   const b = body?.data || body;
-  return { ok:true, uid: b?.uid || b?.id || 'unknown' };
+  const uid = b?.uid || b?.id || 'unknown';
+
+  // Cal.com creates bookings as 'pending' when there's a price on the event
+  // (Coach set one). We handle payment via Stripe separately, so we
+  // auto-confirm here so the booking shows on Coach's calendar immediately.
+  if(uid && uid !== 'unknown' && (b?.status === 'pending' || !b?.status)){
+    try {
+      await fetch(`https://api.cal.com/v2/bookings/${encodeURIComponent(uid)}/confirm`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${env.CAL_COM_API_KEY}`, 'cal-api-version': '2024-08-13', 'Content-Type': 'application/json' },
+        body: JSON.stringify({})
+      });
+    } catch(_){ /* best-effort — booking still exists even if confirm fails */ }
+  }
+  return { ok:true, uid };
 }
 
 // Claim handler — verifies Stripe payment and books appropriate Cal.com slots
@@ -1314,6 +1328,15 @@ async function handleClaimSingleBooking(request, env){
   const calBooking = calBody?.data || calBody;
   const calUid = calBooking?.uid || calBooking?.id || 'unknown';
 
+  // Auto-confirm pending bookings (Cal.com sets pending when event has a price)
+  if(calUid && calUid !== 'unknown' && (calBooking?.status === 'pending' || !calBooking?.status)){
+    try {
+      await fetch(`https://api.cal.com/v2/bookings/${encodeURIComponent(calUid)}/confirm`, {
+        method:'POST', headers:{ 'Authorization':`Bearer ${env.CAL_COM_API_KEY}`, 'cal-api-version':'2024-08-13', 'Content-Type':'application/json' }, body: JSON.stringify({})
+      });
+    } catch(_){}
+  }
+
   user.bookings = (user.bookings||[]).concat([{
     calBookingUid: calUid,
     startTime: slotStart,
@@ -1462,6 +1485,15 @@ async function handleBookSession(request, env){
   }
   const calBooking = r.body?.data || r.body;
   const calUid = calBooking?.uid || calBooking?.id || 'unknown';
+
+  // Auto-confirm pending bookings
+  if(calUid && calUid !== 'unknown' && (calBooking?.status === 'pending' || !calBooking?.status)){
+    try {
+      await fetch(`https://api.cal.com/v2/bookings/${encodeURIComponent(calUid)}/confirm`, {
+        method:'POST', headers:{ 'Authorization':`Bearer ${env.CAL_COM_API_KEY}`, 'cal-api-version':'2024-08-13', 'Content-Type':'application/json' }, body: JSON.stringify({})
+      });
+    } catch(_){}
+  }
 
   // Decrement the lot, record the booking
   const lots = user.credits;
