@@ -931,6 +931,49 @@ async function handleClaimProgramBooking(request, env){
     return jsonResponse({ claimed:true, preorder:true, program: programKey, message:'Spot reserved. Program starts in October.' });
   }
 
+  // One-time N-pack that auto-books N consecutive weekly slots (Monday 4-Pack)
+  if(cfg.stripeMode === 'payment' && cfg.autoBookCount && cfg.autoBookWeeklyOn !== undefined && slotStart){
+    const start = new Date(slotStart);
+    const weekday = cfg.autoBookWeeklyOn;
+    const timeOfDay = slotStart.slice(11,19);
+    const tz = '-04:00';
+    const dates = [];
+    const cursor = new Date(start);
+    while(dates.length < cfg.autoBookCount){
+      if(cursor.getUTCDay() === weekday){
+        dates.push(new Date(cursor));
+        cursor.setUTCDate(cursor.getUTCDate() + 7);
+      } else {
+        cursor.setUTCDate(cursor.getUTCDate() + 1);
+      }
+    }
+    const created = [];
+    const errors = [];
+    for(const d of dates){
+      const iso = `${d.toISOString().slice(0,10)}T${timeOfDay}.000${tz}`;
+      const dup = (user.bookings||[]).find(b => b.startTime === iso && b.stripeRef === stripeRef);
+      if(dup) continue;
+      const res = await createCalBookingForUser(env, user, cfg.calEventId, iso, {
+        ti_program: programKey, ti_stripe_ref: stripeRef
+      });
+      if(res.ok){
+        created.push({ calBookingUid: res.uid, startTime: iso, bookedAt: Date.now(),
+                       status:'accepted', stripeRef, source: programKey });
+      } else {
+        errors.push({ iso, error: res.error });
+      }
+    }
+    user.bookings = (user.bookings||[]).concat(created);
+    await env.USERS_KV.put(user.email, JSON.stringify(user));
+    try {
+      await sendCoachAlert(env, 'program_subscription', {
+        user, programKey, programLabel: cfg.label, bookingsCreated: created.length
+      });
+    } catch(_){}
+    return jsonResponse({ claimed:true, program:programKey, bookingsCreated: created.length,
+                          errors: errors.length ? errors : undefined });
+  }
+
   // Subscription with weekly auto-book (Monday Monthly)
   if(cfg.stripeMode === 'subscription' && cfg.autoBookWeeklyOn !== undefined){
     // Period from now (or picked start) → end of current billing cycle (~30 days)
