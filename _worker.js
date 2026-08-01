@@ -2713,117 +2713,240 @@ async function sendCoachAlert(env, kind, opts){
   const athleteName = user.athleteName || '';
   const athleteDob  = user.athleteDob  || '';
   const level       = user.level       || '';
+  const notes       = user.notes       || opts.notes || '';
 
-  // Per-kind subject + headline + extra rows
+  // Formatting helpers
+  const fmtSlot = iso => {
+    if(!iso) return '—';
+    try {
+      const d = new Date(iso);
+      const dateStr = d.toLocaleString('en-CA', {
+        timeZone:'America/Toronto', weekday:'long',
+        month:'long', day:'numeric', year:'numeric'
+      });
+      const timeStr = d.toLocaleString('en-US', {
+        timeZone:'America/Toronto', hour:'numeric', minute:'2-digit'
+      });
+      return `${dateStr} at ${timeStr} ET`;
+    } catch(_){ return String(iso); }
+  };
+  const fmtDob = dob => {
+    if(!dob) return '';
+    try {
+      const d = new Date(dob);
+      const age = Math.floor((Date.now() - d.getTime()) / (365.25*24*60*60*1000));
+      return `${dob} (age ~${age})`;
+    } catch(_){ return dob; }
+  };
+  const adminLink = parentEmail
+    ? `https://tibaseball.com/admin?email=${encodeURIComponent(parentEmail)}`
+    : `https://tibaseball.com/admin`;
+  const calDashLink = opts.calBookingUid
+    ? `https://app.cal.com/bookings/upcoming`
+    : null;
+
+  // Per-kind subject + headline + extra rows + optional action panel
   let subject = 'TI Baseball — Activity';
   let badge = 'EVENT';
   let badgeColor = '#1FBFC4';
   let headline = 'Account activity';
   let lede = '';
   let extraRows = [];
+  let actionPanel = '';
+  let ccSteve = false;
 
   if(kind === 'signup'){
     subject = `New Account — ${parentName}`;
-    badge = 'NEW ACCOUNT';
-    badgeColor = '#1FBFC4';
+    badge = 'NEW ACCOUNT'; badgeColor = '#1FBFC4';
     headline = 'New Account Created';
-    lede = `${esc(parentName)} just created an account. No purchase or booking yet — Coach can reach out to introduce TI Baseball.`;
-  } else if(kind === 'session_purchase'){
-    subject = `New Session Pack — ${parentName} (${opts.packSize||'?'} sessions)`;
-    badge = 'SESSION PACK PURCHASED';
-    badgeColor = '#1FBFC4';
+    lede = `${esc(parentName)} just created a TI Baseball account. No purchase or booking yet — a friendly intro reach-out is a nice touch.`;
+    ccSteve = true;
+  }
+  else if(kind === 'session_purchase'){
+    subject = `Session Pack Purchased — ${parentName} (${opts.packSize||'?'} sessions)`;
+    badge = 'SESSION PACK PURCHASED'; badgeColor = '#1FBFC4';
     headline = 'Session Pack Purchased';
     lede = `${esc(parentName)} just bought a session pack.`;
     extraRows = [
-      ['Pack size',     `<strong>${opts.packSize||'?'} sessions</strong>`],
-      ['Mode',          opts.mode === 'monthly' ? 'Monthly recurring' : 'One-time'],
-      ['Expires',       opts.expiresAt ? new Date(opts.expiresAt).toLocaleDateString('en-CA',{month:'short',day:'numeric',year:'numeric'}) : '—']
+      ['Pack size',    `<strong>${opts.packSize||'?'} sessions</strong>`],
+      ['Program',      esc(opts.programLabel || (opts.mode === 'monthly' ? '1-on-1 Monthly' : '1-on-1'))],
+      ['Mode',         opts.mode === 'monthly' ? 'Monthly recurring' : 'One-time'],
+      ['Expires',      opts.expiresAt ? fmtSlot(opts.expiresAt).split(' at ')[0] : '—']
     ];
-  } else if(kind === 'single_session_booked'){
-    const start = opts.slotStart ? new Date(opts.slotStart).toLocaleString('en-CA',{timeZone:'America/Toronto', weekday:'short', month:'short', day:'numeric', hour:'numeric', minute:'2-digit'}) : '—';
-    subject = `1-on-1 Booked — ${athleteName||parentName} (${start})`;
-    badge = 'SINGLE SESSION BOOKED';
-    badgeColor = '#EC2C8A';
-    headline = 'Single 1-on-1 Session Booked';
-    lede = `${esc(athleteName||parentName)} just paid for and booked a single 1-on-1 session.`;
+  }
+  else if(kind === 'single_session_booked'){
+    subject = `1-on-1 Booked — ${athleteName||parentName} — ${fmtSlot(opts.slotStart).split(' at ')[0]}`;
+    badge = 'SINGLE SESSION BOOKED'; badgeColor = '#EC2C8A';
+    headline = 'Single 1-on-1 Session Booked & Paid';
+    lede = `<strong>${esc(athleteName||parentName)}</strong> just paid for and booked a single 1-on-1 session.`;
     extraRows = [
-      ['Slot',           `<strong>${start} ET</strong>`],
-      ['Cal.com UID',    opts.calBookingUid ? esc(opts.calBookingUid) : '—']
+      ['When',           `<strong>${fmtSlot(opts.slotStart)}</strong>`],
+      ['Where',          'B360 · 274 MacKenzie Ave, Suite 450, Ajax ON'],
+      ['Cal.com UID',    opts.calBookingUid ? esc(opts.calBookingUid) : '—'],
+      ['Amount paid',    opts.amountPaid ? '$' + (opts.amountPaid/100).toFixed(2) : '—']
     ];
-  } else if(kind === 'credit_booked'){
-    const start = opts.slotStart ? new Date(opts.slotStart).toLocaleString('en-CA',{timeZone:'America/Toronto', weekday:'short', month:'short', day:'numeric', hour:'numeric', minute:'2-digit'}) : '—';
-    subject = `Session Booked — ${athleteName||parentName} (${start})`;
-    badge = 'SESSION BOOKED';
-    badgeColor = '#EC2C8A';
-    headline = 'Session Credit Used';
-    lede = `${esc(athleteName||parentName)} used an existing credit to book a 1-on-1 session.`;
+  }
+  else if(kind === 'credit_booked'){
+    subject = `${opts.programLabel||'Session'} Booked — ${athleteName||parentName} — ${fmtSlot(opts.slotStart).split(' at ')[0]}`;
+    badge = 'SESSION BOOKED'; badgeColor = '#EC2C8A';
+    headline = 'Session Credit Redeemed';
+    lede = `<strong>${esc(athleteName||parentName)}</strong> used an existing credit to book <strong>${esc(opts.programLabel||'a 1-on-1 session')}</strong>.`;
     extraRows = [
-      ['Slot',           `<strong>${start} ET</strong>`],
+      ['When',           `<strong>${fmtSlot(opts.slotStart)}</strong>`],
+      ['Where',          'B360 · 274 MacKenzie Ave, Suite 450, Ajax ON'],
       ['Credits left',   String(opts.creditsLeft ?? '?')],
       ['Cal.com UID',    opts.calBookingUid ? esc(opts.calBookingUid) : '—']
     ];
-  } else if(kind === 'program_subscription'){
-    subject = `${opts.programLabel||'Program'} Subscription — ${parentName}`;
-    badge = 'SUBSCRIPTION STARTED';
-    badgeColor = '#1FBFC4';
+  }
+  else if(kind === 'program_subscription'){
+    subject = `${opts.programLabel||'Program'} Subscription — ${parentName} (${opts.bookingsCreated ?? 0} sessions auto-booked)`;
+    badge = 'SUBSCRIPTION STARTED'; badgeColor = '#1FBFC4';
     headline = 'Program Subscription Started';
-    lede = `${esc(parentName)} just subscribed to <strong>${esc(opts.programLabel||opts.programKey||'a program')}</strong>.`;
+    lede = `${esc(parentName)} just subscribed to <strong>${esc(opts.programLabel||opts.programKey||'a program')}</strong>. Sessions were auto-booked on Cal.com.`;
     extraRows = [
       ['Program',        esc(opts.programLabel||opts.programKey||'')],
-      ['Bookings created', String(opts.bookingsCreated ?? 0)]
+      ['Sessions booked', `<strong>${opts.bookingsCreated ?? 0}</strong> this billing cycle`],
+      ['Where',          'B360 · 274 MacKenzie Ave, Suite 450, Ajax ON']
     ];
-  } else if(kind === 'program_preorder'){
+  }
+  else if(kind === 'program_preorder'){
     subject = `${opts.programLabel||'Program'} Pre-Order — ${parentName}`;
-    badge = 'PRE-ORDER';
-    badgeColor = '#EC2C8A';
+    badge = 'PRE-ORDER RESERVED'; badgeColor = '#EC2C8A';
     headline = 'Program Pre-Order';
-    lede = `${esc(parentName)} just pre-ordered <strong>${esc(opts.programLabel||opts.programKey||'a program')}</strong>.`;
-    extraRows = [
-      ['Program',        esc(opts.programLabel||opts.programKey||'')]
-    ];
-  } else if(kind === 'program_single'){
-    const start = opts.slotStart ? new Date(opts.slotStart).toLocaleString('en-CA',{timeZone:'America/Toronto', weekday:'short', month:'short', day:'numeric', hour:'numeric', minute:'2-digit'}) : '—';
-    subject = `${opts.programLabel||'Program'} Booked — ${athleteName||parentName} (${start})`;
-    badge = 'PROGRAM BOOKED';
-    badgeColor = '#EC2C8A';
-    headline = 'Program Slot Booked';
-    lede = `${esc(athleteName||parentName)} booked a slot in <strong>${esc(opts.programLabel||opts.programKey||'a program')}</strong>.`;
+    lede = `${esc(parentName)} just reserved a spot in <strong>${esc(opts.programLabel||opts.programKey||'a program')}</strong>. Program starts in the future — reach out with schedule closer to start date.`;
     extraRows = [
       ['Program',        esc(opts.programLabel||opts.programKey||'')],
-      ['Slot',           `<strong>${start} ET</strong>`],
+      ['Athlete',        esc(athleteName||'—')]
+    ];
+  }
+  else if(kind === 'program_single'){
+    subject = `${opts.programLabel||'Program'} Booked — ${athleteName||parentName} — ${fmtSlot(opts.slotStart).split(' at ')[0]}`;
+    badge = 'PROGRAM SESSION BOOKED'; badgeColor = '#EC2C8A';
+    headline = `${opts.programLabel||'Program'} — Slot Booked`;
+    lede = `<strong>${esc(athleteName||parentName)}</strong> booked a slot in <strong>${esc(opts.programLabel||opts.programKey||'a program')}</strong>.`;
+    extraRows = [
+      ['Program',        esc(opts.programLabel||opts.programKey||'')],
+      ['When',           `<strong>${fmtSlot(opts.slotStart)}</strong>`],
+      ['Where',          'B360 · 274 MacKenzie Ave, Suite 450, Ajax ON'],
       ['Cal.com UID',    opts.calBookingUid ? esc(opts.calBookingUid) : '—']
     ];
+    if(opts.groupSize) extraRows.push(['Group size', `${opts.groupSize} people`]);
+    if(opts.playerNames) extraRows.push(['Attendees', esc(opts.playerNames)]);
+  }
+  else if(kind === 'booking_failed_after_payment'){
+    // URGENT — parent paid, Cal.com booking did not go through.
+    subject = `⚠️ ACTION NEEDED — Booking failed after payment — ${athleteName||parentName} (${fmtSlot(opts.slotStart).split(' at ')[0]})`;
+    badge = '⚠ ACTION NEEDED'; badgeColor = '#D9245B';
+    headline = 'Booking Failed After Payment';
+    lede = `<strong>${esc(parentName)}</strong> completed payment for <strong>${esc(opts.programLabel||opts.programKey||'a program')}</strong> but Cal.com did NOT accept the booking. The parent thinks they are booked. <strong>Please book them manually or refund + contact them within 24 hours.</strong>`;
+    extraRows = [
+      ['Program',        esc(opts.programLabel||opts.programKey||'')],
+      ['Requested slot', `<strong>${fmtSlot(opts.slotStart)}</strong>`],
+      ['Where',          'B360 · 274 MacKenzie Ave, Suite 450, Ajax ON'],
+      ['Cal.com error',  opts.calError ? `<code style="background:#fee; padding:2px 6px; border-radius:3px; color:#800; font-size:.85em;">${esc(String(opts.calError).slice(0,300))}</code>` : '—']
+    ];
+    actionPanel = `
+      <div style="background:#FEE7EE; border:2px solid #D9245B; border-radius:8px; padding:16px; margin-top:20px;">
+        <div style="font-family:Anton,Arial,sans-serif; color:#D9245B; letter-spacing:.05em; margin-bottom:8px;">NEXT STEPS</div>
+        <ol style="margin:0; padding-left:20px; color:#333; line-height:1.6;">
+          <li>Open Cal.com and manually create a booking at the requested slot.</li>
+          <li>Reply to this email to confirm with ${esc(parentName)} (${esc(parentEmail)}).</li>
+          <li>Or, if you can't accommodate: <a href="https://dashboard.stripe.com/search?query=${encodeURIComponent(parentEmail)}" style="color:#D9245B;">refund via Stripe</a> and let them know.</li>
+        </ol>
+      </div>`;
+    ccSteve = true;
+  }
+  else if(kind === 'beginners_reservation'){
+    subject = `Beginners Reservation — ${parentName} (${athleteName||'?'})`;
+    badge = 'BEGINNERS RESERVATION'; badgeColor = '#1FBFC4';
+    headline = 'Beginners Program Reservation';
+    lede = `${esc(parentName)} reserved a spot for <strong>${esc(athleteName||'their athlete')}</strong> in the Introduction to Baseball program.`;
+    extraRows = [
+      ['Athlete age',    opts.ageGroup ? esc(opts.ageGroup) : '—'],
+      ['Notes',          notes ? esc(notes) : '(none)']
+    ];
+    ccSteve = true;
+  }
+  else if(kind === 'academy_register'){
+    subject = `Academy Registration — ${parentName} (${athleteName||'?'})`;
+    badge = 'ACADEMY REGISTRATION'; badgeColor = '#1FBFC4';
+    headline = 'Winter Academy Registration';
+    lede = `${esc(parentName)} registered <strong>${esc(athleteName||'their athlete')}</strong> for the TI Baseball Academy.`;
+    extraRows = [
+      ['Notes',          notes ? esc(notes) : '(none)']
+    ];
+    ccSteve = true;
+  }
+  else if(kind === 'camp_registration'){
+    subject = `Camp Registration — ${athleteName||parentName} (${opts.campLabel||'?'})`;
+    badge = 'CAMP REGISTRATION'; badgeColor = '#1FBFC4';
+    headline = 'Camp Registration Form Submitted';
+    lede = `${esc(parentName)} registered <strong>${esc(athleteName||'their athlete')}</strong> for <strong>${esc(opts.campLabel||'a camp')}</strong>.`;
+    extraRows = [
+      ['Camp',           esc(opts.campLabel||'')],
+      ['Payment',        opts.paid ? 'Paid ✓' : 'Awaiting payment'],
+      ['T-shirt size',   opts.shirt ? esc(opts.shirt) : '—'],
+      ['Position',       opts.position ? esc(opts.position) : '—']
+    ];
+  }
+  else if(kind === 'camp_paid'){
+    subject = `Camp Paid — ${athleteName||parentName} (${opts.campLabel||'?'})`;
+    badge = 'CAMP PAID'; badgeColor = '#1FBFC4';
+    headline = 'Camp Payment Confirmed';
+    lede = `${esc(parentName)} paid for <strong>${esc(athleteName||'their athlete')}</strong>\'s spot in <strong>${esc(opts.campLabel||'a camp')}</strong>.`;
+    extraRows = [
+      ['Camp',           esc(opts.campLabel||'')],
+      ['Amount paid',    opts.amountPaid ? '$' + (opts.amountPaid/100).toFixed(2) : '—']
+    ];
+  }
+  else {
+    // Fallback for unhandled kinds — still include parent + athlete details
+    subject = `TI Baseball — ${kind} (${parentName})`;
+    badge = String(kind || 'EVENT').toUpperCase().replace(/_/g,' ');
+    headline = `${badge}`;
+    lede = `Automated alert (kind: <code>${esc(kind)}</code>). Full details below.`;
+    extraRows = Object.keys(opts).filter(k => k !== 'user').map(k => [k, esc(JSON.stringify(opts[k]).slice(0,200))]);
+    ccSteve = true;
   }
 
   const standardRows = [
-    ['Parent',  esc(parentName)],
-    ['Email',   `<a href="mailto:${esc(parentEmail)}" style="color:#1FBFC4;">${esc(parentEmail)}</a>`],
-    parentPhone && ['Phone',  `<a href="tel:${esc(parentPhone)}" style="color:#1FBFC4;">${esc(parentPhone)}</a>`],
-    athleteName && ['Athlete', esc(athleteName) + (athleteDob ? ' &middot; DOB ' + esc(athleteDob) : '')],
-    level && ['Level', esc(level)]
+    ['Parent',  `<strong>${esc(parentName)}</strong>`],
+    ['Email',   parentEmail ? `<a href="mailto:${esc(parentEmail)}" style="color:#1FBFC4;">${esc(parentEmail)}</a>` : '(none)'],
+    parentPhone && ['Phone', `<a href="tel:${esc(parentPhone)}" style="color:#1FBFC4;">${esc(parentPhone)}</a>`],
+    athleteName && ['Athlete', esc(athleteName) + (athleteDob ? ' · ' + fmtDob(athleteDob) : '')],
+    level && ['Level of play', esc(level)]
   ].filter(Boolean);
 
   const allRows = standardRows.concat(extraRows);
   const tableRows = allRows.map(r =>
-    `<tr><td style="padding:8px 0; color:#888; width:150px; vertical-align:top;">${r[0]}</td><td style="padding:8px 0; vertical-align:top;">${r[1]}</td></tr>`
+    `<tr><td style="padding:8px 12px 8px 0; color:#666; width:140px; vertical-align:top; font-size:.9em;">${r[0]}</td><td style="padding:8px 0; vertical-align:top; color:#111;">${r[1]}</td></tr>`
   ).join('');
 
   const html = `
-    <div style="font-family: Inter, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; background: #f7f7f7;">
+    <div style="font-family: Inter, Arial, sans-serif; max-width: 640px; margin: 0 auto; padding: 24px; background: #f7f7f7;">
       <div style="background: #fff; border-radius: 12px; padding: 32px; border: 1px solid #eee;">
         <div style="margin-bottom: 20px;">
           <span style="display:inline-block; background:#010101; color:#fff; padding:6px 12px; border-radius:6px; font-weight:700; letter-spacing:.04em; font-size:.85rem;">TI BASEBALL</span>
           <span style="display:inline-block; background:${badgeColor}; color:#fff; padding:6px 12px; border-radius:6px; font-weight:700; letter-spacing:.04em; font-size:.85rem; margin-left:6px;">${badge}</span>
         </div>
-        <h2 style="margin: 0 0 12px; font-family: Anton, Arial, sans-serif; letter-spacing: .02em;">${headline}</h2>
+        <h2 style="margin: 0 0 12px; font-family: Anton, Arial, sans-serif; letter-spacing: .02em; color:#111;">${headline}</h2>
         <p style="color: #333; line-height: 1.55;">${lede}</p>
         <table style="width:100%; border-collapse:collapse; margin-top:14px;">${tableRows}</table>
-        <p style="color: #666; font-size: .9rem; margin-top: 24px;">Full details in the <a href="https://tibaseball.com/admin" style="color:#1FBFC4;">admin panel</a>.</p>
+        ${actionPanel}
+        <p style="color: #666; font-size: .9rem; margin-top: 24px;">
+          <a href="${adminLink}" style="color:#1FBFC4; font-weight:600;">Open this user in admin →</a>
+          ${calDashLink ? `<span style="color:#ccc; margin:0 8px;">|</span><a href="${calDashLink}" style="color:#1FBFC4; font-weight:600;">Cal.com bookings →</a>` : ''}
+        </p>
         <hr style="border:none; border-top:1px solid #eee; margin: 24px 0;">
-        <p style="color: #888; font-size: .8rem;">TI Baseball &middot; Ajax, Ontario &middot; tibaseball.com</p>
+        <p style="color: #888; font-size: .8rem;">TI Baseball · Ajax, Ontario · tibaseball.com · Reply to this email to reach ${esc(parentName)} directly.</p>
       </div>
     </div>
   `;
+
+  const ccList = ccSteve
+    ? ['steve.r.hyland@gmail.com','christopherscotthastings@gmail.com']
+    : undefined;
+
   try {
     const r = await fetch('https://api.resend.com/emails', {
       method:'POST',
@@ -2831,8 +2954,7 @@ async function sendCoachAlert(env, kind, opts){
       body: JSON.stringify({
         from: 'TI Baseball <noreply@tibaseball.com>',
         to: ['crosbyathletics321@gmail.com'],
-        // CC Steve on high-priority action-needed alerts so we never depend on Coach's inbox alone
-        cc: (kind === 'booking_failed_after_payment') ? ['steve.r.hyland@gmail.com','christopherscotthastings@gmail.com'] : undefined,
+        cc: ccList,
         reply_to: parentEmail || undefined,
         subject,
         html
