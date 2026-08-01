@@ -1795,10 +1795,22 @@ async function handleMondayReconcile(request, env){
     }
 
     // Idempotency: has this stripeRef already been recorded?
-    const gotBooking = (user.bookings||[]).some(b => b.stripeRef === stripeRef);
+    const matchingBookings = (user.bookings||[]).filter(b => b.stripeRef === stripeRef);
     const gotCredit = (user.credits||[]).some(c => c.stripeId === stripeRef);
-    if(gotBooking || gotCredit){
-      findings.push({ email, programKey, slot, issue:'OK_ALREADY_RECORDED' });
+    if(matchingBookings.length){
+      const b = matchingBookings[0];
+      const info = {
+        email, programKey, slot,
+        status: b.status || 'accepted',
+        calBookingUid: b.calBookingUid,
+        calError: b.calError,
+        issue: b.status === 'needs_manual_booking' ? 'NEEDS_MANUAL_BOOKING' : 'OK_ALREADY_BOOKED'
+      };
+      findings.push(info);
+      continue;
+    }
+    if(gotCredit){
+      findings.push({ email, programKey, issue:'OK_CREDIT_GRANTED' });
       continue;
     }
 
