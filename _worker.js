@@ -2002,6 +2002,68 @@ async function handleMondayRosterAlert(request, env){
   });
 }
 
+async function handleCalDiag(request, env){
+  // Diagnostic: fetch Cal.com bookings via API for a date range,
+  // and return their raw status + attendees. Helps debug "not on calendar" issues.
+  const gate = await requireAdmin(request, env);
+  if(gate.error) return gate.error;
+
+  const url = new URL(request.url);
+  const days = Math.min(30, Math.max(1, parseInt(url.searchParams.get('days')||'7',10)));
+  const afterISO = new Date(Date.now() - 1*24*60*60*1000).toISOString();
+  const beforeISO = new Date(Date.now() + days*24*60*60*1000).toISOString();
+
+  const out = { calApiKey: env.CAL_COM_API_KEY ? ('SET (last 6: ' + env.CAL_COM_API_KEY.slice(-6) + ')') : 'MISSING' };
+
+  // Fetch upcoming bookings via v2 API
+  const attempts = [
+    { path: '/v2/bookings', version: '2024-08-13', params: { afterStart: afterISO, beforeStart: beforeISO, take: '100' } },
+    { path: '/v2/bookings', version: '2024-08-13', params: { status: 'accepted,pending', take: '100' } },
+    { path: '/v1/bookings', version: '2024-08-13', params: { apiKey: env.CAL_COM_API_KEY } }
+  ];
+
+  for(const a of attempts){
+    const ps = new URLSearchParams(a.params);
+    const headers = { 'cal-api-version': a.version, 'Content-Type':'application/json' };
+    if(a.path !== '/v1/bookings') headers['Authorization'] = `Bearer ${env.CAL_COM_API_KEY}`;
+    try {
+      const r = await fetch(`https://api.cal.com${a.path}?${ps.toString()}`, { headers });
+      const j = await r.json().catch(function(){ return {}; });
+      out[a.path + '@' + a.version + '?' + Object.keys(a.params).join(',')] = {
+        httpStatus: r.status,
+        ok: r.ok,
+        error: j?.error?.message || j?.message,
+        totalReturned: Array.isArray(j?.data) ? j.data.length : (Array.isArray(j) ? j.length : (j?.bookings?.length || null)),
+        sample: (Array.isArray(j?.data) ? j.data : (Array.isArray(j) ? j : (j?.bookings||[]))).slice(0,10).map(function(b){
+          return {
+            id: b.id, uid: b.uid,
+            title: b.title, status: b.status,
+            start: b.start || b.startTime,
+            end: b.end || b.endTime,
+            eventTypeId: b.eventTypeId || b.eventType?.id,
+            attendees: (b.attendees||[]).map(function(a){ return { name: a.name, email: a.email }; }),
+            metadata: b.metadata
+          };
+        })
+      };
+    } catch(e){
+      out[a.path] = { fetchError: String(e) };
+    }
+  }
+
+  // Also check /me on Cal.com to verify which account this key belongs to
+  try {
+    const r = await fetch('https://api.cal.com/v2/me', {
+      headers: { 'Authorization': `Bearer ${env.CAL_COM_API_KEY}`, 'cal-api-version': '2024-08-13' }
+    });
+    const j = await r.json().catch(function(){ return {}; });
+    out.calAccount = { ok: r.ok, httpStatus: r.status, data: j?.data || j };
+  } catch(e){ out.calAccount = { fetchError: String(e) }; }
+
+  return jsonResponse(out);
+}
+
+
 
 
 
@@ -3776,6 +3838,7 @@ export default {
     if(p==='/api/book-monday-credit') return handleBookMondayCredit(request,env);
     if(p==='/api/admin/monday-reconcile') return handleMondayReconcile(request,env);
     if(p==='/api/admin/monday-roster-alert') return handleMondayRosterAlert(request,env);
+    if(p==='/api/admin/cal-diag') return handleCalDiag(request,env);
     if(p==='/api/my-bookings') return handleMyBookings(request,env);
     if(p==='/api/public-slots') return handlePublicSlots(request,env);
     if(p==='/api/program-config') return handleProgramConfig(request,env);
