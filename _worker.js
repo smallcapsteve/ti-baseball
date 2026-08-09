@@ -2291,13 +2291,26 @@ async function handleBookingsIcs(request, env){
   const list = Array.isArray(j?.data) ? j.data : [];
 
   const pad = n => String(n).padStart(2,'0');
-  const fmt = iso => {
+  // For DTSTAMP (mandatory) — always UTC
+  const fmtUtc = iso => {
     const d = new Date(iso);
     return d.getUTCFullYear()+pad(d.getUTCMonth()+1)+pad(d.getUTCDate())+'T'
       +pad(d.getUTCHours())+pad(d.getUTCMinutes())+pad(d.getUTCSeconds())+'Z';
   };
+  // For DTSTART/DTEND — convert to America/Toronto WALL time (no Z suffix)
+  // and pair with TZID=America/Toronto in the property.
+  const fmtLocalToronto = iso => {
+    const d = new Date(iso);
+    const parts = new Intl.DateTimeFormat('en-CA', {
+      timeZone:'America/Toronto', hour12:false,
+      year:'numeric', month:'2-digit', day:'2-digit',
+      hour:'2-digit', minute:'2-digit', second:'2-digit'
+    }).formatToParts(d).reduce(function(o,p){ o[p.type]=p.value; return o; }, {});
+    return parts.year+parts.month+parts.day+'T'+parts.hour+parts.minute+parts.second;
+  };
+  const fmt = fmtUtc; // legacy alias for DTSTAMP
   const esc = s => String(s||'').replace(/([,;\\])/g, '\\$1').replace(/\n/g, '\\n');
-  const dtstamp = fmt(new Date().toISOString());
+  const dtstamp = fmtUtc(new Date().toISOString());
 
   const lines = [
     'BEGIN:VCALENDAR',
@@ -2306,7 +2319,26 @@ async function handleBookingsIcs(request, env){
     'CALSCALE:GREGORIAN',
     'METHOD:PUBLISH',
     'X-WR-CALNAME:TI Baseball — Coach Schedule',
-    'X-WR-TIMEZONE:America/Toronto'
+    'X-WR-TIMEZONE:America/Toronto',
+    // VTIMEZONE for America/Toronto — makes events render in Eastern regardless of client TZ setting
+    'BEGIN:VTIMEZONE',
+    'TZID:America/Toronto',
+    'X-LIC-LOCATION:America/Toronto',
+    'BEGIN:STANDARD',
+    'DTSTART:19701101T020000',
+    'TZOFFSETFROM:-0400',
+    'TZOFFSETTO:-0500',
+    'TZNAME:EST',
+    'RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU',
+    'END:STANDARD',
+    'BEGIN:DAYLIGHT',
+    'DTSTART:19700308T020000',
+    'TZOFFSETFROM:-0500',
+    'TZOFFSETTO:-0400',
+    'TZNAME:EDT',
+    'RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU',
+    'END:DAYLIGHT',
+    'END:VTIMEZONE'
   ];
 
   let count = 0;
@@ -2326,8 +2358,8 @@ async function handleBookingsIcs(request, env){
     lines.push('BEGIN:VEVENT');
     lines.push('UID:' + (b.uid || b.id || 'ti-'+count) + '@tibaseball.com');
     lines.push('DTSTAMP:' + dtstamp);
-    lines.push('DTSTART:' + fmt(start));
-    lines.push('DTEND:' + fmt(end));
+    lines.push('DTSTART;TZID=America/Toronto:' + fmtLocalToronto(start));
+    lines.push('DTEND;TZID=America/Toronto:' + fmtLocalToronto(end));
     lines.push('SUMMARY:' + esc(title));
     if(desc) lines.push('DESCRIPTION:' + esc(desc));
     lines.push('LOCATION:B360 · 274 MacKenzie Ave, Suite 450, Ajax ON');
@@ -2379,13 +2411,26 @@ async function handleScheduleIcs(request, env, providedToken){
   const list = Array.isArray(j?.data) ? j.data : [];
 
   const pad = n => String(n).padStart(2,'0');
-  const fmt = iso => {
+  // For DTSTAMP (mandatory) — always UTC
+  const fmtUtc = iso => {
     const d = new Date(iso);
     return d.getUTCFullYear()+pad(d.getUTCMonth()+1)+pad(d.getUTCDate())+'T'
       +pad(d.getUTCHours())+pad(d.getUTCMinutes())+pad(d.getUTCSeconds())+'Z';
   };
+  // For DTSTART/DTEND — convert to America/Toronto WALL time (no Z suffix)
+  // and pair with TZID=America/Toronto in the property.
+  const fmtLocalToronto = iso => {
+    const d = new Date(iso);
+    const parts = new Intl.DateTimeFormat('en-CA', {
+      timeZone:'America/Toronto', hour12:false,
+      year:'numeric', month:'2-digit', day:'2-digit',
+      hour:'2-digit', minute:'2-digit', second:'2-digit'
+    }).formatToParts(d).reduce(function(o,p){ o[p.type]=p.value; return o; }, {});
+    return parts.year+parts.month+parts.day+'T'+parts.hour+parts.minute+parts.second;
+  };
+  const fmt = fmtUtc; // legacy alias for DTSTAMP
   const esc = s => String(s||'').replace(/([,;\\])/g, '\\$1').replace(/\n/g, '\\n');
-  const dtstamp = fmt(new Date().toISOString());
+  const dtstamp = fmtUtc(new Date().toISOString());
 
   const lines = [
     'BEGIN:VCALENDAR',
@@ -2396,7 +2441,25 @@ async function handleScheduleIcs(request, env, providedToken){
     'X-WR-CALNAME:TI Baseball — Coach Schedule',
     'X-WR-TIMEZONE:America/Toronto',
     'X-PUBLISHED-TTL:PT1H',
-    'REFRESH-INTERVAL;VALUE=DURATION:PT1H'
+    'REFRESH-INTERVAL;VALUE=DURATION:PT1H',
+    'BEGIN:VTIMEZONE',
+    'TZID:America/Toronto',
+    'X-LIC-LOCATION:America/Toronto',
+    'BEGIN:STANDARD',
+    'DTSTART:19701101T020000',
+    'TZOFFSETFROM:-0400',
+    'TZOFFSETTO:-0500',
+    'TZNAME:EST',
+    'RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU',
+    'END:STANDARD',
+    'BEGIN:DAYLIGHT',
+    'DTSTART:19700308T020000',
+    'TZOFFSETFROM:-0500',
+    'TZOFFSETTO:-0400',
+    'TZNAME:EDT',
+    'RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU',
+    'END:DAYLIGHT',
+    'END:VTIMEZONE'
   ];
 
   let count = 0;
@@ -2416,8 +2479,8 @@ async function handleScheduleIcs(request, env, providedToken){
     lines.push('BEGIN:VEVENT');
     lines.push('UID:' + (b.uid || b.id || 'ti-'+count) + '@tibaseball.com');
     lines.push('DTSTAMP:' + dtstamp);
-    lines.push('DTSTART:' + fmt(start));
-    lines.push('DTEND:' + fmt(end));
+    lines.push('DTSTART;TZID=America/Toronto:' + fmtLocalToronto(start));
+    lines.push('DTEND;TZID=America/Toronto:' + fmtLocalToronto(end));
     lines.push('SUMMARY:' + esc(title));
     if(desc) lines.push('DESCRIPTION:' + esc(desc));
     lines.push('LOCATION:B360 · 274 MacKenzie Ave, Suite 450, Ajax ON');
