@@ -2379,6 +2379,51 @@ async function handleBookingsIcs(request, env){
   });
 }
 
+async function handleIcsPreview(request, env){
+  // Returns the current .ics content as text/plain wrapped in JSON,
+  // plus a per-event summary — for diagnosing "why isn't X showing".
+  const gate = await requireAdmin(request, env);
+  if(gate.error) return gate.error;
+
+  const before = new Date(Date.now() + 90*24*60*60*1000);
+  const q = new URLSearchParams({
+    afterStart: new Date(Date.now() - 24*60*60*1000).toISOString(),
+    beforeStart: before.toISOString(),
+    take: '250'
+  });
+  const r = await fetch(`https://api.cal.com/v2/bookings?${q.toString()}`, {
+    headers: { 'Authorization': `Bearer ${env.CAL_COM_API_KEY}`, 'cal-api-version':'2024-08-13' }
+  });
+  const j = await r.json().catch(function(){ return {}; });
+  const list = Array.isArray(j?.data) ? j.data : [];
+
+  const summary = list.map(function(b){
+    const start = b.start || b.startTime;
+    let localStart = '?';
+    try {
+      localStart = new Date(start).toLocaleString('en-CA', {
+        timeZone:'America/Toronto', weekday:'short', month:'short', day:'numeric',
+        hour:'numeric', minute:'2-digit'
+      });
+    } catch(_){}
+    return {
+      uid: b.uid, status: b.status,
+      title: b.title, eventTypeId: b.eventTypeId,
+      startUTC: start, startToronto: localStart,
+      attendeeCount: (b.attendees||[]).length,
+      attendees: (b.attendees||[]).map(a => a.name || a.email).join(', ')
+    };
+  });
+
+  return jsonResponse({
+    totalFromCalcom: list.length,
+    included: summary.filter(s => s.status !== 'cancelled').length,
+    excludedCancelled: summary.filter(s => s.status === 'cancelled').length,
+    events: summary
+  });
+}
+
+
 async function scheduleToken(env){
   // Stable token derived from CAL_COM_API_KEY — changes if the key rotates.
   const enc = new TextEncoder();
@@ -4362,6 +4407,7 @@ export default {
     if(p==='/api/admin/trace-session') return handleTraceSession(request,env);
     if(p==='/api/admin/resolve-booking') return handleResolveBooking(request,env);
     if(p==='/api/admin/bookings-ics') return handleBookingsIcs(request,env);
+    if(p==='/api/admin/ics-preview') return handleIcsPreview(request,env);
     if(p==='/api/admin/subscription-url') return handleSubscriptionUrl(request,env);
     const mSch = p.match(/^\/schedule\/([a-f0-9]{32})\.ics$/);
     if(mSch) return handleScheduleIcs(request, env, mSch[1]);
