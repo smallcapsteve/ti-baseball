@@ -848,7 +848,33 @@ async function createCalBookingForUser(env, user, eventTypeId, startISO, extraMe
   });
   const body = await r.json();
   if(!r.ok){
-    return { ok:false, error: body?.error?.message || body?.message || 'Cal.com error', detail: body };
+    const errMsg = String(body?.error?.message || body?.message || '');
+    // Race with webhook safety net: if Cal.com says user is already booked
+    // for this slot, the webhook already added them. Look up the booking.
+    if(/already signed up for this booking/i.test(errMsg)){
+      try {
+        const afterISO = new Date(new Date(startISO).getTime() - 60*1000).toISOString();
+        const beforeISO = new Date(new Date(startISO).getTime() + 60*60*1000).toISOString();
+        const q = new URLSearchParams({ afterStart: afterISO, beforeStart: beforeISO, take:'100' });
+        const lr = await fetch(`https://api.cal.com/v2/bookings?${q.toString()}`, {
+          headers:{ 'Authorization':`Bearer ${env.CAL_COM_API_KEY}`, 'cal-api-version':'2024-08-13' }
+        });
+        const lj = await lr.json().catch(function(){ return {}; });
+        const list = Array.isArray(lj?.data) ? lj.data : (Array.isArray(lj) ? lj : []);
+        const found = list.find(function(bk){
+          if(bk.eventTypeId && bk.eventTypeId !== eventTypeId && bk.eventType?.id !== eventTypeId) return false;
+          const at = (bk.attendees||[]).some(function(a){ return String(a.email||'').toLowerCase() === String(user.email||'').toLowerCase(); });
+          return at && bk.status !== 'cancelled';
+        });
+        if(found){
+          console.log('CAL.COM DEDUPE: user already booked, found existing uid=' + (found.uid || found.id));
+          return { ok:true, uid: found.uid || found.id, dedupedFromWebhook: true };
+        }
+      } catch(e){
+        console.log('CAL.COM dedupe lookup failed:', e?.message||String(e));
+      }
+    }
+    return { ok:false, error: errMsg || 'Cal.com error', detail: body };
   }
   const b = body?.data || body;
   const uid = b?.uid || b?.id || 'unknown';
@@ -1586,7 +1612,33 @@ async function handleBookSession(request, env){
   });
   if(!r.ok){
     const detail = r.body?.error?.message || r.body?.error || r.body?.message || 'Cal.com booking failed';
-    return jsonResponse({error:'Booking failed', detail},502);
+    // Same dedupe recovery: if user is already on this slot, treat as success
+    if(/already signed up for this booking/i.test(String(detail))){
+      try {
+        const _afterISO = new Date(new Date(startISO).getTime() - 60*1000).toISOString();
+        const _beforeISO = new Date(new Date(startISO).getTime() + 60*60*1000).toISOString();
+        const _q = new URLSearchParams({ afterStart:_afterISO, beforeStart:_beforeISO, take:'100' });
+        const _lr = await fetch(`https://api.cal.com/v2/bookings?${_q.toString()}`, {
+          headers:{ 'Authorization':`Bearer ${env.CAL_COM_API_KEY}`, 'cal-api-version':'2024-08-13' }
+        });
+        const _lj = await _lr.json().catch(function(){ return {}; });
+        const _list = Array.isArray(_lj?.data) ? _lj.data : (Array.isArray(_lj) ? _lj : []);
+        const _found = _list.find(function(bk){
+          const _at = (bk.attendees||[]).some(function(a){ return String(a.email||'').toLowerCase() === String(user.email||'').toLowerCase(); });
+          return _at && bk.status !== 'cancelled';
+        });
+        if(_found){
+          // Fall through: pretend Cal.com succeeded
+          r.body = { data: _found };
+        } else {
+          return jsonResponse({error:'Booking failed', detail},502);
+        }
+      } catch(_){
+        return jsonResponse({error:'Booking failed', detail},502);
+      }
+    } else {
+      return jsonResponse({error:'Booking failed', detail},502);
+    }
   }
   const calBooking = r.body?.data || r.body;
   const calUid = calBooking?.uid || calBooking?.id || 'unknown';
@@ -1717,7 +1769,33 @@ async function handleBookMondayCredit(request, env){
   const r = await calApiV2('/v2/bookings', env, { method:'POST', body: JSON.stringify(bookingPayload) });
   if(!r.ok){
     const detail = r.body?.error?.message || r.body?.error || r.body?.message || 'Cal.com booking failed';
-    return jsonResponse({error:'Booking failed', detail},502);
+    // Same dedupe recovery: if user is already on this slot, treat as success
+    if(/already signed up for this booking/i.test(String(detail))){
+      try {
+        const _afterISO = new Date(new Date(startISO).getTime() - 60*1000).toISOString();
+        const _beforeISO = new Date(new Date(startISO).getTime() + 60*60*1000).toISOString();
+        const _q = new URLSearchParams({ afterStart:_afterISO, beforeStart:_beforeISO, take:'100' });
+        const _lr = await fetch(`https://api.cal.com/v2/bookings?${_q.toString()}`, {
+          headers:{ 'Authorization':`Bearer ${env.CAL_COM_API_KEY}`, 'cal-api-version':'2024-08-13' }
+        });
+        const _lj = await _lr.json().catch(function(){ return {}; });
+        const _list = Array.isArray(_lj?.data) ? _lj.data : (Array.isArray(_lj) ? _lj : []);
+        const _found = _list.find(function(bk){
+          const _at = (bk.attendees||[]).some(function(a){ return String(a.email||'').toLowerCase() === String(user.email||'').toLowerCase(); });
+          return _at && bk.status !== 'cancelled';
+        });
+        if(_found){
+          // Fall through: pretend Cal.com succeeded
+          r.body = { data: _found };
+        } else {
+          return jsonResponse({error:'Booking failed', detail},502);
+        }
+      } catch(_){
+        return jsonResponse({error:'Booking failed', detail},502);
+      }
+    } else {
+      return jsonResponse({error:'Booking failed', detail},502);
+    }
   }
   const calBooking = r.body?.data || r.body;
   const calUid = calBooking?.uid || calBooking?.id || 'unknown';
@@ -2158,6 +2236,40 @@ async function handleTraceSession(request, env){
 
   return jsonResponse(out);
 }
+
+async function handleResolveBooking(request, env){
+  // Admin: fix a needs_manual_booking placeholder by attaching a real
+  // Cal.com booking UID. Sets status='accepted' and clears calError.
+  // Body: { email, stripeRef, calBookingUid }
+  const gate = await requireAdmin(request, env);
+  if(gate.error) return gate.error;
+  if(request.method !== 'POST') return new Response('POST only',{status:405});
+  let body;
+  try { body = await request.json(); } catch { return jsonResponse({error:'Invalid JSON'},400); }
+  const email = String(body.email||'').toLowerCase().trim();
+  const stripeRef = String(body.stripeRef||'').trim();
+  const calUid = String(body.calBookingUid||'').trim();
+  if(!email || !stripeRef || !calUid) return jsonResponse({error:'email + stripeRef + calBookingUid required'},400);
+
+  const user = await env.USERS_KV.get(email,'json');
+  if(!user) return jsonResponse({error:'user not found'},404);
+
+  const bookings = user.bookings||[];
+  const idx = bookings.findIndex(function(b){ return b.stripeRef === stripeRef && b.status === 'needs_manual_booking'; });
+  if(idx < 0) return jsonResponse({error:'no needs_manual_booking placeholder found for that stripeRef'},404);
+
+  const before = { ...bookings[idx] };
+  bookings[idx].calBookingUid = calUid;
+  bookings[idx].status = 'accepted';
+  bookings[idx].calError = undefined;
+  bookings[idx].resolvedAt = Date.now();
+  bookings[idx].resolvedBy = gate.auth.user.email;
+  user.bookings = bookings;
+  await env.USERS_KV.put(user.email, JSON.stringify(user));
+
+  return jsonResponse({ ok:true, before, after: bookings[idx] });
+}
+
 
 
 
@@ -4007,6 +4119,7 @@ export default {
     if(p==='/api/admin/monday-roster-alert') return handleMondayRosterAlert(request,env);
     if(p==='/api/admin/cal-diag') return handleCalDiag(request,env);
     if(p==='/api/admin/trace-session') return handleTraceSession(request,env);
+    if(p==='/api/admin/resolve-booking') return handleResolveBooking(request,env);
     if(p==='/api/my-bookings') return handleMyBookings(request,env);
     if(p==='/api/public-slots') return handlePublicSlots(request,env);
     if(p==='/api/program-config') return handleProgramConfig(request,env);
