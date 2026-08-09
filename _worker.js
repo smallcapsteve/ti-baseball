@@ -2066,6 +2066,100 @@ async function handleCalDiag(request, env){
   return jsonResponse(out);
 }
 
+async function handleTraceSession(request, env){
+  // Full trace of what happened to a specific Stripe checkout session:
+  // Stripe state → user KV → matching bookings → Cal.com verification.
+  const gate = await requireAdmin(request, env);
+  if(gate.error) return gate.error;
+
+  const url = new URL(request.url);
+  const sid = url.searchParams.get('session_id');
+  if(!sid) return jsonResponse({error:'session_id required'},400);
+
+  const out = { session_id: sid, timeline: [] };
+
+  // 1. Stripe checkout session
+  const stripeR = await fetch(`https://api.stripe.com/v1/checkout/sessions/${sid}`, {
+    headers:{ 'Authorization':`Bearer ${env.STRIPE_RECONCILE_KEY}` }
+  });
+  const cs = await stripeR.json();
+  if(!stripeR.ok){
+    out.stripe = { error: cs.error };
+    return jsonResponse(out);
+  }
+  const md = cs.metadata || {};
+  out.stripe = {
+    payment_status: cs.payment_status,
+    amount_total: cs.amount_total,
+    metadata: md,
+    payment_intent: cs.payment_intent,
+    subscription: cs.subscription,
+    created: new Date(cs.created*1000).toISOString(),
+    success_url: cs.success_url
+  };
+  out.timeline.push(`Stripe: ${cs.payment_status} at ${new Date(cs.created*1000).toISOString()}`);
+
+  // 2. User KV state
+  const email = (md.ti_email || cs.customer_email || '').toLowerCase();
+  if(!email){ out.error = 'No ti_email metadata'; return jsonResponse(out); }
+  const user = await env.USERS_KV.get(email, 'json');
+  if(!user){
+    out.userKv = 'NO_USER_ACCOUNT';
+    out.timeline.push('KV: no user account');
+    return jsonResponse(out);
+  }
+  out.user = {
+    email: user.email,
+    parentName: user.parentName,
+    athleteName: user.athleteName,
+    athleteDob: user.athleteDob,
+    level: user.level,
+    phone: user.phone,
+    totalBookings: (user.bookings||[]).length,
+    totalCreditLots: (user.credits||[]).length
+  };
+
+  // 3. Matching booking(s) in KV
+  const stripeRef = cs.subscription || cs.payment_intent || cs.id;
+  const matchingBookings = (user.bookings||[]).filter(b => b.stripeRef === stripeRef);
+  out.matchingBookings = matchingBookings;
+  if(matchingBookings.length){
+    out.timeline.push(`KV: ${matchingBookings.length} booking(s) recorded with this stripeRef`);
+    matchingBookings.forEach(function(b){
+      out.timeline.push(`  → status=${b.status} calUid=${b.calBookingUid} start=${b.startTime}` + (b.calError?` ERROR: ${b.calError}`:''));
+    });
+  } else {
+    out.timeline.push('KV: NO booking recorded for this stripeRef ← problem');
+  }
+
+  // 4. Cal.com verification — look up the booking by uid if we have one
+  for(const b of matchingBookings){
+    if(!b.calBookingUid) continue;
+    try {
+      const r = await fetch(`https://api.cal.com/v2/bookings/${b.calBookingUid}`, {
+        headers: { 'Authorization': `Bearer ${env.CAL_COM_API_KEY}`, 'cal-api-version':'2024-08-13' }
+      });
+      const j = await r.json().catch(function(){ return {}; });
+      out.calBookingLookup = {
+        uid: b.calBookingUid,
+        httpStatus: r.status,
+        ok: r.ok,
+        status: j?.data?.status || j?.status,
+        title: j?.data?.title || j?.title,
+        start: j?.data?.start || j?.start,
+        eventTypeId: j?.data?.eventTypeId || j?.eventType?.id,
+        attendees: j?.data?.attendees || j?.attendees
+      };
+      out.timeline.push(`Cal.com: ${r.ok ? ('booking exists, status=' + (j?.data?.status || j?.status)) : ('NOT FOUND (' + r.status + ')')}`);
+    } catch(e){
+      out.calBookingLookup = { uid: b.calBookingUid, fetchError: String(e) };
+    }
+  }
+
+  return jsonResponse(out);
+}
+
+
 
 
 
@@ -3912,6 +4006,7 @@ export default {
     if(p==='/api/admin/monday-reconcile') return handleMondayReconcile(request,env);
     if(p==='/api/admin/monday-roster-alert') return handleMondayRosterAlert(request,env);
     if(p==='/api/admin/cal-diag') return handleCalDiag(request,env);
+    if(p==='/api/admin/trace-session') return handleTraceSession(request,env);
     if(p==='/api/my-bookings') return handleMyBookings(request,env);
     if(p==='/api/public-slots') return handlePublicSlots(request,env);
     if(p==='/api/program-config') return handleProgramConfig(request,env);
