@@ -382,9 +382,10 @@ async function handleAdminUsers(request, env){
       for(const lot of (u.credits||[])){
         const rem = (lot.count||0) - (lot.used||0);
         if(rem <= 0 || lot.expiresAt <= _now) continue;
-        const prog = lot.program || '1-on-1';
+        const prog = lot.program || 'one-on-one';
         if(prog === 'academy') tags.add('Academy');
-        else if(prog === '1-on-1') tags.add('1-on-1');
+        else if(prog === 'one-on-one') tags.add('1-on-1');
+        else if(prog === 'monday-night') tags.add('Monday Night');
         if(groupMap[lot.source]) tags.add(groupMap[lot.source]);
       }
       if((u.campRegistrations||[]).length > 0) tags.add('Camps');
@@ -453,9 +454,14 @@ async function handleAdminAddCredits(request, env, email){
   if(!(count > 0 && count <= 50)) return jsonResponse({error:'Count must be 1-50'},400);
   if(!(days > 0 && days <= 365)) return jsonResponse({error:'Days must be 1-365'},400);
   const now = Date.now();
+  // Admin can specify program='monday-night' in body to grant Monday credits;
+  // defaults to 1-on-1 for backwards compat with existing admin UI.
+  const gp = String(body?.program || 'one-on-one');
+  const validProg = (gp === 'monday-night' || gp === 'academy' || gp === 'one-on-one') ? gp : 'one-on-one';
   const lot = {
     id: newToken(8),
     count, used:0,
+    program: validProg,
     purchasedAt: now,
     expiresAt: now + days*24*60*60*1000,
     source: reason
@@ -1311,12 +1317,17 @@ async function handleClaimPurchase(request, env){
 }
 
 function totalAvailable(user){
+  // Total 1-on-1 credits only (Monday-night credits are separate).
+  // Legacy lots without program field treated as 'one-on-one' for backwards compat.
   const now = Date.now();
   let n = 0;
   for(const lot of (user.credits||[])){
-    if((lot.count - (lot.used||0)) > 0 && lot.expiresAt > now){
-      n += lot.count - (lot.used||0);
-    }
+    const rem = (lot.count||0) - (lot.used||0);
+    if(rem <= 0) continue;
+    if(lot.expiresAt <= now) continue;
+    const lp = lot.program || 'one-on-one';
+    if(lp !== 'one-on-one') continue;
+    n += rem;
   }
   return n;
 }
@@ -2845,6 +2856,7 @@ async function handleStripeWebhook(request, env){
             program: 'one-on-one',
         purchasedAt: now,
             expiresAt: now + 30*24*60*60*1000,
+            program: 'one-on-one',
             source: csMode + '_webhook_fallback',
             stripeId: stripeRef
           };
@@ -4119,7 +4131,8 @@ async function handleAdminBookOneOnOne(request, env, email){
   // 1-on-1 Cal.com event id (matches CAL_ONE_ON_ONE_EVENT_ID = 6031855 used in booking handler)
   const ONE_ON_ONE_EVENT = 6031855;
 
-  // If using a credit, find an earliest-expiring active lot first (don't book if none available)
+  // If using a credit, find an earliest-expiring active 1-ON-1 lot first
+  // (do NOT spend Monday-night credits on 1-on-1 bookings — different programs)
   let lotToDecrement = null;
   if(payment === 'credit'){
     const now = Date.now();
@@ -4127,9 +4140,11 @@ async function handleAdminBookOneOnOne(request, env, email){
       const rem = (lot.count||0) - (lot.used||0);
       if(rem <= 0) continue;
       if(lot.expiresAt <= now) continue;
+      const lp = lot.program || 'one-on-one';  // legacy = 1-on-1
+      if(lp !== 'one-on-one') continue;         // skip Monday-night lots
       if(!lotToDecrement || lot.expiresAt < lotToDecrement.expiresAt) lotToDecrement = lot;
     }
-    if(!lotToDecrement) return jsonResponse({error:'No active credits available for this user — use "Mark Paid" or "No payment tracking" instead, or grant credits first.'},402);
+    if(!lotToDecrement) return jsonResponse({error:'No active 1-on-1 credits available for this user (Monday Night credits cannot be used here). Use "Mark Paid" or grant 1-on-1 credits first.'},402);
   }
 
   const stripeRef = payment === 'paid' ? ('admin_manual_' + Date.now()) : null;
