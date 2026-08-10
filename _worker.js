@@ -1702,48 +1702,60 @@ async function handleBookSession(request, env){
 
 async function handleMondaySlots(request, env){
   // Available Monday Night slots — for parents booking with monday-night credits.
+  // The Monday Night event type on Cal.com (6031818) is Monday-only, so Cal.com
+  // returns only Monday slots for it. No need to filter by getDay().
   const auth = await requireAuth(request, env);
   if(!auth) return jsonResponse({error:'Not signed in'},401);
   const url = new URL(request.url);
+  const debug = url.searchParams.get('debug') === '1';
   const startISO = url.searchParams.get('start') || new Date().toISOString();
   const endParam = url.searchParams.get('end');
-  const endDate = endParam ? new Date(endParam) : new Date(Date.now() + 42*24*60*60*1000); // 6 weeks out
+  const endDate = endParam ? new Date(endParam) : new Date(Date.now() + 42*24*60*60*1000);
   const endISO = endDate.toISOString();
   const tries = [
     { path:'/v2/slots/available', version:'2024-08-13', params:{ eventTypeId:String(CAL_MONDAY_NIGHT_EVENT_ID), startTime:startISO, endTime:endISO, timeZone:'America/Toronto' } },
-    { path:'/v1/slots', version:'2024-08-13', params:{ eventTypeId:String(CAL_MONDAY_NIGHT_EVENT_ID), startTime:startISO, endTime:endISO, timeZone:'America/Toronto', apiKey: env.CAL_COM_API_KEY } },
     { path:'/v2/slots', version:'2024-09-04', params:{ eventTypeId:String(CAL_MONDAY_NIGHT_EVENT_ID), start:startISO.slice(0,10), end:endISO.slice(0,10), timeZone:'America/Toronto' } }
   ];
   let lastErr = null;
+  let lastRaw = null;
   for(const t of tries){
     const ps = new URLSearchParams(t.params);
-    const headers = { 'cal-api-version': t.version, 'Content-Type':'application/json' };
-    if(t.path !== '/v1/slots') headers['Authorization'] = `Bearer ${env.CAL_COM_API_KEY}`;
+    const headers = { 'cal-api-version': t.version, 'Content-Type':'application/json',
+                      'Authorization':`Bearer ${env.CAL_COM_API_KEY}` };
     try {
       const rr = await fetch(`https://api.cal.com${t.path}?${ps.toString()}`, { headers });
-      const jb = await rr.json().catch(()=>({}));
-      if(rr.ok){
-        // Flatten Cal.com nested slots shape: { data: { "2026-08-03": [...], "2026-08-10": [...] } }
-        const raw = jb?.data || jb?.slots || jb;
-        const out = [];
-        if(Array.isArray(raw)){
-          for(const s of raw){ out.push({ start: s.time || s.start || s.startTime, end: s.end || s.endTime }); }
-        } else if(raw && typeof raw === 'object'){
-          for(const k of Object.keys(raw)){
-            const arr = raw[k];
-            if(Array.isArray(arr)){
-              for(const s of arr){ out.push({ start: s.time || s.start || s.startTime, end: s.end || s.endTime }); }
+      const txt = await rr.text();
+      let jb; try { jb = JSON.parse(txt); } catch { jb = { raw: txt }; }
+      if(!rr.ok){ lastErr = { path:t.path, status:rr.status, body: jb }; continue; }
+
+      // Unwrap: Cal.com v2 returns { status:'success', data: { slots: { 'YYYY-MM-DD': [...] } } }
+      // OR { data: { 'YYYY-MM-DD': [...] } }  OR  { data: [...] }
+      const data = jb?.data?.slots || jb?.data || jb?.slots || {};
+      lastRaw = { path:t.path, dataShape: Array.isArray(data) ? 'array' : (typeof data), keyCount: Array.isArray(data) ? data.length : Object.keys(data||{}).length };
+      const out = [];
+      if(Array.isArray(data)){
+        for(const s of data){
+          const st = s.time || s.start || s.startTime;
+          if(st) out.push({ start: st, end: s.end || s.endTime });
+        }
+      } else if(data && typeof data === 'object'){
+        for(const day of Object.keys(data)){
+          const arr = data[day];
+          if(Array.isArray(arr)){
+            for(const s of arr){
+              const st = s.time || s.start || s.startTime;
+              if(st) out.push({ start: st, end: s.end || s.endTime });
             }
           }
         }
-        // Only Mondays
-        const mondays = out.filter(s => s.start && new Date(s.start).getDay() === 1);
-        return jsonResponse({ slots: mondays });
       }
-      lastErr = jb;
-    } catch(e){ lastErr = String(e); }
+      if(debug){
+        return jsonResponse({ slots: out, debug: { tried: t.path, dataShape: lastRaw.dataShape, keyCount: lastRaw.keyCount, rawKeys: Array.isArray(data) ? null : Object.keys(data||{}), sampleRaw: JSON.stringify(jb).slice(0, 2000) } });
+      }
+      return jsonResponse({ slots: out });
+    } catch(e){ lastErr = { path:t.path, error: String(e?.message||e) }; }
   }
-  return jsonResponse({ slots:[], error:'Slots unavailable', detail:lastErr }, 200);
+  return jsonResponse({ slots:[], error:'Slots unavailable', detail:lastErr, lastRaw }, 200);
 }
 
 async function handleBookMondayCredit(request, env){
