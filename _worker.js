@@ -1088,7 +1088,10 @@ async function handleClaimProgramBooking(request, env){
       await env.USERS_KV.put(user.email, JSON.stringify(user));
       try { await sendCoachAlert(env, 'session_purchase', {
         user, packSize: cfg.creditCount, mode: 'one_time',
-        expiresAt: now + 60*24*60*60*1000
+        expiresAt: now + 60*24*60*60*1000, programLabel: cfg.label
+      }); } catch(_){}
+      try { await sendParentMondayCreditsEmail(env, user, {
+        creditCount: cfg.creditCount, expiresAt: now + 60*24*60*60*1000
       }); } catch(_){}
     }
     return jsonResponse({ claimed:true, program:programKey, creditsAdded: cfg.creditCount });
@@ -2883,6 +2886,9 @@ async function handleStripeWebhook(request, env){
           await sendCoachAlertLogged(env, 'session_purchase', {
             user, packSize: cfg.creditCount, mode: 'one_time', programLabel: cfg.label
           });
+          try { await sendParentMondayCreditsEmail(env, user, {
+            creditCount: cfg.creditCount, expiresAt: now + 60*24*60*60*1000
+          }); } catch(_){}
           return new Response(`ok (credit pack granted via webhook fallback: ${cfg.creditCount})`, {status:200});
         }
 
@@ -3269,6 +3275,74 @@ async function sendCoachAlertLogged(env, type, payload){
       }), { expirationTtl: 30*24*60*60 });
     } catch(_){}
     return null;
+  }
+}
+
+async function sendParentMondayCreditsEmail(env, user, opts){
+  // Parent-facing confirmation after buying the Monday Night 4-Pack.
+  // Explicitly points them to /dashboard/book-monday (not /dashboard/book).
+  const apiKey = env.RESEND_API_KEY;
+  if(!apiKey || !user?.email) return { ok:false };
+  const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const firstName = ((user.parentName||'').split(' ')[0]) || 'there';
+  const creditCount = opts.creditCount || 4;
+  const expiresAtMs = opts.expiresAt || (Date.now() + 60*24*60*60*1000);
+  const expiryStr = new Date(expiresAtMs).toLocaleDateString('en-CA', { month:'long', day:'numeric', year:'numeric' });
+
+  const html = `
+    <div style="font-family: Inter, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; background: #f7f7f7;">
+      <div style="background: #fff; border-radius: 12px; padding: 32px; border: 1px solid #eee;">
+        <div style="margin-bottom: 24px;">
+          <span style="display:inline-block; background:#010101; color:#fff; padding:6px 12px; border-radius:6px; font-weight:700; letter-spacing:.04em; font-size:.85rem;">TI BASEBALL</span>
+        </div>
+        <h2 style="margin: 0 0 12px; font-family: Anton, Arial, sans-serif; color:#111; letter-spacing:.02em;">Your Monday Night 4-Pack is ready, ${esc(firstName)}!</h2>
+        <p style="color: #333; line-height: 1.55; font-size:1.02em;">Thanks for buying the Monday Night Hitting Group 4-Pack. Here's your confirmation and — importantly — <strong>how to pick your Mondays</strong>.</p>
+
+        <table style="width:100%; border-collapse:collapse; margin-top:14px;">
+          <tr><td style="padding:8px 12px 8px 0; color:#666; width:150px;">Credits added</td><td style="padding:8px 0; color:#111;"><strong>${creditCount} × Monday Night sessions</strong></td></tr>
+          <tr><td style="padding:8px 12px 8px 0; color:#666;">Session times</td><td style="padding:8px 0; color:#111;">Mondays, 6:30 – 8:00 PM ET</td></tr>
+          <tr><td style="padding:8px 12px 8px 0; color:#666;">Where</td><td style="padding:8px 0; color:#111;">B360 · 274 MacKenzie Ave, Suite 450, Ajax ON</td></tr>
+          <tr><td style="padding:8px 12px 8px 0; color:#666;">Credits expire</td><td style="padding:8px 0; color:#111;">${expiryStr} <span style="color:#888;">(60 days from purchase)</span></td></tr>
+        </table>
+
+        <div style="background:#f0fbfc; border:2px solid #1FBFC4; border-radius:10px; padding:20px; margin-top:24px;">
+          <div style="font-family:Anton,Arial,sans-serif; color:#0e888c; letter-spacing:.05em; margin-bottom:10px; font-size:.9em;">HOW TO BOOK YOUR MONDAYS</div>
+          <ol style="margin:0; padding-left:22px; color:#333; line-height:1.7;">
+            <li>Sign in at <a href="https://tibaseball.com/login" style="color:#EC2C8A; font-weight:600;">tibaseball.com/login</a></li>
+            <li>From your dashboard, click <strong>"Book A Monday"</strong> (in the Monday Night Credits card) — or go straight to <a href="https://tibaseball.com/dashboard/book-monday" style="color:#EC2C8A; font-weight:600;">tibaseball.com/dashboard/book-monday</a></li>
+            <li>Pick the Mondays you want from Coach's schedule</li>
+            <li>Each Monday you book uses 1 credit. You have ${creditCount} to spend.</li>
+          </ol>
+        </div>
+
+        <div style="text-align:center; margin-top:26px;">
+          <a href="https://tibaseball.com/dashboard/book-monday" style="display:inline-block; background:#EC2C8A; color:#fff; text-decoration:none; padding:14px 32px; border-radius:8px; font-family:Anton,Arial,sans-serif; letter-spacing:.05em; font-size:1.05em;">BOOK YOUR FIRST MONDAY →</a>
+        </div>
+
+        <p style="color: #666; margin-top: 30px; line-height:1.55;">Trouble booking? Just reply to this email or call Coach at <strong>(289) 928-8662</strong>.</p>
+
+        <p style="color: #333; margin-top: 20px;">See you Monday night,<br><strong>Coach Crosby</strong><br><span style="color:#888;">TI Baseball · Ajax, ON</span></p>
+      </div>
+    </div>
+  `;
+  const text = `Your Monday Night 4-Pack is ready, ${firstName}!\n\nCredits added: ${creditCount} × Monday Night sessions\nWhen: Mondays 6:30–8:00 PM ET\nWhere: B360 · 274 MacKenzie Ave, Suite 450, Ajax ON\nExpires: ${expiryStr}\n\nHOW TO BOOK YOUR MONDAYS:\n1. Sign in at https://tibaseball.com/login\n2. Click "Book A Monday" on your dashboard, or go to https://tibaseball.com/dashboard/book-monday\n3. Pick the Mondays you want\n4. Each Monday uses 1 credit\n\nTrouble? Reply to this email or call (289) 928-8662.\n\nSee you Monday night,\nCoach Crosby\nTI Baseball · Ajax, ON`;
+
+  try {
+    const r = await fetch('https://api.resend.com/emails', {
+      method:'POST',
+      headers:{ 'Authorization': `Bearer ${apiKey}`, 'Content-Type':'application/json' },
+      body: JSON.stringify({
+        from: 'TI Baseball <noreply@tibaseball.com>',
+        to: [user.email],
+        reply_to: 'Crosbyathletics321@gmail.com',
+        subject: `Your Monday Night 4-Pack is ready — here's how to book`,
+        html, text
+      })
+    });
+    if(!r.ok){ const t = await r.text().catch(()=>''); return { ok:false, error:'resend-'+r.status, detail:t.slice(0,300) }; }
+    return { ok:true };
+  } catch(err){
+    return { ok:false, error:'fetch-failed', detail:String(err).slice(0,300) };
   }
 }
 
