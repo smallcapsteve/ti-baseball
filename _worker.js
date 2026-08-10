@@ -2203,14 +2203,34 @@ async function handleTraceSession(request, env){
   // 3. Matching booking(s) in KV
   const stripeRef = cs.subscription || cs.payment_intent || cs.id;
   const matchingBookings = (user.bookings||[]).filter(b => b.stripeRef === stripeRef);
+  const matchingCredits = (user.credits||[]).filter(c => c.stripeId === stripeRef || c.stripeId === (stripeRef+':'+cs.invoice));
   out.matchingBookings = matchingBookings;
+  out.matchingCredits = matchingCredits;
+  out.allCredits = (user.credits||[]).map(function(c){
+    return {
+      id: c.id, count: c.count, used: c.used||0,
+      remaining: (c.count||0)-(c.used||0),
+      program: c.program || 'one-on-one',
+      source: c.source, stripeId: c.stripeId,
+      purchasedAt: c.purchasedAt ? new Date(c.purchasedAt).toISOString() : null,
+      expiresAt: c.expiresAt ? new Date(c.expiresAt).toISOString() : null,
+      expired: c.expiresAt && c.expiresAt < Date.now()
+    };
+  });
   if(matchingBookings.length){
     out.timeline.push(`KV: ${matchingBookings.length} booking(s) recorded with this stripeRef`);
     matchingBookings.forEach(function(b){
       out.timeline.push(`  → status=${b.status} calUid=${b.calBookingUid} start=${b.startTime}` + (b.calError?` ERROR: ${b.calError}`:''));
     });
-  } else {
-    out.timeline.push('KV: NO booking recorded for this stripeRef ← problem');
+  }
+  if(matchingCredits.length){
+    out.timeline.push(`KV: ${matchingCredits.length} credit lot(s) with this stripeRef ← SUCCESS (this is a credit purchase)`);
+    matchingCredits.forEach(function(c){
+      out.timeline.push(`  → ${(c.count||0)-(c.used||0)}/${c.count} credits remaining, program=${c.program||'one-on-one'}, expires ${new Date(c.expiresAt).toISOString().slice(0,10)}`);
+    });
+  }
+  if(!matchingBookings.length && !matchingCredits.length){
+    out.timeline.push('KV: NO booking OR credit lot for this stripeRef ← problem');
   }
 
   // 4. Cal.com verification — look up the booking by uid if we have one
