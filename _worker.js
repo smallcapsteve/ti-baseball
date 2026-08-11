@@ -4771,6 +4771,7 @@ export default {
     if(p==='/dashboard/buy'||p==='/dashboard/buy.html') return htmlP(BUY_HTML, env);
     if(p==='/dashboard/book'||p==='/dashboard/book.html') return html(BOOK_HTML);
     if(p==='/dashboard/book-monday'||p==='/dashboard/book-monday.html') return htmlP(BOOK_MONDAY_HTML, env);
+    if(p==='/admin/pricing'||p==='/admin/pricing.html') return html(PRICING_HTML);
     // /book redirects for legacy tryout-prep slugs
     if(p==='/book' && url.searchParams.get('program')==='tryout-prep-monthly'){ return Response.redirect(new URL('/book?program=academy-monthly', request.url),301); }
     if(p==='/book' && url.searchParams.get('program')==='tryout-prep-season'){ return Response.redirect(new URL('/book?program=academy-full', request.url),301); }
