@@ -4799,6 +4799,9 @@ export default {
     if(p==='/api/admin/trace-session') return handleTraceSession(request,env);
     if(p==='/api/admin/resolve-booking') return handleResolveBooking(request,env);
     if(p==='/api/admin/impersonate') return handleImpersonate(request,env);
+    if(p==='/api/admin/pricing-keys') return handleAdminPricingKeys(request,env);
+    if(p==='/api/admin/set-pricing') return handleAdminSetPricing(request,env);
+    if(p==='/api/admin/pricing-audit') return handleAdminPricingAudit(request,env);
     if(p==='/api/admin/end-impersonation') return handleEndImpersonation(request,env);
     if(p==='/api/admin/bookings-ics') return handleBookingsIcs(request,env);
     if(p==='/api/admin/ics-preview') return handleIcsPreview(request,env);
