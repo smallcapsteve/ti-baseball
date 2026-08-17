@@ -2305,6 +2305,59 @@ async function handleMondayRosterAlert(request, env){
   });
 }
 
+async function handleCalEventTypeDiag(request, env){
+  // Fetch event-type config for our Monday Night + 1-on-1 event types.
+  // Reveals privacy-relevant settings: hideCalendarNotes, seatsShowAttendees,
+  // metadata policies, requiresConfirmation, disableGuests, etc.
+  const gate = await requireAdmin(request, env);
+  if(gate.error) return gate.error;
+  const ids = [6031818, 6031855]; // Monday Night, 1-on-1
+  const results = {};
+  for(const id of ids){
+    const attempts = [
+      { path: `/v2/event-types/${id}`, version:'2024-08-13' },
+      { path: `/v2/event-types/${id}`, version:'2024-06-14' },
+      { path: `/v1/event-types/${id}?apiKey=${env.CAL_COM_API_KEY}`, version:'2024-06-14' }
+    ];
+    for(const a of attempts){
+      const headers = { 'cal-api-version': a.version, 'Content-Type':'application/json' };
+      if(!a.path.startsWith('/v1')) headers['Authorization'] = `Bearer ${env.CAL_COM_API_KEY}`;
+      try {
+        const r = await fetch(`https://api.cal.com${a.path}`, { headers });
+        const j = await r.json().catch(function(){ return {}; });
+        if(r.ok){
+          const d = j?.data || j;
+          results[id] = {
+            path: a.path, version: a.version, httpStatus: r.status,
+            title: d?.title, slug: d?.slug, length: d?.length || d?.lengthInMinutes,
+            seatsPerTimeSlot: d?.seatsPerTimeSlot,
+            seatsShowAttendees: d?.seatsShowAttendees,
+            seatsShowAvailabilityCount: d?.seatsShowAvailabilityCount,
+            hideCalendarNotes: d?.hideCalendarNotes,
+            hideCalendarEventDetails: d?.hideCalendarEventDetails,
+            requiresConfirmation: d?.requiresConfirmation,
+            requiresConfirmationForFreeEmail: d?.requiresConfirmationForFreeEmail,
+            disableGuests: d?.disableGuests,
+            hidden: d?.hidden,
+            price: d?.price,
+            metadata: d?.metadata,
+            eventType: d?.eventType,
+            fullResponseKeys: Object.keys(d||{})
+          };
+          break;
+        } else {
+          results[id] = results[id] || { attempts: [] };
+          results[id].attempts = (results[id].attempts||[]).concat([{ path:a.path, status:r.status, error: j?.error?.message || j?.message || j }]);
+        }
+      } catch(e){
+        results[id] = results[id] || { attempts: [] };
+        results[id].attempts = (results[id].attempts||[]).concat([{ path:a.path, fetchError: String(e) }]);
+      }
+    }
+  }
+  return jsonResponse(results);
+}
+
 async function handleCalDiag(request, env){
   // Diagnostic: fetch Cal.com bookings via API for a date range,
   // and return their raw status + attendees. Helps debug "not on calendar" issues.
@@ -4872,6 +4925,7 @@ export default {
     if(p==='/api/admin/monday-reconcile') return handleMondayReconcile(request,env);
     if(p==='/api/admin/monday-roster-alert') return handleMondayRosterAlert(request,env);
     if(p==='/api/admin/cal-diag') return handleCalDiag(request,env);
+    if(p==='/api/admin/cal-event-diag') return handleCalEventTypeDiag(request,env);
     if(p==='/api/admin/trace-session') return handleTraceSession(request,env);
     if(p==='/api/admin/resolve-booking') return handleResolveBooking(request,env);
     if(p==='/api/admin/impersonate') return handleImpersonate(request,env);
