@@ -2305,6 +2305,63 @@ async function handleMondayRosterAlert(request, env){
   });
 }
 
+async function handleCalSetAddress(request, env){
+  // PATCH Cal.com event types to use a single custom in-person address.
+  // Payload: { address: "..." } — defaults to B360 if omitted.
+  const gate = await requireAdmin(request, env);
+  if(gate.error) return gate.error;
+  if(request.method !== 'POST') return new Response('POST only',{status:405});
+  let body;
+  try { body = await request.json(); } catch { body = {}; }
+  const address = String(body.address || 'B360 Indoor Facility · 274 MacKenzie Ave, Suite 450, Ajax, ON L1S 2E9');
+  const eventIds = [6031818, 6031855];
+
+  // Cal.com v2 (2024-06-14) location shape variants — try in order:
+  //   [{ type: 'address', address: '...', displayLocationPublicly: true }]
+  //   [{ type: 'in-person', address: '...' }]
+  //   [{ type: 'integrations:daily', ... }] ← video (not relevant)
+  //   [{ type: 'inPerson', address: '...' }]
+  const locationVariants = [
+    [{ type: 'address', address: address, displayLocationPublicly: true }],
+    [{ type: 'in-person', address: address, displayLocationPublicly: true }],
+    [{ type: 'inPerson', address: address }]
+  ];
+
+  const results = {};
+  for(const id of eventIds){
+    results[id] = { attempts: [] };
+    let succeeded = false;
+    for(const loc of locationVariants){
+      if(succeeded) break;
+      const body = { locations: loc };
+      const patchUrl = `https://api.cal.com/v2/event-types/${id}`;
+      try {
+        const r = await fetch(patchUrl, {
+          method: 'PATCH',
+          headers: {
+            'Authorization': `Bearer ${env.CAL_COM_API_KEY}`,
+            'cal-api-version': '2024-06-14',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(body)
+        });
+        const j = await r.json().catch(function(){ return {}; });
+        results[id].attempts.push({
+          shape: loc[0]?.type,
+          httpStatus: r.status,
+          ok: r.ok,
+          error: r.ok ? undefined : (j?.error?.message || j?.message || JSON.stringify(j).slice(0,300)),
+          returnedLocations: r.ok ? (j?.data?.locations || j?.locations) : undefined
+        });
+        if(r.ok){ succeeded = true; results[id].success = { shape: loc[0]?.type, address }; }
+      } catch(e){
+        results[id].attempts.push({ shape: loc[0]?.type, fetchError: String(e) });
+      }
+    }
+  }
+  return jsonResponse({ address, results });
+}
+
 async function handleCalEventTypeDiag(request, env){
   // Fetch event-type config for our Monday Night + 1-on-1 event types.
   // Reveals privacy-relevant settings: hideCalendarNotes, seatsShowAttendees,
@@ -2331,6 +2388,7 @@ async function handleCalEventTypeDiag(request, env){
             path: a.path, version: a.version, httpStatus: r.status,
             title: d?.title, slug: d?.slug, length: d?.length || d?.lengthInMinutes,
             seats: d?.seats,
+            locations: d?.locations,
             hideOrganizerEmail: d?.hideOrganizerEmail,
             bookingRequiresAuthentication: d?.bookingRequiresAuthentication,
             confirmationPolicy: d?.confirmationPolicy,
@@ -4928,6 +4986,7 @@ export default {
     if(p==='/api/admin/monday-roster-alert') return handleMondayRosterAlert(request,env);
     if(p==='/api/admin/cal-diag') return handleCalDiag(request,env);
     if(p==='/api/admin/cal-event-diag') return handleCalEventTypeDiag(request,env);
+    if(p==='/api/admin/cal-set-address') return handleCalSetAddress(request,env);
     if(p==='/api/admin/trace-session') return handleTraceSession(request,env);
     if(p==='/api/admin/resolve-booking') return handleResolveBooking(request,env);
     if(p==='/api/admin/impersonate') return handleImpersonate(request,env);
