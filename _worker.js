@@ -2147,6 +2147,52 @@ async function handleBookMondayCredit(request, env){
   });
 }
 
+async function handleWDBookCredit(request, env, stream){
+  if(request.method !== 'POST') return new Response('Method not allowed',{status:405});
+  const auth = await requireAuth(request, env);
+  if(!auth) return jsonResponse({error:'Not signed in'},401);
+  let body;
+  try { body = await request.json(); } catch { return jsonResponse({error:'Invalid JSON'},400); }
+  const startISO = (body.start||'').trim();
+  if(!startISO || !/^\d{4}-\d{2}-\d{2}T/.test(startISO)) return jsonResponse({error:'Missing or invalid start time'},400);
+
+  const streamCfg = {
+    '8to12':    { creditProgram:'wd-8to12',    label:'Winter Development — 8-12 (Tue 6-8 PM)' },
+    '13to18':   { creditProgram:'wd-13to18',   label:'Winter Development — 13-18 (Fri 5-7 PM)' },
+    'catchers': { creditProgram:'wd-catchers', label:'Winter Development — Catchers (Sat 1-3 PM)' }
+  }[stream];
+  if(!streamCfg) return jsonResponse({error:'Unknown stream'},400);
+
+  const user = await env.USERS_KV.get(auth.user.email,'json');
+  if(!user) return jsonResponse({error:'User not found'},404);
+
+  const lot = pickEarliestExpiringLotForProgram(user, streamCfg.creditProgram);
+  if(!lot) return jsonResponse({error:'No '+streamCfg.label+' credits available. Buy a drop-in first.'},402);
+
+  const dupe = (user.bookings||[]).find(b => b.startTime === startISO && b.source && b.source.startsWith('wd-'+stream));
+  if(dupe) return jsonResponse({error:'You already have this session booked.'},409);
+
+  const lots = user.credits;
+  const idx = lots.findIndex(l => l.id === lot.id);
+  if(idx >= 0){ lots[idx].used = (lots[idx].used||0) + 1; }
+  user.bookings = (user.bookings || []).concat([{
+    calBookingUid: null,
+    startTime: startISO, bookedAt: Date.now(),
+    status:'accepted', source: 'wd-'+stream+'-drop-in',
+    program: streamCfg.creditProgram,
+    wdStream: stream
+  }]);
+  await env.USERS_KV.put(user.email, JSON.stringify(user));
+
+  try { await sendCoachAlertLogged(env, 'credit_booked', {
+    user, slotStart: startISO,
+    programLabel: streamCfg.label,
+    creditsLeft: (lots[idx].count - lots[idx].used)
+  }); } catch(_){}
+
+  return jsonResponse({ ok:true, startTime: startISO, stream: stream, remainingCredits: (lots[idx].count - lots[idx].used) });
+}
+
 async function handleBookAcademyCredit(request, env){
   // Academy drop-in credit redemption — records booking, alerts Coach.
   // No Cal.com integration yet (Academy Saturdays aren't on Cal.com);
