@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Team Assistance — TI Baseball (Tools of Ignorance)</title>
+<meta name="description" content="Team assistance from Coach Crosby — join your team practices for hitting, catching, pitching, and fielding support, or step in to lead when your coaches are away.">
+<link rel="icon" href="assets/logo.jpg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>/* Top utility ribbon — sits above the site header on every page */
+.top-ribbon {
+  background:#010101; border-bottom:1px solid rgba(255,255,255,0.06);
+  font-family:'Inter', sans-serif; font-size:.84rem;
+}
+.top-ribbon-inner {
+  max-width:1180px; margin:0 auto; padding:8px 22px;
+  display:flex; justify-content:space-between; align-items:center; gap:18px;
+  flex-wrap:wrap;
+}
+.top-ribbon-tagline { color:rgba(255,255,255,0.55); letter-spacing:.04em; text-transform:uppercase; font-size:.74rem; font-weight:600; }
+.top-ribbon-actions { display:flex; align-items:center; gap:14px; }
+.top-ribbon-social { display:flex; align-items:center; gap:8px; }
+.top-ribbon-social a {
+  display:flex; align-items:center; justify-content:center;
+  width:30px; height:30px; border-radius:50%;
+  background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.85);
+  transition:background .15s, color .15s, transform .15s;
+}
+.top-ribbon-social a:hover { background:#1FBFC4; color:#010101; transform:translateY(-1px); }
+.top-ribbon-social svg { width:16px; height:16px; }
+.top-ribbon-login {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:5px 14px; border-radius:6px;
+  background:transparent; border:1px solid rgba(255,255,255,0.20); color:#fff;
+  font-size:.78rem; font-weight:600; letter-spacing:.04em; text-transform:uppercase;
+  text-decoration:none; transition:background .15s, border-color .15s;
+}
+.top-ribbon-login:hover { background:#EC2C8A; border-color:#EC2C8A; }
+.top-ribbon-login svg { width:14px; height:14px; }
+@media (max-width:560px) {
+  .top-ribbon-inner { padding:8px 16px; gap:10px; }
+  .top-ribbon-tagline { display:none; }
+}
+</style>
+</head>
+<body>
+<div class="top-ribbon">
+  <div class="top-ribbon-inner">
+    <span class="top-ribbon-tagline">Ajax, ON · Baseball Training Academy</span>
+    <div class="top-ribbon-actions">
+      <div class="top-ribbon-social">
+        <a href="https://www.instagram.com/ti_baseball_academy/" target="_blank" rel="noopener" aria-label="TI Baseball on Instagram">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </a>
+        <a href="https://www.facebook.com/profile.php?id=100068096166498" target="_blank" rel="noopener" aria-label="TI Baseball on Facebook">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+      </div>
+      <a href="/login" class="top-ribbon-login" id="top-ribbon-login-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        <span>Sign In</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+
+<header class="site-header">
+  <nav class="nav" aria-label="Primary">
+    <a href="index.html" class="nav-brand" aria-label="TI Baseball home">
+      <img src="assets/logo.png" alt="">
+      <span>TI BASEBALL<small>TOOLS OF IGNORANCE</small></span>
+    </a>
+    <button class="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <line x1="4" y1="7" x2="20" y2="7"/>
+        <line x1="4" y1="12" x2="20" y2="12"/>
+        <line x1="4" y1="17" x2="20" y2="17"/>
+      </svg>
+    </button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="coach.html">Coaches</a></li>
+      <li><a href="team-assistance.html">Team Assistance</a></li>
+      <li><a href="programs.html">Programs</a></li>
+      
+      <li><a href="academy.html">Winter Development</a></li>
+      <li><a href="facility.html">Facility</a></li>
+      <li><a href="contact.html" class="cta">Book Now</a></li>
+    </ul>
+  </nav>
+</header>
+<main>
+
+  <section class="page-head">
+    <div class="container">
+      <p class="eyebrow">For Teams &amp; Head Coaches</p>
+      <h1>Team Assistance.</h1>
+      <p>Coach Crosby joins your team's practices to run specialized skill work &mdash; or steps in to lead a full session when your coaching staff can't be there. Bring pro-level instruction to your team without the travel.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <p class="eyebrow">What Coach Can Do At Your Practice</p>
+      <h2>Pick What Your Team Needs.</h2>
+      <div class="divider"></div>
+      <div class="grid cols-2" style="margin-top:30px;">
+        <div class="card teal">
+          <h3>Hitting Instruction</h3>
+          <p>Swing mechanics, bat speed, contact drills, approach, timing, situational hitting. From basic fundamentals to advanced pitch-recognition work.</p>
+        </div>
+        <div class="card pink">
+          <h3>Catching Development</h3>
+          <p>Receiving, framing, footwork, blocking, throwing to bases, pitch calling. Positional instruction from someone who caught at the pro level.</p>
+        </div>
+        <div class="card teal">
+          <h3>Pitching Support</h3>
+          <p>Mechanics, arm care, pitch design, command work, and bullpen sessions with video feedback. Age-appropriate volume + intensity.</p>
+        </div>
+        <div class="card pink">
+          <h3>Fielding &amp; Defense</h3>
+          <p>Infield and outfield fundamentals, footwork, throwing accuracy, cut-offs and relays, game situations and communication.</p>
+        </div>
+        <div class="card teal">
+          <h3>Cover for Absent Coaches</h3>
+          <p>Head coach out of town? Assistant unavailable? Coach can step in to run a full team practice so your athletes stay on schedule.</p>
+        </div>
+        <div class="card pink">
+          <h3>Position-Specific Clinics</h3>
+          <p>One-day clinics focused on a single skill for your whole team — e.g., a 90-minute catching clinic for your two catchers plus their backups.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="alt">
+    <div class="container">
+      <p class="eyebrow">How It Works</p>
+      <h2>Simple Booking.</h2>
+      <div class="divider"></div>
+      <ul class="check-list" style="max-width:640px;">
+        <li><strong>Send the details below</strong> &mdash; your team name, age group, what you'd like Coach to focus on, and a few dates that could work.</li>
+        <li class="pink"><strong>Coach will reply</strong> within 24 hours with availability and pricing tailored to your ask (one-off session, multi-week program, or clinic format).</li>
+        <li><strong>Coach travels</strong> to your practice location within the GTA. Longer distances by arrangement.</li>
+        <li class="pink"><strong>Bring what you have</strong> &mdash; Coach adapts to whatever gear and space you're working with.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="inquiry">
+    <div class="container contact-grid">
+      <div>
+        <p class="eyebrow">Get In Touch</p>
+        <h2>Book Coach For Your Team.</h2>
+        <div class="divider"></div>
+        <form class="contact-form" id="ta-form" novalidate>
+          <div class="form-row">
+            <div>
+              <label for="ta-name">Your Name</label>
+              <input id="ta-name" name="name" type="text" required autocomplete="name">
+            </div>
+            <div>
+              <label for="ta-email">Email</label>
+              <input id="ta-email" name="email" type="email" required autocomplete="email">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div>
+              <label for="ta-phone">Phone</label>
+              <input id="ta-phone" name="phone" type="tel" autocomplete="tel">
+            </div>
+            <div>
+              <label for="ta-role">Your Role</label>
+              <select id="ta-role" name="role">
+                <option value="">Select&hellip;</option>
+                <option>Head Coach</option>
+                <option>Assistant Coach</option>
+                <option>Team Manager / Parent Rep</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div>
+              <label for="ta-team">Team Name</label>
+              <input id="ta-team" name="teamName" type="text" placeholder="e.g. Ajax Spartans Rep 2015">
+            </div>
+            <div>
+              <label for="ta-age">Age Group</label>
+              <input id="ta-age" name="ageGroup" type="text" placeholder="e.g. 10U, 13U, U18">
+            </div>
+          </div>
+
+          <div>
+            <label for="ta-focus">What would you like Coach to focus on?</label>
+            <select id="ta-focus" name="focus">
+              <option value="">Select&hellip;</option>
+              <option>Hitting</option>
+              <option>Catching</option>
+              <option>Pitching</option>
+              <option>Fielding / Defense</option>
+              <option>Multiple skills (mixed session)</option>
+              <option>Cover full practice (coaches away)</option>
+              <option>Other / describe below</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="ta-message">Message (dates, location, anything else Coach should know)</label>
+            <textarea id="ta-message" name="message" placeholder="Preferred dates, practice location, roster size, any specific needs."></textarea>
+          </div>
+
+          <button class="btn btn-primary" type="submit" style="justify-self:start;">Send Inquiry</button>
+          <div class="form-msg" id="ta-msg" role="status" aria-live="polite"></div>
+        </form>
+      </div>
+
+      <aside class="contact-info">
+        <p class="eyebrow">Direct Contact</p>
+        <h2>Or Reach Coach Directly.</h2>
+        <div class="divider"></div>
+        <div class="info-block">
+          <div class="label">Email</div>
+          <a href="mailto:Crosbyathletics321@gmail.com">Crosbyathletics321@gmail.com</a>
+        </div>
+        <div class="info-block">
+          <div class="label">Phone</div>
+          <a href="tel:+12899288662">+1 (289) 928-8662</a>
+        </div>
+        <div class="info-block">
+          <div class="label">Response Time</div>
+          <p style="margin:0;">Within 24 hours, usually much faster.</p>
+        </div>
+        <div class="info-block">
+          <div class="label">Coverage Area</div>
+          <p style="margin:0;">GTA-based teams. Longer distances by arrangement.</p>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+</main>
+
+<script>
+document.getElementById('ta-form').addEventListener('submit', async function(e){
+  e.preventDefault();
+  var msg = document.getElementById('ta-msg');
+  var btn = e.target.querySelector('button[type=submit]');
+  msg.textContent = ''; msg.classList.remove('error','success');
+  var payload = {
+    name:      document.getElementById('ta-name').value.trim(),
+    email:     document.getElementById('ta-email').value.trim(),
+    phone:     document.getElementById('ta-phone').value.trim(),
+    role:      document.getElementById('ta-role').value,
+    teamName:  document.getElementById('ta-team').value.trim(),
+    ageGroup:  document.getElementById('ta-age').value.trim(),
+    focus:     document.getElementById('ta-focus').value,
+    message:   document.getElementById('ta-message').value.trim()
+  };
+  if(!payload.name || !payload.email){
+    msg.textContent = 'Name and email are required.';
+    msg.classList.add('error');
+    return;
+  }
+  btn.disabled = true; btn.textContent = 'Sending…';
+  try {
+    var r = await fetch('/api/team-assistance-inquiry', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(payload)
+    });
+    var j = await r.json();
+    if(!r.ok){
+      msg.textContent = j.error || 'Something went wrong. Please email Coach directly.';
+      msg.classList.add('error');
+      btn.disabled = false; btn.textContent = 'Send Inquiry';
+      return;
+    }
+    msg.innerHTML = '<strong>Thanks!</strong> Coach will reply within 24 hours.';
+    msg.classList.add('success');
+    e.target.reset();
+    btn.textContent = 'Sent ✓';
+  } catch(err){
+    msg.textContent = 'Network error. Please email Coach directly.';
+    msg.classList.add('error');
+    btn.disabled = false; btn.textContent = 'Send Inquiry';
+  }
+});
+</script>
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <div class="footer-brand">
+        <img src="assets/logo.png" alt="">
+        <div>
+          <h4>TI Baseball</h4>
+          <small>TOOLS OF IGNORANCE · EST. 2024</small>
+        </div>
+      </div>
+      <p style="max-width:340px;">Elite baseball development in Ajax, Ontario. Hitters. Pitchers. Catchers. Train strong, play strong.</p>
+    </div>
+    <div>
+      <h5>Explore</h5>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="coach.html">The Coaches</a></li>
+        <li><a href="programs.html">Programs</a></li>
+        
+        <li><a href="academy.html">Winter Academy</a></li>
+        <li><a href="facility.html">Facility</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5>Visit</h5>
+      <address>
+        274 MacKenzie Ave, Suite 450<br>
+        Ajax, ON L1S 2E9<br>
+        Canada
+      </address>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <div>© <span id="year">2026</span> TI Baseball (Tools of Ignorance). All rights reserved.</div>
+    <div>Train Strong. Play Strong.</div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
