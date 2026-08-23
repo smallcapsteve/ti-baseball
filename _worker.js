@@ -5249,6 +5249,9 @@ export default {
     if(p==='/api/monday-slots') return handleMondaySlots(request,env);
     if(p==='/api/book-monday-credit') return handleBookMondayCredit(request,env);
     if(p==='/api/book-academy-credit') return handleBookAcademyCredit(request,env);
+    if(p==='/api/book-wd-8to12') return handleWDBookCredit(request,env,'8to12');
+    if(p==='/api/book-wd-13to18') return handleWDBookCredit(request,env,'13to18');
+    if(p==='/api/book-wd-catchers') return handleWDBookCredit(request,env,'catchers');
     if(p==='/api/admin/monday-reconcile') return handleMondayReconcile(request,env);
     if(p==='/api/admin/monday-roster-alert') return handleMondayRosterAlert(request,env);
     if(p==='/api/admin/cal-diag') return handleCalDiag(request,env);
