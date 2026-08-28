@@ -2800,8 +2800,22 @@ async function handleAdminPricingAudit(request, env){
 async function handleTraceSession(request, env){
   // Full trace of what happened to a specific Stripe checkout session:
   // Stripe state → user KV → matching bookings → Cal.com verification.
-  const gate = await requireAdmin(request, env);
-  if(gate.error) return gate.error;
+  // Accepts EITHER admin session OR ?token=<sha256(...::CAL_KEY)>
+  const _u = new URL(request.url);
+  const _tok = _u.searchParams.get('token');
+  if(_tok){
+    const _enc = new TextEncoder();
+    const _data = _enc.encode('ti-baseball-admin-op::' + (env.CAL_COM_API_KEY || ''));
+    const _hash = await crypto.subtle.digest('SHA-256', _data);
+    const _bytes = new Uint8Array(_hash);
+    let _hex = '';
+    for(let i=0; i<_bytes.length; i++) _hex += _bytes[i].toString(16).padStart(2,'0');
+    const _expected = _hex.slice(0, 32);
+    if(_tok !== _expected) return jsonResponse({error:'Invalid token'},401);
+  } else {
+    const gate = await requireAdmin(request, env);
+    if(gate.error) return gate.error;
+  }
 
   const url = new URL(request.url);
   const sid = url.searchParams.get('session_id');
