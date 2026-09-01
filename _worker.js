@@ -1715,7 +1715,8 @@ async function handleClaimSingleBooking(request, env){
       'player-name': athleteName2,
       'athlete-dob': dob2,
       'level-of-play': level2,
-      'waiver-agreement': true
+      'waiver-agreement': true,
+      'Are-you-looking-for-help-with-hitting--catching--pitching': 'Hitting'
     },
     metadata: {
       ti_email: user.email,
