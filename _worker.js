@@ -1093,7 +1093,8 @@ async function createCalBookingForUser(env, user, eventTypeId, startISO, extraMe
       'player-name': athleteName,
       'athlete-dob': athleteDob,
       'level-of-play': level,
-      'waiver-agreement': true
+      'waiver-agreement': true,
+      'Are-you-looking-for-help-with-hitting--catching--pitching': 'Hitting'
     },
     metadata: Object.assign({
       ti_email: user.email,
@@ -1896,7 +1897,8 @@ async function handleBookSession(request, env){
       'player-name': _aname,
       'athlete-dob': _dob,
       'level-of-play': _level,
-      'waiver-agreement': true
+      'waiver-agreement': true,
+      'Are-you-looking-for-help-with-hitting--catching--pitching': 'Hitting'
     },
     metadata: {
       ti_email: user.email,
@@ -2076,7 +2078,8 @@ async function handleBookMondayCredit(request, env){
       'player-name': _aname,
       'athlete-dob': _dob,
       'level-of-play': _level,
-      'waiver-agreement': true
+      'waiver-agreement': true,
+      'Are-you-looking-for-help-with-hitting--catching--pitching': 'Hitting'
     },
     metadata: {
       ti_email: user.email,
