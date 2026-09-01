@@ -2576,6 +2576,7 @@ async function handleCalEventTypeDiag(request, env){
             path: a.path, version: a.version, httpStatus: r.status,
             title: d?.title, slug: d?.slug, length: d?.length || d?.lengthInMinutes,
             seats: d?.seats,
+            bookingFields: d?.bookingFields,
             locations: d?.locations,
             hideOrganizerEmail: d?.hideOrganizerEmail,
             bookingRequiresAuthentication: d?.bookingRequiresAuthentication,
