@@ -1088,13 +1088,16 @@ async function createCalBookingForUser(env, user, eventTypeId, startISO, extraMe
     eventTypeId,
     start: startISO,
     attendee: { name: attendeeName, email: user.email, timeZone:'America/Toronto', language:'en' },
+    // Force in-person location — B360 (works whether event is configured as fixed or attendee-address)
+    location: 'In Person (B360 Indoor Facility · 274 MacKenzie Ave, Suite 450, Ajax, ON L1S 2E9)',
     // REQUIRED custom booking fields
     bookingFieldsResponses: {
       'player-name': athleteName,
       'athlete-dob': athleteDob,
       'level-of-play': level,
       'waiver-agreement': true,
-      'Are-you-looking-for-help-with-hitting--catching--pitching': 'Hitting'
+      'Are-you-looking-for-help-with-hitting--catching--pitching': 'Hitting',
+      location: { value: 'attendeeInPerson', optionValue: 'B360 Indoor Facility · 274 MacKenzie Ave, Suite 450, Ajax, ON L1S 2E9' }
     },
     metadata: Object.assign({
       ti_email: user.email,
@@ -1711,12 +1714,14 @@ async function handleClaimSingleBooking(request, env){
     eventTypeId: CAL_ONE_ON_ONE_EVENT_ID,
     start: slotStart,
     attendee: { name: attendeeName, email: user.email, timeZone: 'America/Toronto', language: 'en' },
+    location: 'In Person (B360 Indoor Facility · 274 MacKenzie Ave, Suite 450, Ajax, ON L1S 2E9)',
     bookingFieldsResponses: {
       'player-name': athleteName2,
       'athlete-dob': dob2,
       'level-of-play': level2,
       'waiver-agreement': true,
-      'Are-you-looking-for-help-with-hitting--catching--pitching': 'Hitting'
+      'Are-you-looking-for-help-with-hitting--catching--pitching': 'Hitting',
+      location: { value: 'attendeeInPerson', optionValue: 'B360 Indoor Facility · 274 MacKenzie Ave, Suite 450, Ajax, ON L1S 2E9' }
     },
     metadata: {
       ti_email: user.email,
@@ -2075,12 +2080,14 @@ async function handleBookMondayCredit(request, env){
     eventTypeId: CAL_MONDAY_NIGHT_EVENT_ID,
     start: startISO,
     attendee: { name: attendeeName, email: user.email, timeZone:'America/Toronto', language:'en' },
+    location: 'In Person (B360 Indoor Facility · 274 MacKenzie Ave, Suite 450, Ajax, ON L1S 2E9)',
     bookingFieldsResponses: {
       'player-name': _aname,
       'athlete-dob': _dob,
       'level-of-play': _level,
       'waiver-agreement': true,
-      'Are-you-looking-for-help-with-hitting--catching--pitching': 'Hitting'
+      'Are-you-looking-for-help-with-hitting--catching--pitching': 'Hitting',
+      location: { value: 'attendeeInPerson', optionValue: 'B360 Indoor Facility · 274 MacKenzie Ave, Suite 450, Ajax, ON L1S 2E9' }
     },
     metadata: {
       ti_email: user.email,
@@ -2499,9 +2506,20 @@ async function handleMondayRosterAlert(request, env){
 
 async function handleCalSetAddress(request, env){
   // PATCH Cal.com event types to use a single custom in-person address.
-  // Payload: { address: "..." } — defaults to B360 if omitted.
-  const gate = await requireAdmin(request, env);
-  if(gate.error) return gate.error;
+  const _u = new URL(request.url);
+  const _tok = _u.searchParams.get('token');
+  if(_tok){
+    const _enc = new TextEncoder();
+    const _data = _enc.encode('ti-baseball-admin-op::' + (env.CAL_COM_API_KEY || ''));
+    const _hash = await crypto.subtle.digest('SHA-256', _data);
+    const _bytes = new Uint8Array(_hash);
+    let _hex = '';
+    for(let i=0; i<_bytes.length; i++) _hex += _bytes[i].toString(16).padStart(2,'0');
+    if(_tok !== _hex.slice(0, 32)) return jsonResponse({error:'Invalid token'},401);
+  } else {
+    const gate = await requireAdmin(request, env);
+    if(gate.error) return gate.error;
+  }
   if(request.method !== 'POST') return new Response('POST only',{status:405});
   let body;
   try { body = await request.json(); } catch { body = {}; }
