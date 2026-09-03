@@ -1088,16 +1088,13 @@ async function createCalBookingForUser(env, user, eventTypeId, startISO, extraMe
     eventTypeId,
     start: startISO,
     attendee: { name: attendeeName, email: user.email, timeZone:'America/Toronto', language:'en' },
-    // Force in-person location — B360 (works whether event is configured as fixed or attendee-address)
-    location: 'In Person (B360 Indoor Facility · 274 MacKenzie Ave, Suite 450, Ajax, ON L1S 2E9)',
     // REQUIRED custom booking fields
     bookingFieldsResponses: {
       'player-name': athleteName,
       'athlete-dob': athleteDob,
       'level-of-play': level,
       'waiver-agreement': true,
-      'Are-you-looking-for-help-with-hitting--catching--pitching': 'Hitting',
-      location: { value: 'attendeeInPerson', optionValue: 'B360 Indoor Facility · 274 MacKenzie Ave, Suite 450, Ajax, ON L1S 2E9' }
+      'Are-you-looking-for-help-with-hitting--catching--pitching': 'Hitting'
     },
     metadata: Object.assign({
       ti_email: user.email,
@@ -1714,14 +1711,12 @@ async function handleClaimSingleBooking(request, env){
     eventTypeId: CAL_ONE_ON_ONE_EVENT_ID,
     start: slotStart,
     attendee: { name: attendeeName, email: user.email, timeZone: 'America/Toronto', language: 'en' },
-    location: 'In Person (B360 Indoor Facility · 274 MacKenzie Ave, Suite 450, Ajax, ON L1S 2E9)',
     bookingFieldsResponses: {
       'player-name': athleteName2,
       'athlete-dob': dob2,
       'level-of-play': level2,
       'waiver-agreement': true,
-      'Are-you-looking-for-help-with-hitting--catching--pitching': 'Hitting',
-      location: { value: 'attendeeInPerson', optionValue: 'B360 Indoor Facility · 274 MacKenzie Ave, Suite 450, Ajax, ON L1S 2E9' }
+      'Are-you-looking-for-help-with-hitting--catching--pitching': 'Hitting'
     },
     metadata: {
       ti_email: user.email,
@@ -2080,14 +2075,12 @@ async function handleBookMondayCredit(request, env){
     eventTypeId: CAL_MONDAY_NIGHT_EVENT_ID,
     start: startISO,
     attendee: { name: attendeeName, email: user.email, timeZone:'America/Toronto', language:'en' },
-    location: 'In Person (B360 Indoor Facility · 274 MacKenzie Ave, Suite 450, Ajax, ON L1S 2E9)',
     bookingFieldsResponses: {
       'player-name': _aname,
       'athlete-dob': _dob,
       'level-of-play': _level,
       'waiver-agreement': true,
-      'Are-you-looking-for-help-with-hitting--catching--pitching': 'Hitting',
-      location: { value: 'attendeeInPerson', optionValue: 'B360 Indoor Facility · 274 MacKenzie Ave, Suite 450, Ajax, ON L1S 2E9' }
+      'Are-you-looking-for-help-with-hitting--catching--pitching': 'Hitting'
     },
     metadata: {
       ti_email: user.email,
