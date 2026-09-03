@@ -2532,9 +2532,9 @@ async function handleCalSetAddress(request, env){
   //   [{ type: 'integrations:daily', ... }] ← video (not relevant)
   //   [{ type: 'inPerson', address: '...' }]
   const locationVariants = [
-    [{ type: 'address', address: address, displayLocationPublicly: true }],
-    [{ type: 'in-person', address: address, displayLocationPublicly: true }],
-    [{ type: 'inPerson', address: address }]
+    [{ type: 'address', address: address, public: true }],
+    [{ type: 'address', address: address }],
+    [{ type: 'address', address: address, displayLocationPublicly: true }]
   ];
 
   const results = {};
