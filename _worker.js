@@ -3110,6 +3110,68 @@ async function handleExpireMondayCredits(request, env){
   });
 }
 
+async function handleRetryFailedBooking(request, env){
+  // Retry a Cal.com booking that previously failed. Looks up the
+  // needs_manual_booking placeholder in the user's KV, actually creates
+  // the booking on Cal.com now, and updates the placeholder to accepted.
+  // Accepts EITHER admin session OR ?token=<...>
+  const _u = new URL(request.url);
+  const _tok = _u.searchParams.get('token');
+  if(_tok){
+    const _enc = new TextEncoder();
+    const _data = _enc.encode('ti-baseball-admin-op::' + (env.CAL_COM_API_KEY || ''));
+    const _hash = await crypto.subtle.digest('SHA-256', _data);
+    const _bytes = new Uint8Array(_hash);
+    let _hex = '';
+    for(let i=0; i<_bytes.length; i++) _hex += _bytes[i].toString(16).padStart(2,'0');
+    if(_tok !== _hex.slice(0, 32)) return jsonResponse({error:'Invalid token'},401);
+  } else {
+    const gate = await requireAdmin(request, env);
+    if(gate.error) return gate.error;
+  }
+
+  const email = String(_u.searchParams.get('email')||'').toLowerCase().trim();
+  const stripeRef = String(_u.searchParams.get('stripeRef')||'').trim();
+  const eventTypeIdParam = _u.searchParams.get('eventTypeId');
+  if(!email || !stripeRef) return jsonResponse({error:'email + stripeRef required'},400);
+
+  const user = await env.USERS_KV.get(email, 'json');
+  if(!user) return jsonResponse({error:'user not found'},404);
+
+  const bookings = user.bookings || [];
+  const idx = bookings.findIndex(b => b.stripeRef === stripeRef && b.status === 'needs_manual_booking');
+  if(idx < 0) return jsonResponse({error:'no needs_manual_booking placeholder for that stripeRef',bookings:bookings.filter(b=>b.stripeRef===stripeRef)},404);
+
+  const placeholder = bookings[idx];
+  const slotStart = placeholder.startTime;
+  const eventTypeId = eventTypeIdParam ? parseInt(eventTypeIdParam,10) : CAL_ONE_ON_ONE_EVENT_ID;
+
+  const res = await createCalBookingForUser(env, user, eventTypeId, slotStart, {
+    ti_stripe_ref: stripeRef,
+    ti_retry: 'true',
+    ti_source: placeholder.source || 'admin_retry'
+  });
+
+  if(!res.ok){
+    return jsonResponse({ ok:false, error:'Cal.com still rejected the booking', calError: res.error, detail: res.detail },502);
+  }
+
+  // Update placeholder → accepted
+  bookings[idx].calBookingUid = res.uid;
+  bookings[idx].status = 'accepted';
+  bookings[idx].calError = undefined;
+  bookings[idx].retriedAt = Date.now();
+  user.bookings = bookings;
+  await env.USERS_KV.put(email, JSON.stringify(user));
+
+  try { await sendCoachAlertLogged(env, 'program_single', {
+    user, programKey: placeholder.source || 'one-on-one', programLabel: '1-on-1 Training Session (retry)',
+    slotStart, calBookingUid: res.uid
+  }); } catch(_){}
+
+  return jsonResponse({ ok:true, bookingUid: res.uid, slotStart });
+}
+
 async function handleResolveBooking(request, env){
   // Admin: fix a needs_manual_booking placeholder by attaching a real
   // Cal.com booking UID. Sets status='accepted' and clears calError.
@@ -5406,6 +5468,7 @@ export default {
     if(p==='/api/admin/cal-set-address') return handleCalSetAddress(request,env);
     if(p==='/api/admin/trace-session') return handleTraceSession(request,env);
     if(p==='/api/admin/resolve-booking') return handleResolveBooking(request,env);
+    if(p==='/api/admin/retry-failed-booking') return handleRetryFailedBooking(request,env);
     if(p==='/api/admin/expire-monday-credits') return handleExpireMondayCredits(request,env);
     if(p==='/api/admin/impersonate') return handleImpersonate(request,env);
     if(p==='/api/admin/wd-signups') return handleAdminWDSignups(request,env);
