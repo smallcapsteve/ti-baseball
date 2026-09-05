@@ -4819,6 +4819,94 @@ async function handleAdminBeginnersLeadUpdate(request, env, id){
 // paid if a matching Stripe session is found).
 // Idempotent — re-running it never duplicates entries.
 // ============================================================
+
+// Secret-gated bootstrap reconcile — same as admin reconcile but auth via
+// X-Reconcile-Secret header. Lets us fix a specific user's missing credits +
+// program tags after a webhook race or user-created-after-payment. Idempotent.
+async function handleBootstrapReconcile(request, env){
+  const secret = request.headers.get('X-Reconcile-Secret') || '';
+  if(!secret || secret !== env.RECONCILE_SECRET){
+    return jsonResponse({error:'unauthorized'}, 401);
+  }
+  const url = new URL(request.url);
+  const email = normalizeEmail(url.searchParams.get('email') || '');
+  if(!email) return jsonResponse({error:'email required'},400);
+  const user = await env.USERS_KV.get(email, 'json');
+  if(!user) return jsonResponse({error:'User not found - sign them up first, then re-run'},404);
+  user.bookings = user.bookings || [];
+  const report = { calBookingsImported:0, stripePaymentsLinked:0, creditsGranted:0, preordersLinked:0, alreadyKnown:0, errors:[] };
+  try {
+    let customerId = user.stripeCustomerId;
+    if(!customerId){
+      const searchUrl = 'https://api.stripe.com/v1/customers/search?query=' + encodeURIComponent('email:"' + email + '"') + '&limit=5';
+      const r = await fetch(searchUrl, { headers: { 'Authorization': 'Bearer ' + env.STRIPE_RECONCILE_KEY } });
+      if(r.ok){
+        const body = await r.json();
+        if((body.data||[]).length){ customerId = body.data[0].id; user.stripeCustomerId = customerId; }
+      }
+    }
+    if(customerId){
+      const listUrl = 'https://api.stripe.com/v1/checkout/sessions?customer=' + encodeURIComponent(customerId) + '&limit=50';
+      const r = await fetch(listUrl, { headers: { 'Authorization': 'Bearer ' + env.STRIPE_RECONCILE_KEY } });
+      if(r.ok){
+        const body = await r.json();
+        for(const cs of (body.data || [])){
+          if(cs.payment_status !== 'paid') continue;
+          const stripeRef = cs.subscription || cs.payment_intent || cs.id;
+          const alreadyBooked = (user.bookings||[]).find(function(b){ return b.stripeRef === stripeRef; });
+          const alreadyPre    = (user.preorders||[]).find(function(p){ return p.stripeRef === stripeRef; });
+          const alreadyCred   = (user.credits||[]).find(function(c){ return c.stripeId === stripeRef; });
+          if(alreadyBooked || alreadyPre || alreadyCred){ report.alreadyKnown++; continue; }
+          const progKey = cs.metadata && cs.metadata.ti_program;
+          const packSize = parseInt((cs.metadata && cs.metadata.ti_pack_size) || '0', 10);
+          const cfg = progKey ? PROGRAMS_CATALOG[progKey] : null;
+          const now = Date.now();
+          if(cfg && cfg.preorder){
+            user.preorders = (user.preorders||[]).concat([{
+              id: newToken(8), program: progKey, slug: cfg.preorderSlug,
+              stripeRef: stripeRef, mode: cfg.stripeMode, priceCents: cfg.priceCents,
+              paidAt: (cs.created||now/1000)*1000, status:'reserved'
+            }]);
+            report.preordersLinked++;
+          } else if(cfg && cfg.creditPack && cfg.creditCount){
+            user.credits = (user.credits||[]).concat([{
+              id: newToken(8), count: cfg.creditCount, used:0,
+              purchasedAt: (cs.created||now/1000)*1000, expiresAt: now + 60*24*60*60*1000,
+              program: cfg.creditProgram || 'one-on-one',
+              source: progKey + '_bootstrap_reconcile', stripeId: stripeRef
+            }]);
+            report.creditsGranted++;
+          } else if(progKey){
+            user.bookings.push({
+              calBookingUid: null, startTime: (cs.metadata && cs.metadata.ti_slot) || null,
+              bookedAt: (cs.created||now/1000)*1000, status:'paid',
+              stripeRef: stripeRef, source: progKey,
+              reconciledAt: now, reconciledFrom:'stripe_bootstrap'
+            });
+            report.stripePaymentsLinked++;
+          } else if(packSize >= 4 && packSize <= 12){
+            user.credits = (user.credits||[]).concat([{
+              id: newToken(8), count: packSize, used:0, program:'one-on-one',
+              purchasedAt: (cs.created||now/1000)*1000, expiresAt: now + 30*24*60*60*1000,
+              source:'bootstrap_reconcile', stripeId: stripeRef
+            }]);
+            report.creditsGranted++;
+          }
+        }
+      } else {
+        const t = await r.text().catch(function(){return '';});
+        report.errors.push({source:'stripe', status:r.status, detail:t.slice(0,200)});
+      }
+    } else {
+      report.errors.push({source:'stripe', detail:'no Stripe customer found'});
+    }
+  } catch(err){
+    report.errors.push({source:'stripe', error:String((err && err.message) || err).slice(0,200)});
+  }
+  await env.USERS_KV.put(user.email, JSON.stringify(user));
+  return jsonResponse({ ok:true, email: email, report: report });
+}
+
 async function handleAdminReconcileUser(request, env, email){
   const a = await requireAdmin(request, env);
   if(a.error) return a.error;
@@ -5541,6 +5629,7 @@ export default {
     if(p==='/api/book-wd-13to18') return handleWDBookCredit(request,env,'13to18');
     if(p==='/api/book-wd-catchers') return handleWDBookCredit(request,env,'catchers');
     if(p==='/api/admin/monday-reconcile') return handleMondayReconcile(request,env);
+    if(p==='/api/bootstrap-reconcile') return handleBootstrapReconcile(request,env);
     if(p==='/api/admin/monday-roster-alert') return handleMondayRosterAlert(request,env);
     if(p==='/api/admin/cal-diag') return handleCalDiag(request,env);
     if(p==='/api/admin/cal-event-diag') return handleCalEventTypeDiag(request,env);
