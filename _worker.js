@@ -1915,6 +1915,11 @@ async function handleBookSession(request, env){
   try { body = await request.json(); } catch { return jsonResponse({error:'Invalid JSON'},400); }
   const startISO = (body.start||'').trim();
   if(!startISO || !/^\d{4}-\d{2}-\d{2}T/.test(startISO)) return jsonResponse({error:'Missing or invalid start time'},400);
+  // Multi-coach: which coach was picked?
+  const coachKey = (body.coach && COACHES[body.coach]) ? body.coach : 'crosby';
+  const bookingCoach = getCoach(coachKey);
+  const bookingApiKey = coachApiKey(env, coachKey) || env.CAL_COM_API_KEY;
+  const bookingEventId = bookingCoach.oneOnOneEventId;
 
   // Re-read user to make sure credits are fresh
   const user = await env.USERS_KV.get(auth.user.email,'json');
@@ -1931,7 +1936,7 @@ async function handleBookSession(request, env){
   const _dob = /^\d{4}-\d{2}-\d{2}$/.test(user.athleteDob||'') ? user.athleteDob : '2010-01-01';
   const _aname = (user.athleteName || attendeeName || 'Not provided').trim();
   const bookingPayload = {
-    eventTypeId: CAL_ONE_ON_ONE_EVENT_ID,
+    eventTypeId: bookingEventId,
     start: startISO,
     attendee: {
       name: attendeeName,
