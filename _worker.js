@@ -1779,7 +1779,7 @@ const CAL_ONE_ON_ONE_EVENT_ID = 6031855;
 const CAL_MONDAY_NIGHT_EVENT_ID = 6031818;  // 1-on-1 60-min event
 
 // ============================================================
-// Multi-coach 1-on-1 booking. Each coach has their own Cal.com account,
+// Multi-coach 1-on-1 booking (Crosby + Hastings live). Each coach has their own Cal.com account,
 // API key, event type, and email. Parent picks at booking time.
 // ============================================================
 const CAL_HASTINGS_ONE_ON_ONE_EVENT_ID = 6957580;
