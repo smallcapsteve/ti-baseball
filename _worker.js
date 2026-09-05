@@ -4823,6 +4823,22 @@ async function handleAdminBeginnersLeadUpdate(request, env, id){
 // Secret-gated bootstrap reconcile — same as admin reconcile but auth via
 // X-Reconcile-Secret header. Lets us fix a specific user's missing credits +
 // program tags after a webhook race or user-created-after-payment. Idempotent.
+
+// Secret-gated read-only user dump for post-purchase debugging.
+async function handleBootstrapUserDump(request, env){
+  const secret = request.headers.get('X-Reconcile-Secret') || '';
+  if(!secret || secret !== env.RECONCILE_SECRET){
+    return jsonResponse({error:'unauthorized'}, 401);
+  }
+  const url = new URL(request.url);
+  const email = normalizeEmail(url.searchParams.get('email') || '');
+  if(!email) return jsonResponse({error:'email required'},400);
+  const user = await env.USERS_KV.get(email, 'json');
+  if(!user) return jsonResponse({error:'User not found'},404);
+  const { passwordHash, ...safe } = user;
+  return jsonResponse({ ok:true, email:email, user:safe, summary: creditSummary(user) });
+}
+
 async function handleBootstrapReconcile(request, env){
   const secret = request.headers.get('X-Reconcile-Secret') || '';
   if(!secret || secret !== env.RECONCILE_SECRET){
@@ -5630,6 +5646,7 @@ export default {
     if(p==='/api/book-wd-catchers') return handleWDBookCredit(request,env,'catchers');
     if(p==='/api/admin/monday-reconcile') return handleMondayReconcile(request,env);
     if(p==='/api/bootstrap-reconcile') return handleBootstrapReconcile(request,env);
+    if(p==='/api/bootstrap-user') return handleBootstrapUserDump(request,env);
     if(p==='/api/admin/monday-roster-alert') return handleMondayRosterAlert(request,env);
     if(p==='/api/admin/cal-diag') return handleCalDiag(request,env);
     if(p==='/api/admin/cal-event-diag') return handleCalEventTypeDiag(request,env);
