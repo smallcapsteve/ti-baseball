@@ -429,7 +429,24 @@ async function handleAdminUsers(request, env){
         // Academy
         'academy-full':'Academy',
         'academy-monthly':'Academy',
-        'academy':'Academy'
+        'academy':'Academy',
+        // Multi-person 1-on-1
+        'multi-person-session':'Multi-Person',
+        // Winter Development
+        'wd-8to12-full-season':'Winter Dev 8-12',
+        'wd-8to12-two-phase':'Winter Dev 8-12',
+        'wd-8to12-single-phase':'Winter Dev 8-12',
+        'wd-8to12-drop-in':'Winter Dev 8-12',
+        'wd-13to18-full-season':'Winter Dev 13-18',
+        'wd-13to18-two-phase':'Winter Dev 13-18',
+        'wd-13to18-single-phase':'Winter Dev 13-18',
+        'wd-13to18-drop-in':'Winter Dev 13-18',
+        'wd-catchers-full-season':'Winter Dev Catchers',
+        'wd-catchers-two-phase':'Winter Dev Catchers',
+        'wd-catchers-single-phase':'Winter Dev Catchers',
+        'wd-catchers-drop-in':'Winter Dev Catchers',
+        // Monday 4-pack (legacy)
+        'monday-4-pack':'Monday Night'
       };
       for(const b of (u.bookings||[])){
         const sv = (b.source||'').toString();
@@ -440,8 +457,8 @@ async function handleAdminUsers(request, env){
       if(u.subscription && u.subscription.program && groupMap[u.subscription.program]) tags.add(groupMap[u.subscription.program]);
       const _now = Date.now();
       for(const lot of (u.credits||[])){
-        const rem = (lot.count||0) - (lot.used||0);
-        if(rem <= 0 || lot.expiresAt <= _now) continue;
+        // Tag from every lot the customer ever bought (identity, not availability).
+        // Availability lives in the Credits column already.
         const prog = lot.program || 'one-on-one';
         if(prog === 'academy') tags.add('Academy');
         else if(prog === 'one-on-one') tags.add('1-on-1');
@@ -2030,7 +2047,8 @@ async function handleBookSession(request, env){
     creditLotId: lot.id,
     bookedAt: Date.now(),
     status: 'accepted',
-    coach: coachKey
+    coach: coachKey,
+    source: 'one-on-one'
   }]);
   await env.USERS_KV.put(user.email, JSON.stringify(user));
 
