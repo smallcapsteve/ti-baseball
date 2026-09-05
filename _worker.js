@@ -631,7 +631,7 @@ const PROGRAMS_CATALOG = {
     priceCents: 9000, currency: 'cad',
     stripeMode: 'payment',
     needsSlot: true,
-    calEventId: 6031855,
+    calEventId: 6958887,
     preorder: false,
     description: '60-min 1-on-1 with Coach.'
   },
@@ -800,7 +800,7 @@ const PROGRAMS_CATALOG = {
     priceCents: 9000, currency: 'cad',
     stripeMode: 'payment',
     needsSlot: true,
-    calEventId: 6031855,
+    calEventId: 6958887,
     preorder: false,
     // Dynamic pricing: base + per additional person
     basePriceCents: 9000,
@@ -1795,7 +1795,7 @@ async function handleClaimSingleBooking(request, env){
 // ============================================================
 // BOOKING HANDLERS — book Cal.com slots against credit balance
 // ============================================================
-const CAL_ONE_ON_ONE_EVENT_ID = 6031855;
+const CAL_ONE_ON_ONE_EVENT_ID = 6958887;
 const CAL_MONDAY_NIGHT_EVENT_ID = 6031818;  // 1-on-1 60-min event
 
 // ============================================================
@@ -1810,7 +1810,7 @@ const COACHES = {
     name: 'Coach Crosby',
     email: 'crosbyathletics321@gmail.com',
     apiKeyEnvVar: 'CAL_COM_API_KEY',
-    oneOnOneEventId: 6031855,
+    oneOnOneEventId: 6958887,
     default: true
   },
   hastings: {
@@ -2598,7 +2598,7 @@ async function handleCalSetAddress(request, env){
   let body;
   try { body = await request.json(); } catch { body = {}; }
   const address = String(body.address || 'B360 Indoor Facility · 274 MacKenzie Ave, Suite 450, Ajax, ON L1S 2E9');
-  const eventIds = [6031818, 6031855];
+  const eventIds = [6031818, 6958887];
 
   // Cal.com v2 (2024-06-14) location shape variants — try in order:
   //   [{ type: 'address', address: '...', displayLocationPublicly: true }]
@@ -2662,7 +2662,7 @@ async function handleCalEventTypeDiag(request, env){
     const gate = await requireAdmin(request, env);
     if(gate.error) return gate.error;
   }
-  const ids = [6031818, 6031855]; // Monday Night, 1-on-1
+  const ids = [6031818, 6958887]; // Monday Night, 1-on-1
   const results = {};
   for(const id of ids){
     const attempts = [
@@ -5271,8 +5271,8 @@ async function handleAdminBookOneOnOne(request, env, email){
   const user = await env.USERS_KV.get(email.toLowerCase(), 'json');
   if(!user) return jsonResponse({error:'User not found'},404);
 
-  // 1-on-1 Cal.com event id (matches CAL_ONE_ON_ONE_EVENT_ID = 6031855 used in booking handler)
-  const ONE_ON_ONE_EVENT = 6031855;
+  // 1-on-1 Cal.com event id (matches CAL_ONE_ON_ONE_EVENT_ID = 6958887 used in booking handler)
+  const ONE_ON_ONE_EVENT = 6958887;
 
   // If using a credit, find an earliest-expiring active 1-ON-1 lot first
   // (do NOT spend Monday-night credits on 1-on-1 bookings — different programs)
@@ -5574,7 +5574,7 @@ async function handleAdminRetryBooking(request, env, email){
 
   // Determine event ID from source
   const src2 = (target.source||'').toLowerCase();
-  let eventId = 6031855; // 1-on-1 default
+  let eventId = 6958887; // 1-on-1 default
   if(src2.includes('monday')) eventId = 6031818;
   else if(src2 === 'camps-morning') eventId = 6031774;
   else if(src2 === 'camps-afternoon') eventId = 6031947;
