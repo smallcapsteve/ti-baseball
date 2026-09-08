@@ -5005,6 +5005,41 @@ async function handleBootstrapRebook(request, env){
   return jsonResponse({ ok:true, email, report });
 }
 
+
+// Push already-created Cal.com booking UIDs into a user's KV bookings.
+// For cases where we booked directly via Cal.com API and just need to record them.
+async function handleBootstrapPushBookings(request, env){
+  const secret = request.headers.get('X-Reconcile-Secret') || '';
+  if(!secret || secret !== env.RECONCILE_SECRET) return jsonResponse({error:'unauthorized'},401);
+  if(request.method !== 'POST') return jsonResponse({error:'POST only'},405);
+  let body;
+  try { body = await request.json(); } catch { return jsonResponse({error:'bad json'},400); }
+  const email = normalizeEmail(body.email || '');
+  const bookings = Array.isArray(body.bookings) ? body.bookings : []; // [{uid,start,lotId,coach,source}]
+  if(!email) return jsonResponse({error:'email required'},400);
+  const user = await env.USERS_KV.get(email, 'json');
+  if(!user) return jsonResponse({error:'user not found'},404);
+  user.bookings = user.bookings || [];
+  let added = 0;
+  for(const b of bookings){
+    if(!b.uid || !b.start) continue;
+    if(user.bookings.find(function(x){ return x.calBookingUid === b.uid; })) continue;
+    user.bookings.push({
+      calBookingUid: b.uid,
+      startTime: b.start,
+      creditLotId: b.lotId || null,
+      bookedAt: Date.now(),
+      status: 'accepted',
+      coach: b.coach || 'crosby',
+      source: b.source || 'one-on-one',
+      recovered: true
+    });
+    added++;
+  }
+  await env.USERS_KV.put(user.email, JSON.stringify(user));
+  return jsonResponse({ ok:true, email, added, total: user.bookings.length });
+}
+
 async function handleBootstrapReconcile(request, env){
   const secret = request.headers.get('X-Reconcile-Secret') || '';
   if(!secret || secret !== env.RECONCILE_SECRET){
@@ -5815,6 +5850,7 @@ export default {
     if(p==='/api/bootstrap-user') return handleBootstrapUserDump(request,env);
     if(p==='/api/bootstrap-migrate') return handleBootstrapMigrateBookings(request,env);
     if(p==='/api/bootstrap-rebook') return handleBootstrapRebook(request,env);
+    if(p==='/api/bootstrap-push') return handleBootstrapPushBookings(request,env);
     if(p==='/api/admin/monday-roster-alert') return handleMondayRosterAlert(request,env);
     if(p==='/api/admin/cal-diag') return handleCalDiag(request,env);
     if(p==='/api/admin/cal-event-diag') return handleCalEventTypeDiag(request,env);
