@@ -3458,6 +3458,25 @@ async function handleScheduleIcs(request, env, providedToken){
   if(providedToken !== expected){
     return new Response('Invalid schedule token', { status: 404 });
   }
+  // DEPRECATED as of 2026-09-08. Cal.com's Google Calendar sync is reliable
+  // again, so this feed was duplicating every event on Coach's calendar
+  // ("1 on 1..." from Cal.com + "TI: Jo..." from this feed). Serve an empty
+  // valid VCALENDAR so any subscribed clients (Coach's Google Calendar)
+  // clear their imported copies on next refresh. Leave the endpoint alive
+  // so subscriptions don't error — just no events.
+  {
+    const empty = [
+      'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//TI Baseball//Coach Schedule//EN',
+      'CALSCALE:GREGORIAN','METHOD:PUBLISH',
+      'X-WR-CALNAME:TI Baseball — Coach Schedule (deprecated)',
+      'X-PUBLISHED-TTL:PT1H','REFRESH-INTERVAL;VALUE=DURATION:PT1H',
+      'END:VCALENDAR',''
+    ].join('\r\n');
+    return new Response(empty, {
+      status: 200,
+      headers: { 'Content-Type':'text/calendar; charset=utf-8', 'Cache-Control':'no-store' }
+    });
+  }
   const now = new Date();
   const before = new Date(Date.now() + 180*24*60*60*1000); // 6 months
   const q = new URLSearchParams({
