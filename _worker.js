@@ -4857,6 +4857,102 @@ async function handleBootstrapUserDump(request, env){
   return jsonResponse({ ok:true, email:email, user:safe, summary: creditSummary(user) });
 }
 
+
+// One-shot: migrate a user's bookings from an old Cal.com event id to a new one.
+// Cancels each old booking, creates a fresh booking at the same time on the new
+// event, and swaps the calBookingUid in KV. Idempotent — skips bookings whose
+// calBookingUid already lives on the new event.
+async function handleBootstrapMigrateBookings(request, env){
+  const secret = request.headers.get('X-Reconcile-Secret') || '';
+  if(!secret || secret !== env.RECONCILE_SECRET) return jsonResponse({error:'unauthorized'},401);
+  if(request.method !== 'POST') return jsonResponse({error:'POST only'},405);
+  let body;
+  try { body = await request.json(); } catch { return jsonResponse({error:'bad json'},400); }
+  const email = normalizeEmail(body.email || '');
+  const oldEventId = parseInt(body.oldEventId, 10);
+  const newEventId = parseInt(body.newEventId, 10);
+  const coachKey = (body.coach && COACHES[body.coach]) ? body.coach : 'crosby';
+  if(!email || !oldEventId || !newEventId) return jsonResponse({error:'email, oldEventId, newEventId required'},400);
+  const apiKey = coachApiKey(env, coachKey) || env.CAL_COM_API_KEY;
+  const user = await env.USERS_KV.get(email, 'json');
+  if(!user) return jsonResponse({error:'user not found'},404);
+
+  const report = { checked:0, migrated:0, alreadyNew:0, cancelledOnly:0, errors:[] };
+  const upcoming = (user.bookings || []).filter(function(b){
+    if(!b.calBookingUid) return false;
+    if(!b.startTime) return false;
+    return new Date(b.startTime).getTime() > Date.now();
+  });
+  for(const b of upcoming){
+    report.checked++;
+    // Look up the current Cal.com record to see which event it's on
+    let curEt = null;
+    try {
+      const r = await fetch('https://api.cal.com/v2/bookings/' + encodeURIComponent(b.calBookingUid), {
+        headers: { 'Authorization': 'Bearer ' + apiKey, 'cal-api-version': '2024-08-13' }
+      });
+      if(r.ok){
+        const j = await r.json();
+        curEt = ((j.data || {}).eventType || {}).id;
+      }
+    } catch(e){}
+    if(curEt === newEventId){ report.alreadyNew++; continue; }
+    if(curEt !== oldEventId){
+      report.errors.push({uid: b.calBookingUid, detail:'not on expected old event; skipping', curEt});
+      continue;
+    }
+    // 1. Create new booking on new event at same time
+    const attendeeName = (user.parentName || user.athleteName || user.email).trim();
+    const _vl = ['Beginner','House League','Select','Rep','College','Other'];
+    const _level = _vl.indexOf(user.level) !== -1 ? user.level : 'Other';
+    const _dob = /^\d{4}-\d{2}-\d{2}$/.test(user.athleteDob||'') ? user.athleteDob : '2010-01-01';
+    const _aname = (user.athleteName || attendeeName || 'Not provided').trim();
+    const payload = {
+      eventTypeId: newEventId,
+      start: b.startTime,
+      attendee: { name: attendeeName, email: user.email, timeZone: 'America/Toronto', language: 'en' },
+      bookingFieldsResponses: {
+        'player-name': _aname,
+        'athlete-dob': _dob,
+        'level-of-play': _level,
+        'waiver-agreement': true,
+        'Are-you-looking-for-help-with-hitting--catching--pitching': 'Hitting'
+      },
+      metadata: {
+        ti_email: user.email, ti_lot_id: b.creditLotId || '',
+        ti_credit_used: 'true', athlete_name: _aname, athlete_dob: _dob, level: _level,
+        ti_migrated_from: b.calBookingUid
+      }
+    };
+    const cr = await fetch('https://api.cal.com/v2/bookings', {
+      method:'POST',
+      headers:{ 'Authorization':'Bearer '+apiKey, 'cal-api-version':'2024-08-13', 'Content-Type':'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const cj = await cr.json().catch(function(){return {};});
+    if(!cr.ok){
+      report.errors.push({uid: b.calBookingUid, detail:'create failed', body: (cj.error && cj.error.message) || cj.message || 'unknown'});
+      continue;
+    }
+    const newUid = (cj.data && (cj.data.uid || cj.data.id)) || cj.uid || 'unknown';
+    // 2. Cancel the old booking
+    try {
+      await fetch('https://api.cal.com/v2/bookings/' + encodeURIComponent(b.calBookingUid) + '/cancel', {
+        method:'POST',
+        headers:{ 'Authorization':'Bearer '+apiKey, 'cal-api-version':'2024-08-13', 'Content-Type':'application/json' },
+        body: JSON.stringify({ cancellationReason:'Migrated to new event type — replaced by ' + newUid })
+      });
+    } catch(e){}
+    // 3. Swap the UID in KV
+    b.calBookingUid = newUid;
+    b.migratedFrom = payload.metadata.ti_migrated_from;
+    b.migratedAt = Date.now();
+    report.migrated++;
+  }
+  await env.USERS_KV.put(user.email, JSON.stringify(user));
+  return jsonResponse({ ok:true, email, oldEventId, newEventId, report });
+}
+
 async function handleBootstrapReconcile(request, env){
   const secret = request.headers.get('X-Reconcile-Secret') || '';
   if(!secret || secret !== env.RECONCILE_SECRET){
@@ -5665,6 +5761,7 @@ export default {
     if(p==='/api/admin/monday-reconcile') return handleMondayReconcile(request,env);
     if(p==='/api/bootstrap-reconcile') return handleBootstrapReconcile(request,env);
     if(p==='/api/bootstrap-user') return handleBootstrapUserDump(request,env);
+    if(p==='/api/bootstrap-migrate') return handleBootstrapMigrateBookings(request,env);
     if(p==='/api/admin/monday-roster-alert') return handleMondayRosterAlert(request,env);
     if(p==='/api/admin/cal-diag') return handleCalDiag(request,env);
     if(p==='/api/admin/cal-event-diag') return handleCalEventTypeDiag(request,env);
