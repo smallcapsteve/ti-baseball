@@ -4948,6 +4948,63 @@ async function handleBootstrapMigrateBookings(request, env){
   return jsonResponse({ ok:true, email, oldEventId, newEventId, report });
 }
 
+
+// Rebook Josh Kim's 4 sessions at fresh 7pm slots after removing the stale
+// KV entries (which are being served in our .ics feed and blocking 7pm on Cal.com).
+async function handleBootstrapRebook(request, env){
+  const secret = request.headers.get('X-Reconcile-Secret') || '';
+  if(!secret || secret !== env.RECONCILE_SECRET) return jsonResponse({error:'unauthorized'},401);
+  if(request.method !== 'POST') return jsonResponse({error:'POST only'},405);
+  let body;
+  try { body = await request.json(); } catch { return jsonResponse({error:'bad json'},400); }
+  const email = normalizeEmail(body.email || '');
+  const removeUids = Array.isArray(body.removeUids) ? body.removeUids : [];
+  const rebook = Array.isArray(body.rebook) ? body.rebook : [];  // [{start, eventTypeId, coachKey}]
+  if(!email) return jsonResponse({error:'email required'},400);
+  const user = await env.USERS_KV.get(email, 'json');
+  if(!user) return jsonResponse({error:'user not found'},404);
+
+  // 1. Strip specified UIDs from user.bookings
+  const before = (user.bookings || []).length;
+  user.bookings = (user.bookings || []).filter(function(b){ return !removeUids.includes(b.calBookingUid); });
+  const removed = before - user.bookings.length;
+  await env.USERS_KV.put(user.email, JSON.stringify(user));
+
+  const report = { removedFromKV: removed, rebooked: [], errors: [] };
+
+  // 2. Attempt rebook on Cal.com for each requested slot
+  for(const item of rebook){
+    const coachKey = (item.coachKey && COACHES[item.coachKey]) ? item.coachKey : 'crosby';
+    const apiKey = coachApiKey(env, coachKey) || env.CAL_COM_API_KEY;
+    const evtId = parseInt(item.eventTypeId, 10);
+    const start = item.start;
+    if(!evtId || !start){ report.errors.push({item, error:'missing eventTypeId or start'}); continue; }
+    const attendeeName = (user.parentName || user.athleteName || user.email).trim();
+    const payload = {
+      eventTypeId: evtId, start,
+      attendee: { name: attendeeName, email: user.email, timeZone: 'America/Toronto', language: 'en' },
+      metadata: { ti_email: user.email, ti_lot_id: item.lotId || '', ti_credit_used: 'true',
+                  athlete_name: (user.athleteName || attendeeName), athlete_dob: user.athleteDob || '',
+                  level: user.level || 'Other', ti_recovery: 'true' }
+    };
+    const r = await fetch('https://api.cal.com/v2/bookings', {
+      method:'POST',
+      headers:{ 'Authorization':'Bearer '+apiKey, 'cal-api-version':'2024-08-13', 'Content-Type':'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const j = await r.json().catch(function(){return {};});
+    if(!r.ok){ report.errors.push({start, detail:(j.error && j.error.message) || j.message || 'failed'}); continue; }
+    const uid = (j.data && (j.data.uid || j.data.id)) || 'unknown';
+    user.bookings.push({
+      calBookingUid: uid, startTime: start, creditLotId: item.lotId || null,
+      bookedAt: Date.now(), status:'accepted', coach: coachKey, source: 'one-on-one', recovered: true
+    });
+    report.rebooked.push({ start, uid });
+  }
+  await env.USERS_KV.put(user.email, JSON.stringify(user));
+  return jsonResponse({ ok:true, email, report });
+}
+
 async function handleBootstrapReconcile(request, env){
   const secret = request.headers.get('X-Reconcile-Secret') || '';
   if(!secret || secret !== env.RECONCILE_SECRET){
@@ -5757,6 +5814,7 @@ export default {
     if(p==='/api/bootstrap-reconcile') return handleBootstrapReconcile(request,env);
     if(p==='/api/bootstrap-user') return handleBootstrapUserDump(request,env);
     if(p==='/api/bootstrap-migrate') return handleBootstrapMigrateBookings(request,env);
+    if(p==='/api/bootstrap-rebook') return handleBootstrapRebook(request,env);
     if(p==='/api/admin/monday-roster-alert') return handleMondayRosterAlert(request,env);
     if(p==='/api/admin/cal-diag') return handleCalDiag(request,env);
     if(p==='/api/admin/cal-event-diag') return handleCalEventTypeDiag(request,env);
