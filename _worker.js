@@ -4901,7 +4901,16 @@ async function handleBootstrapMigrateBookings(request, env){
       report.errors.push({uid: b.calBookingUid, detail:'not on expected old event; skipping', curEt});
       continue;
     }
-    // 1. Create new booking on new event at same time
+    // 1. Cancel the old booking FIRST so Cal.com doesn't flag the slot as
+    // already booked by this attendee when we recreate on the new event.
+    try {
+      await fetch('https://api.cal.com/v2/bookings/' + encodeURIComponent(b.calBookingUid) + '/cancel', {
+        method:'POST',
+        headers:{ 'Authorization':'Bearer '+apiKey, 'cal-api-version':'2024-08-13', 'Content-Type':'application/json' },
+        body: JSON.stringify({ cancellationReason:'Migrated to new event type (calendar sync fix)' })
+      });
+    } catch(e){}
+    // 2. Create fresh booking on the new event at same time.
     const attendeeName = (user.parentName || user.athleteName || user.email).trim();
     const _vl = ['Beginner','House League','Select','Rep','College','Other'];
     const _level = _vl.indexOf(user.level) !== -1 ? user.level : 'Other';
@@ -4911,13 +4920,6 @@ async function handleBootstrapMigrateBookings(request, env){
       eventTypeId: newEventId,
       start: b.startTime,
       attendee: { name: attendeeName, email: user.email, timeZone: 'America/Toronto', language: 'en' },
-      bookingFieldsResponses: {
-        'player-name': _aname,
-        'athlete-dob': _dob,
-        'level-of-play': _level,
-        'waiver-agreement': true,
-        'Are-you-looking-for-help-with-hitting--catching--pitching': 'Hitting'
-      },
       metadata: {
         ti_email: user.email, ti_lot_id: b.creditLotId || '',
         ti_credit_used: 'true', athlete_name: _aname, athlete_dob: _dob, level: _level,
@@ -4932,17 +4934,10 @@ async function handleBootstrapMigrateBookings(request, env){
     const cj = await cr.json().catch(function(){return {};});
     if(!cr.ok){
       report.errors.push({uid: b.calBookingUid, detail:'create failed', body: (cj.error && cj.error.message) || cj.message || 'unknown'});
+      report.cancelledOnly++;
       continue;
     }
     const newUid = (cj.data && (cj.data.uid || cj.data.id)) || cj.uid || 'unknown';
-    // 2. Cancel the old booking
-    try {
-      await fetch('https://api.cal.com/v2/bookings/' + encodeURIComponent(b.calBookingUid) + '/cancel', {
-        method:'POST',
-        headers:{ 'Authorization':'Bearer '+apiKey, 'cal-api-version':'2024-08-13', 'Content-Type':'application/json' },
-        body: JSON.stringify({ cancellationReason:'Migrated to new event type — replaced by ' + newUid })
-      });
-    } catch(e){}
     // 3. Swap the UID in KV
     b.calBookingUid = newUid;
     b.migratedFrom = payload.metadata.ti_migrated_from;
