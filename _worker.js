@@ -4734,12 +4734,13 @@ async function sendCoachAlert(env, kind, opts){
       body: JSON.stringify({
         from: 'TI Baseball <noreply@tibaseball.com>',
         to: (function(){
-          // Multi-coach routing: if the booking is for a specific non-default coach,
-          // send the alert to their email instead of the default (Coach Crosby)
+          // Multi-coach routing: if the booking is for a non-default coach
+          // (e.g. Hastings), send to that coach AND always include Coach Crosby
+          // so he can coordinate the facility. Default (Crosby) gets it alone.
           try {
             const _c = opts && opts.coach;
             if(_c && typeof COACHES !== 'undefined' && COACHES[_c] && _c !== 'crosby'){
-              return [COACHES[_c].email];
+              return [COACHES[_c].email, 'crosbyathletics321@gmail.com'];
             }
           } catch(_){}
           return ['crosbyathletics321@gmail.com'];
