@@ -1134,7 +1134,7 @@ async function createCalBookingForUser(env, user, eventTypeId, startISO, extraMe
     const errMsg = String(body?.error?.message || body?.message || '');
     // Race with webhook safety net: if Cal.com says user is already booked
     // for this slot, the webhook already added them. Look up the booking.
-    if(/already signed up for this booking/i.test(errMsg)){
+    if(/already signed up for this booking|already has booking at this time/i.test(errMsg)){
       try {
         const afterISO = new Date(new Date(startISO).getTime() - 60*1000).toISOString();
         const beforeISO = new Date(new Date(startISO).getTime() + 60*60*1000).toISOString();
