@@ -1022,7 +1022,7 @@ async function handleProgramCheckout(request, env){
     params.set('success_url', successUrl);
     params.set('cancel_url', cancelUrl);
     params.set('metadata[ti_email]', auth.user.email);
-  if(programKey === 'one-on-one' || programKey === 'multi-person-session'){ params.set('metadata[ti_coach]', pcCoachKey); if(mode==='payment'){ params.set('payment_intent_data[metadata][ti_coach]', pcCoachKey); } }
+  if(programKey === 'one-on-one' || programKey === 'multi-person-session'){ params.set('metadata[ti_coach]', pcCoachKey); if(cfg.stripeMode==='payment'){ params.set('payment_intent_data[metadata][ti_coach]', pcCoachKey); } }
     params.set('metadata[ti_program]', programKey);
     if(slotStart) params.set('metadata[ti_slot]', slotStart);
     if(cfg.preorder) params.set('metadata[ti_preorder]', 'true');
