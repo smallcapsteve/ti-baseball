@@ -5047,6 +5047,36 @@ async function handleBootstrapPushBookings(request, env){
   return jsonResponse({ ok:true, email, added, total: user.bookings.length });
 }
 
+
+// Fix a needs_manual_booking placeholder by attaching the real Cal.com UID.
+// Used when webhook+claim race caused Cal.com booking to succeed but KV
+// recorded it as failed.
+async function handleBootstrapFixPlaceholder(request, env){
+  const secret = request.headers.get('X-Reconcile-Secret') || '';
+  if(!secret || secret !== env.RECONCILE_SECRET) return jsonResponse({error:'unauthorized'},401);
+  if(request.method !== 'POST') return jsonResponse({error:'POST only'},405);
+  let body;
+  try { body = await request.json(); } catch { return jsonResponse({error:'bad json'},400); }
+  const email = normalizeEmail(body.email || '');
+  const stripeRef = body.stripeRef;
+  const calBookingUid = body.calBookingUid;
+  if(!email || !stripeRef || !calBookingUid) return jsonResponse({error:'email, stripeRef, calBookingUid required'},400);
+  const user = await env.USERS_KV.get(email, 'json');
+  if(!user) return jsonResponse({error:'user not found'},404);
+  let fixed = 0;
+  for(const b of (user.bookings||[])){
+    if(b.stripeRef === stripeRef && (b.status === 'needs_manual_booking' || !b.calBookingUid)){
+      b.calBookingUid = calBookingUid;
+      b.status = 'accepted';
+      b.recoveredAt = Date.now();
+      delete b.calError;
+      fixed++;
+    }
+  }
+  await env.USERS_KV.put(user.email, JSON.stringify(user));
+  return jsonResponse({ ok:true, email, fixed });
+}
+
 async function handleBootstrapReconcile(request, env){
   const secret = request.headers.get('X-Reconcile-Secret') || '';
   if(!secret || secret !== env.RECONCILE_SECRET){
@@ -5858,6 +5888,7 @@ export default {
     if(p==='/api/bootstrap-migrate') return handleBootstrapMigrateBookings(request,env);
     if(p==='/api/bootstrap-rebook') return handleBootstrapRebook(request,env);
     if(p==='/api/bootstrap-push') return handleBootstrapPushBookings(request,env);
+    if(p==='/api/bootstrap-fix') return handleBootstrapFixPlaceholder(request,env);
     if(p==='/api/admin/monday-roster-alert') return handleMondayRosterAlert(request,env);
     if(p==='/api/admin/cal-diag') return handleCalDiag(request,env);
     if(p==='/api/admin/cal-event-diag') return handleCalEventTypeDiag(request,env);
