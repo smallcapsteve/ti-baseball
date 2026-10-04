@@ -5125,6 +5125,32 @@ async function handleBootstrapFixPlaceholder(request, env){
   return jsonResponse({ ok:true, email, fixed });
 }
 
+
+// Secret-gated bulk user export for parent mailing lists.
+// Returns a minimal record per user: parent, athlete, email, athleteDob.
+async function handleBootstrapAllUsers(request, env){
+  const secret = request.headers.get('X-Reconcile-Secret') || '';
+  if(!secret || secret !== env.RECONCILE_SECRET) return jsonResponse({error:'unauthorized'},401);
+  const out = [];
+  let cursor;
+  do {
+    const page = await env.USERS_KV.list({ cursor, limit: 1000 });
+    for(const k of page.keys){
+      const u = await env.USERS_KV.get(k.name, 'json');
+      if(!u) continue;
+      out.push({
+        email: u.email,
+        parentName: u.parentName || '',
+        athleteName: u.athleteName || '',
+        athleteDob: u.athleteDob || '',
+        createdAt: u.createdAt || null
+      });
+    }
+    cursor = page.list_complete ? undefined : page.cursor;
+  } while(cursor);
+  return jsonResponse({ ok:true, count: out.length, users: out });
+}
+
 async function handleBootstrapReconcile(request, env){
   const secret = request.headers.get('X-Reconcile-Secret') || '';
   if(!secret || secret !== env.RECONCILE_SECRET){
@@ -5933,6 +5959,7 @@ export default {
     if(p==='/api/admin/monday-reconcile') return handleMondayReconcile(request,env);
     if(p==='/api/bootstrap-reconcile') return handleBootstrapReconcile(request,env);
     if(p==='/api/bootstrap-user') return handleBootstrapUserDump(request,env);
+    if(p==='/api/bootstrap-all-users') return handleBootstrapAllUsers(request,env);
     if(p==='/api/bootstrap-migrate') return handleBootstrapMigrateBookings(request,env);
     if(p==='/api/bootstrap-rebook') return handleBootstrapRebook(request,env);
     if(p==='/api/bootstrap-push') return handleBootstrapPushBookings(request,env);
