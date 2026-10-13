@@ -4709,6 +4709,23 @@ async function sendCoachAlert(env, kind, opts){
       ['Amount paid',    opts.amountPaid ? '$' + (opts.amountPaid/100).toFixed(2) : '—']
     ];
   }
+  else if(kind === 'testimonial_submitted'){
+    subject = `New Testimonial — ${parentName} (${athleteName || 'athlete'})`;
+    badge = 'TESTIMONIAL'; badgeColor = '#EC2C8A';
+    headline = 'New Testimonial Submitted';
+    const consentNote = opts.consent
+      ? '<span style="color:#1FBFC4; font-weight:700;">\u2713 Consented to posting</span> on the website (first name only).'
+      : '<span style="color:#999;">No consent given to post publicly \u2014 private feedback only.</span>';
+    lede = `${esc(parentName)} just submitted a testimonial. ${consentNote} Review the full note below; nothing is published automatically.`;
+    extraRows = [
+      opts.athleteAge && ['Athlete age', esc(String(opts.athleteAge))],
+      opts.duration   && ['Training duration', esc(opts.duration)],
+      opts.whichCoach && ['Which coach', esc(opts.whichCoach)],
+      ['Consent to post', opts.consent ? '<strong style="color:#1FBFC4;">YES</strong>' : '<span style="color:#999;">no</span>'],
+      ['Testimonial', `<div style="white-space:pre-wrap; padding:12px 14px; background:#f7f7f7; border-left:3px solid #1FBFC4; border-radius:4px; color:#111; line-height:1.5;">${esc(opts.testimonial || '')}</div>`]
+    ].filter(Boolean);
+    ccSteve = true;
+  }
   else {
     // Fallback for unhandled kinds — still include parent + athlete details
     subject = `TI Baseball — ${kind} (${parentName})`;
